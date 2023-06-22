@@ -1,19 +1,24 @@
 import React , { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 function Header() {
   const [selectedLink, setSelectedLink] = useState('/');
 
+  // const navigate = useNavigate();
   useEffect(() => {
     setSelectedLink(window.location.pathname);
   }, []);
 
   const handleLinkClick = (link) => {
+    //navigate(link);
+    window.location.href = link
     setSelectedLink(link);
   };
 
-  if (!selectedLink) {
-    return null; // or render a loading indicator
-  }
+
+  // if (!selectedLink) {
+  //   return null; // or render a loading indicator
+  // }
     return(
         <div>
              <header id="pageHeaderWrapper">
@@ -32,7 +37,7 @@ function Header() {
                         <nav className="nav">
                         <ul className="main-menu">
                           <li className={selectedLink === '/' ? 'selected' : ''}>
-                            <Link to="/" onClick={(e) => {e.preventDefault(); handleLinkClick('/');}}>
+                            <Link to="/" onClick={() => { handleLinkClick('/');}}>
                               Home
                             </Link>
                           </li>
