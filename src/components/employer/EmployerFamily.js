@@ -173,7 +173,7 @@ const EmployerFamily = () => {
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"> <span>No</span></input></label>
+                                      <input type="radio" name="r1"/> <span>No</span></label>
                                   </div>
                                 </div>
                               </div>

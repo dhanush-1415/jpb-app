@@ -232,9 +232,9 @@ const HelperMedical = () => {
                             </tr>
                             <tr className="white-transparent">
                               <td className="valign-top"> 13 </td>
-                              <td colspan="2">  
+                              <td colSpan="2">  
                                 <table className="sub-table">
-                                  <tr><td className="pl0" style="min-width: 110px;">Dietary Restrictions</td></tr>
+                                  <tr><td className="pl0" style={{'minWidth': 110+'px'}}>Dietary Restrictions</td></tr>
                                   <tr>
                                     <td className="pl0 ">No Pork</td>
                                     <td>
@@ -277,9 +277,9 @@ const HelperMedical = () => {
                             </tr>
                             <tr className="tr-dark">
                               <td className="valign-top"> 14 </td>
-                              <td colspan="2">  
+                              <td colSpan="2">  
                                 <table className="sub-table">
-                                  <tr className="tr-dark"><td className="pl0" style="min-width: 110px;">Food Handing Preference</td></tr>
+                                  <tr className="tr-dark"><td className="pl0" style={{'minWidth': '110px'}}>Food Handing Preference</td></tr>
                                   <tr>
                                     <td className="pl0 ">Yes Pork</td>
                                     <td>
