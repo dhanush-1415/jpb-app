@@ -125,7 +125,7 @@ const HelperEducation = () => {
                               <a href="#" className="file-close"><i className="far fa-times-circle"></i></a>
                               <div className="upload-file-name">CertificateName.PDF</div>
                               <div className="progress">
-  <div className="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+  <div className="progress-bar" role="progressbar" style={{'width': '75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
                               <div className="upload-file-status">uploading...</div>
                             </div>
@@ -133,7 +133,7 @@ const HelperEducation = () => {
                               <a href="#" className="file-close"><i className="fas fa-times-circle"></i></a>
                               <div className="upload-file-name">CertificateName.PDF</div>
                               <div className="progress">
-  <div className="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+  <div className="progress-bar" role="progressbar" style={{'width': '100%'}} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
                               <div className="upload-file-status">upload complete</div>
                             </div>
@@ -149,7 +149,7 @@ const HelperEducation = () => {
                               <a href="#" className="file-close"><i className="fas fa-times-circle"></i></a>
                               <div className="upload-file-name">ID.docx</div>
                               <div className="progress">
-  <div className="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+  <div className="progress-bar" role="progressbar" style={{'width': '100%'}} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
                               <div className="upload-file-status">uploaded</div>
                             </div>
