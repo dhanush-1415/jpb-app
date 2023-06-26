@@ -41,11 +41,11 @@ function Header() {
                               Home
                             </Link>
                           </li>
-                          <li className={selectedLink === '/services' ? 'selected' : ''}>
+                          {/* <li className={selectedLink === '/services' ? 'selected' : ''}>
                             <Link to="/services" onClick={() => handleLinkClick('/services')}>
                               Services
                             </Link>
-                          </li>
+                          </li> */}
                           <li className={selectedLink === '/about' ? 'selected has-sub' : 'has-sub'}>
                             <Link to="/about" onClick={() => handleLinkClick('/about')}>
                               About Us
