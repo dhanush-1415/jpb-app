@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
@@ -7,6 +7,18 @@ import { Link } from 'react-router-dom';
 
 
 const HelperFamily = () => {
+  const [selectedLink, setSelectedLink] = useState('/');
+
+  // const navigate = useNavigate();
+  useEffect(() => {
+    setSelectedLink(window.location.pathname);
+  }, []);
+
+  const handleLinkClick = (link) => {
+    //navigate(link);
+    window.location.href = link
+    setSelectedLink(link);
+  };
   return(
  <div>
   <div id="wrapper">
@@ -38,16 +50,17 @@ const HelperFamily = () => {
               <div className="sidebar-title"><h5>Hi Samantha,</h5></div>
               <a className="btn-control-notext show-lg" href="#nav">Select</a>
               <ul id="nav" className="nav-1 hide-lg">
-              <li><Link to="/helperprofile">Bio Profile Details</Link></li>
-                <li><Link to="/helpercontact"> Contact Details</Link></li>
-                <li className="active"><Link to="/helperfamily">Family Background</Link></li>
-                <li><Link to="/helperbooking"> Booking Related Info</Link></li>
-                <li><Link to="/helperinterview"> Interview Appointment Details</Link></li>
-                <li><Link to="/helpereducation">Education Details</Link></li>
-                <li><Link to="/helperexperience">Experience Details</Link></li>
-                <li><Link to="/helperlanguage">Language Details</Link></li>
-                <li ><Link to="/helpermedical">Medical Details</Link></li>
-                <li><Link to="/helperskill">Skills Details</Link></li>
+              <li className={selectedLink === '/helperaccount' ? 'active' : ''}><Link to="/helperaccount" onClick={() => { handleLinkClick('/helperaccount');}}>Account</Link></li>
+              <li className={selectedLink === '/helperprofiledetail' ? 'active' : ''}><Link to="/helperprofiledetail" onClick={() => { handleLinkClick('/helperprofiledetail');}}>Bio Profile Details</Link></li>
+                <li className={selectedLink === '/helpercontact' ? 'active' : ''}><Link to="/helpercontact" onClick={() => { handleLinkClick('/helpercontact');}}> Contact Details</Link></li>
+                <li className={selectedLink === '/helperfamily' ? 'active' : ''}><Link to="/helperfamily" onClick={() => { handleLinkClick('/helperfamily');}}>Family Background</Link></li>
+                <li className={selectedLink === '/helperbooking' ? 'active' : ''}><Link to="/helperbooking" onClick={() => { handleLinkClick('/helperbooking');}}> Booking Related Info</Link></li>
+                <li className={selectedLink === '/helperinterview' ? 'active' : ''}><Link to="/helperinterview" onClick={() => { handleLinkClick('/helperinterview');}}> Interview Appointment Details</Link></li>
+                <li className={selectedLink === '/helpereducation' ? 'active' : ''}><Link to="/helpereducation" onClick={() => { handleLinkClick('/helpereducation');}}>Education Details</Link></li>
+                <li className={selectedLink === '/helperexperience' ? 'active' : ''}><Link to="/helperexperience" onClick={() => { handleLinkClick('/helperexperience');}}>Experience Details</Link></li>
+                <li className={selectedLink === '/helperlanguage' ? 'active' : ''}><Link to="/helperlanguage" onClick={() => { handleLinkClick('/helperlanguage');}}>Language Details</Link></li>
+                <li className={selectedLink === '/helpermedical' ? 'active' : ''}><Link to="/helpermedical" onClick={() => { handleLinkClick('/helpermedical');}}>Medical Details</Link></li>
+                <li className={selectedLink === '/helperskill' ? 'active' : ''}><Link to="/helperskill" onClick={() => { handleLinkClick('/helperskill');}}>Skills Details</Link></li>
               </ul>
             </div>
             </div>

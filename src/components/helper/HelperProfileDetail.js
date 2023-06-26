@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
@@ -7,6 +7,18 @@ import { Link } from 'react-router-dom';
 
 
 const HelperProfileDetail = () => {
+  const [selectedLink, setSelectedLink] = useState('/');
+
+  // const navigate = useNavigate();
+  useEffect(() => {
+    setSelectedLink(window.location.pathname);
+  }, []);
+
+  const handleLinkClick = (link) => {
+    //navigate(link);
+    window.location.href = link
+    setSelectedLink(link);
+  };
   return(
  <div>
   <div id="wrapper">
@@ -38,17 +50,17 @@ const HelperProfileDetail = () => {
               <a className="btn-control-notext show-lg" href="#nav">Select</a>
               <ul id="nav" className="nav-1 hide-lg">
              
-                <li><Link to="/helperaccount">Account Details</Link></li>
-                <li className="active"><Link to="/helperprofile">Bio Profile Details</Link></li>
-                <li><Link to="/helpercontact"> Contact Details</Link></li>
-                <li><Link to="/helperfamily">Family Background</Link></li>
-                <li><Link to="/helperbooking"> Booking Related Info</Link></li>
-                <li><Link to="/helperinterview"> Interview Appointment Details</Link></li>
-                <li><Link to="/helpereducation">Education Details</Link></li>
-                <li><Link to="/helperexperience">Experience Details</Link></li>
-                <li><Link to="/helperlanguage">Language Details</Link></li>
-                <li><Link to="/helpermedical">Medical Details</Link></li>
-                <li><Link to="/helperskill">Skills Details</Link></li>
+              <li className={selectedLink === '/helperaccount' ? 'active' : ''}><Link to="/helperaccount" onClick={() => { handleLinkClick('/helperaccount');}}>Account</Link></li>
+              <li className={selectedLink === '/helperprofiledetail' ? 'active' : ''}><Link to="/helperprofiledetail" onClick={() => { handleLinkClick('/helperprofiledetail');}}>Bio Profile Details</Link></li>
+                <li className={selectedLink === '/helpercontact' ? 'active' : ''}><Link to="/helpercontact" onClick={() => { handleLinkClick('/helpercontact');}}> Contact Details</Link></li>
+                <li className={selectedLink === '/helperfamily' ? 'active' : ''}><Link to="/helperfamily" onClick={() => { handleLinkClick('/helperfamily');}}>Family Background</Link></li>
+                <li className={selectedLink === '/helperbooking' ? 'active' : ''}><Link to="/helperbooking" onClick={() => { handleLinkClick('/helperbooking');}}> Booking Related Info</Link></li>
+                <li className={selectedLink === '/helperinterview' ? 'active' : ''}><Link to="/helperinterview" onClick={() => { handleLinkClick('/helperinterview');}}> Interview Appointment Details</Link></li>
+                <li className={selectedLink === '/helpereducation' ? 'active' : ''}><Link to="/helpereducation" onClick={() => { handleLinkClick('/helpereducation');}}>Education Details</Link></li>
+                <li className={selectedLink === '/helperexperience' ? 'active' : ''}><Link to="/helperexperience" onClick={() => { handleLinkClick('/helperexperience');}}>Experience Details</Link></li>
+                <li className={selectedLink === '/helperlanguage' ? 'active' : ''}><Link to="/helperlanguage" onClick={() => { handleLinkClick('/helperlanguage');}}>Language Details</Link></li>
+                <li className={selectedLink === '/helpermedical' ? 'active' : ''}><Link to="/helpermedical" onClick={() => { handleLinkClick('/helpermedical');}}>Medical Details</Link></li>
+                <li className={selectedLink === '/helperskill' ? 'active' : ''}><Link to="/helperskill" onClick={() => { handleLinkClick('/helperskill');}}>Skills Details</Link></li>
               </ul>
             </div>
             </div>
@@ -383,7 +395,7 @@ const HelperProfileDetail = () => {
                               <a href="#" className="file-close"><i className="far fa-times-circle"></i></a>
                               <div className="upload-file-name">Passport.PDF</div>
                               <div className="progress">
-  <div className="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+  <div className="progress-bar" role="progressbar" style={{'width': '75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
                               <div className="upload-file-status">uploading...</div>
                             </div>
@@ -391,7 +403,7 @@ const HelperProfileDetail = () => {
                               <a href="#" className="file-close"><i className="fas fa-times-circle"></i></a>
                               <div className="upload-file-name">Passport.PDF</div>
                               <div className="progress">
-  <div className="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+  <div className="progress-bar" role="progressbar" style={{'width': '100%'}} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
                               <div className="upload-file-status">upload complete</div>
                             </div>
@@ -407,7 +419,7 @@ const HelperProfileDetail = () => {
                               <a href="#" className="file-close"><i className="fas fa-times-circle"></i></a>
                               <div className="upload-file-name">ID.docx</div>
                               <div className="progress">
-  <div className="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+  <div className="progress-bar" role="progressbar" style={{'width': '100%'}} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
                               <div className="upload-file-status">uploaded</div>
                             </div>

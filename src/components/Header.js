@@ -86,8 +86,8 @@ function Header() {
                     <div className="col-auto account-button">
                       <a href="/" className="top-link top-acc  dropdown-toggle" title="Register/login" data-toggle="dropdown" aria-haspopup="true"><img src="images/user.svg" alt="Register/login" /></a>
                       <div className="dropdown-menu">
-                        <Link className="dropdown-item" to="/login">Login</Link>
-                        <Link className="dropdown-item" to="/employerregistration">Register</Link>
+                        <Link className="dropdown-item" to="/login" onClick={() => handleLinkClick('/login')}>Login</Link>
+                        <Link className="dropdown-item" to="/employerregistration" onClick={() => handleLinkClick('/employerregistration')}>Register</Link>
                       </div>
                     </div>
                   </div>
