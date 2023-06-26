@@ -1,6 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 function Footer() {
+  const [selectedLink, setSelectedLink] = useState('/');
+
+  // const navigate = useNavigate();
+  useEffect(() => {
+    setSelectedLink(window.location.pathname);
+  }, []);
+
+  const handleLinkClick = (link) => {
+    //navigate(link);
+    window.location.href = link
+    setSelectedLink(link);
+  };
 return (
     <div>
 <footer className="footer-wrapper">
@@ -11,7 +23,7 @@ return (
                 <div className="col-sm-6 col-lg-auto">
                   <div className="ftbox ftbox1">
                     <div className="footer-logo">
-                      <Link to="/"><img src="images/logo-footer.png" alt="JPB" /></Link>
+                      <Link to="/" onClick={() => { handleLinkClick('/');}}><img src="images/logo-footer.png" alt="JPB" /></Link>
                     </div>
                   </div>
                 </div>
@@ -30,11 +42,32 @@ return (
                   <div className="ftbox ftbox3">
                     <h6>Sitemap</h6>
                     <ul className="footer-nav">
-                      <li className="selected"><Link to="/">Home</Link></li>
-                      <li><Link to="/services">Services</Link></li>
-                      <li><Link to="/about">About Us</Link></li>
-                      <li><Link to="/news">News and Events</Link></li>
-                      <li><Link to="/contact">Contact Us</Link></li>
+                      <li className={selectedLink === '/' ? 'selected' : ''}>
+                            <Link to="/" onClick={() => { handleLinkClick('/');}}>
+                              Home
+                            </Link>
+                          </li>
+                      {/* <li className={selectedLink === '/services' ? 'selected' : ''}>
+                            <Link to="/services" onClick={() => handleLinkClick('/services')}>
+                              Services
+                            </Link>
+                          </li> */}
+                      <li className={selectedLink === '/about' ? 'selected has-sub' : 'has-sub'}>
+                            <Link to="/about" onClick={() => handleLinkClick('/about')}>
+                              About Us
+                            </Link>
+                           
+                          </li>
+                          <li className={selectedLink === '/news' ? 'selected' : ''}>
+                            <Link to="/news" onClick={() => handleLinkClick('/news')}>
+                              News and Events
+                            </Link>
+                          </li>
+                          <li className={selectedLink === '/contact' ? 'selected' : ''}>
+                            <Link to="/contact" onClick={() => handleLinkClick('/contact')}>
+                              Contact Us
+                            </Link>
+                          </li>
                     </ul>
                   </div>
                 </div>

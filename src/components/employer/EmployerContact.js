@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect,useState} from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
@@ -7,6 +7,18 @@ import { Link } from 'react-router-dom';
 
 
 const EmployerContact = () => {
+  const [selectedLink, setSelectedLink] = useState('/');
+
+  // const navigate = useNavigate();
+  useEffect(() => {
+    setSelectedLink(window.location.pathname);
+  }, []);
+
+  const handleLinkClick = (link) => {
+    //navigate(link);
+    window.location.href = link
+    setSelectedLink(link);
+  };
   return(
  <div>
   <div id="wrapper">
@@ -37,13 +49,13 @@ const EmployerContact = () => {
               <div className="sidebar-title"><h5>Hi Timothy,</h5></div>
               <a className="btn-control-notext show-lg" href="#nav">Select</a>
               <ul id="nav" className="nav-1 hide-lg">
-              <li><Link to="/employeraccount">Account Details</Link></li>
-                <li><Link to="/employerprofile">Personal Profile Details</Link></li>
-                <li className="active"><Link to="/employercontact"> Contact Details</Link></li>
-                <li><Link to="/employeraddress">Address</Link></li>
-                <li><Link to="/employerfamily">Family Details & Job Scope</Link></li>
-                <li><Link to="/employerInterview"> Interview Appointment Details</Link></li>
-                <li><Link to="/employerbooking"> Booking & Payment Details</Link></li>
+              <li className={selectedLink === '/employeraccount' ? 'active' : ''}><Link to="/employeraccount" onClick={() => { handleLinkClick('/employeraccount');}}>Account Details</Link></li>
+                <li className={selectedLink === '/employerprofile' ? 'active' : ''}><Link to="/employerprofile" onClick={() => { handleLinkClick('/employerprofile');}}>Personal Profile Details</Link></li>
+                <li className={selectedLink === '/employercontact' ? 'active' : ''}><Link to="/employercontact" onClick={() => { handleLinkClick('/employercontact');}}> Contact Details</Link></li>
+                <li className={selectedLink === '/employeraddress' ? 'active' : ''}><Link to="/employeraddress" onClick={() => { handleLinkClick('/employeraddress');}}>Address</Link></li>
+                <li className={selectedLink === '/employerfamily' ? 'active' : ''}><Link to="/employerfamily" onClick={() => { handleLinkClick('/employerfamily');}}>Family Details & Job Scope</Link></li>
+                <li className={selectedLink === '/employerInterview' ? 'active' : ''}><Link to="/employerInterview" onClick={() => { handleLinkClick('/employerInterview');}}> Interview Appointment Details</Link></li>
+                <li className={selectedLink === '/employerbooking' ? 'active' : ''}><Link to="/employerbooking" onClick={() => { handleLinkClick('/employerbooking');}}> Booking & Payment Details</Link></li>
               </ul>
             </div>
             </div>
