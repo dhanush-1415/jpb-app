@@ -9,13 +9,52 @@ import { Link } from 'react-router-dom';
 
 const EmployerRegistration = () => {
   const [selectedLink, setSelectedLink] = useState('/');
+  const [jwtToken, setjwtToken] = useState('');
+  const [employerCode, setemployerCode] = useState('');
   const nameRef = useRef('');
   const emailRef = useRef('');
   const phoneRef = useRef('');
   const otpRef = useRef('');
+  const [employerFormData, setemployerFormData] = React.useState({
+    PersonalDetails: {
+      OrgId: 1,
+      EmployerCode: employerCode,
+     EmployerName: "string",
+      Nationality: "Singaporean",
+     NRIC_FIN: "string",
+      PassportNo: "string",
+      DateOfBirth: "2023-06-28T05:07:49.787Z"
+    },
+    ContactDetails: {
+      ContactPerson: "string",
+      MobileNo: "string",
+      HomeNo: "string",
+      EmailId: emailRef
+    },
+    JobScopes: {
+      HousingType: "string",
+      ExpectedJobScope: [
+        {
+          JobScopeId: 0,
+          ExpectedJobScope: "string"
+        }
+      ],
+      NoOfBedroom: "string"
+    },
+    AccountDetails: {
+      Email: emailRef,
+      Password: "string",
+      ConfirmPassword: "string",
+      SMSContactNumber: "string",
+      MethodOfproceed: "string"
+    }
+})
+
+
+ 
   useEffect(() => {
     setSelectedLink(window.location.pathname);
-    
+    fetchTokenHandler();
       const verificationForm = () => {
           (function($) {
               "use strict";
@@ -115,7 +154,7 @@ const EmployerRegistration = () => {
     }, []);
 
 
-
+   
   const fetchTokenHandler = useCallback(async () => {
     const tokenDetail = {
       Username: "admin",
@@ -130,38 +169,136 @@ const EmployerRegistration = () => {
         }
       });
       if (!response.ok) {
+        console.log('Something went wrong!');
         throw new Error('Something went wrong!');
       }
       const data = await response.json();
-      console.log(data);
+      console.log(data.Jwt_Token);
+      setjwtToken(data.Jwt_Token);
+     // console.log(jwtToken);
+     // return data.Jwt_Token;
     } catch (error) {
     }
   }, []);
 
 
+
   async function stepFirstHandler(event) {
    // event.preventDefault();
-  // fetchTokenHandler();
+  
     const regDetail = {
       OrgId: 1,
       Name: nameRef.current.value,
       Email: emailRef.current.value,
       Phone: phoneRef.current.value,
-      viaOTP: otpRef.current.value,
+      viaOTP: 'EMAIL',
     };
     console.log(regDetail);
     console.log(JSON.stringify(regDetail));
    
-    // const response = await fetch('http://154.26.130.251:283/api/Employer/Register', {
-    //   method: 'POST',
-    //   body: JSON.stringify(regDetail),
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // });
-    // const data = await response.json();
-    // console.log(data);
+    const token = jwtToken;
+    console.log(jwtToken);
+    console.log(token);
+    const response = await fetch('http://154.26.130.251:283/api/Employer/Register', {
+      method: 'POST',
+      body: JSON.stringify(regDetail),
+      headers: {
+        'Content-Type': 'application/json',
+           Authorization: `Bearer ${token}`,
+      }
+    });
+    if (!response.ok) {
+      console.log('Something went wrong!');
+    }
+    const data = await response.json();
+    console.log(data);
   }
+
+  async function stepTwoHandler(event) {
+    // event.preventDefault();
+  // fetchTokenHandler();
+     const regDetail = {
+       OrgId: 1,
+       Email: emailRef.current.value,
+       OTP: otpRef.current.value
+     };
+     console.log(regDetail);
+     console.log(JSON.stringify(regDetail));
+    
+     const token = jwtToken;
+     console.log(jwtToken);
+     console.log(token);
+     const response = await fetch('http://154.26.130.251:283/api/Employer/VerifyOTP', {
+       method: 'POST',
+       body: JSON.stringify(regDetail),
+       headers: {
+         'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+       }
+     });
+     if (!response.ok) {
+       console.log('Please enter correct OTP!');
+     }
+     const data = await response.json();
+     console.log(data);
+     setemployerCode(data.EmployerCode );
+     console.log(employerCode);
+   }
+
+   async function stepThreeHandler(event) {
+    // event.preventDefault();
+  // fetchTokenHandler();
+     const regDetail = {
+      PersonalDetails: {
+        OrgId: 1,
+        EmployerCode: "JPB35BD34FC",
+       EmployerName: employerFormData.EmployerName,
+        Nationality:document.getElementById('Nationality').value,
+       NRIC_FIN: employerFormData.NRIC_FIN,
+        PassportNo: employerFormData.PassportNo,
+        DateOfBirth: employerFormData.DateOfBirth
+      },
+      ContactDetails: {
+        ContactPerson: employerFormData.ContactPerson,
+        MobileNo: employerFormData.MobileNo,
+        HomeNo: employerFormData.HomeNo,
+        EmailId: employerFormData.EmailId
+      },
+      JobScopes: {
+        HousingType: document.getElementById('HousingType').value,
+        ExpectedJobScope: employerFormData.ExpectedJobScope,
+        NoOfBedroom: employerFormData.NoOfBedroom
+      },
+      AccountDetails: {
+        Email: employerFormData.Email,
+        Password: employerFormData.Password,
+        ConfirmPassword: employerFormData.ConfirmPassword,
+        SMSContactNumber:employerFormData.SMSContactNumber,
+        MethodOfproceed: employerFormData.MethodOfproceed
+      }
+     };
+     console.log(regDetail);
+     console.log(employerFormData.Nationality);
+     console.log(JSON.stringify(regDetail));
+    
+     const token = jwtToken;
+     console.log(jwtToken);
+     console.log(token);
+     const response = await fetch('http://154.26.130.251:283/api/Employer/DataFormUpdation', {
+       method: 'POST',
+       body: JSON.stringify(regDetail),
+       headers: {
+         'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+       }
+     });
+     if (!response.ok) {
+       console.log('SOMETHING WENT WRONG');
+     }
+     console.log(response.json());
+     const data = await response.json();
+     console.log(data);
+   }
 
  
   const handleLinkClick = (link) => {
@@ -224,7 +361,7 @@ const EmployerRegistration = () => {
                         <div className="col-lg-8">
                           <input type="number" ref={phoneRef} className="form-control" placeholder="Your Phone Number" required/> </div>
                       </div>
-                      <div className="row align-items-center text-center justify-content-center form-group">
+                      {/* <div className="row align-items-center text-center justify-content-center form-group">
                         <div className="col-lg-auto">
                           <label>Select Option to Receive OTP * : <span className="red">*</span></label>
                         </div>
@@ -233,36 +370,36 @@ const EmployerRegistration = () => {
                             
                             <div className="radio">
                               <label>
-                                <input type="radio" ref={otpRef} name="r1"/> <span>via Email</span></label>
+                                <input type="radio"  name="r1"/> <span>via Email</span></label>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                     <button type="button" onClick={stepFirstHandler} className="next action-button custom-button center-btn">Next</button>
                   </fieldset>
                   <fieldset>
                     <div className="pageTitle title-fix text-center md">
                       <h2>Enter The Details</h2></div>
-                    <div className="text-center otp-wrap">
-                      <p>A combination of digits has been sent to your chosen OTP.</p>
+                    <div className="text-center ">
+                      <p>OTP has been sent it to your registered Emailid!</p>
                       <label>Enter the OTP <span className="red">*</span></label>
                       <div className="row gutters-10 otp-row align-items-center justify-content-center">
                         <div className="col-auto">
+                          <input type="text"  ref={otpRef} className="form-control"/> </div>
+                        {/* <div className="col-auto">
                           <input type="text" className="form-control"/> </div>
                         <div className="col-auto">
                           <input type="text" className="form-control"/> </div>
                         <div className="col-auto">
                           <input type="text" className="form-control"/> </div>
                         <div className="col-auto">
-                          <input type="text" className="form-control"/> </div>
-                        <div className="col-auto">
-                          <input type="text" className="form-control"/> </div>
+                          <input type="text" className="form-control"/> </div> */}
                       </div>
                       <div className="resend-otp"><a href="#">Resend OTP <i className="fas fa-redo-alt"></i></a></div>
                     </div>
                     <button type="button" className="action-button previous previous_button custom-button prvs">Back</button>
-                    <button type="button" className="next action-button custom-button ">Next</button>
+                    <button type="button" onClick={stepTwoHandler} className="next action-button custom-button ">Next</button>
                   </fieldset>
                   <fieldset>
                     <div className="pageTitle title-fix text-center md">
@@ -277,17 +414,31 @@ const EmployerRegistration = () => {
                                 <label>Employer Name</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Employer Name"/> </div>
+                                <input type="text" className="form-control" placeholder="Employer Name" value={employerFormData.EmployerName}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        EmployerName:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Nationality</label>
                               </div>
                               <div className="col-lg-6">
-                                <select>
-                                  <option>Singaporean</option>
-                                  <option>Indian</option>
-                                  <option>Select</option>
+                                <select id="Nationality"
+                                onChange={(e) => {
+                                  console.log(e.target.value);
+                                  setemployerFormData({
+                                      ...employerFormData,
+                                      Nationality: e.target.value
+                                  })
+                              }}
+                               >
+                                  <option value="Singaporean">Singaporean</option>
+                                  <option value="Indian">Indian</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -296,7 +447,13 @@ const EmployerRegistration = () => {
                                 <label>NRIC / FIN</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Your NRIC / FIN"/> </div>
+                                <input type="text" className="form-control" placeholder="Your NRIC / FIN" value={employerFormData.NRIC_FIN}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        NRIC_FIN:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
@@ -304,7 +461,13 @@ const EmployerRegistration = () => {
                                 <p className="size-12">* only for EP and Spass holder</p>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Your Passport"/> </div>
+                                <input type="text" className="form-control" placeholder="Your Passport" value={employerFormData.PassportNo}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        PassportNo:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
@@ -312,7 +475,13 @@ const EmployerRegistration = () => {
                               </div>
                               <div className="col-lg-6">
                                 <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> </div>
+                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" value={employerFormData.DateOfBirth}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        DateOfBirth:  e.target.value
+                                    })
+                                }}/> <i className="fas fa-calendar-alt"></i> </div>
                               </div>
                             </div>
                           </div>
@@ -329,28 +498,52 @@ const EmployerRegistration = () => {
                                 <label>Contact Person</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Contact Person"/> </div>
+                                <input type="text" className="form-control" placeholder="Contact Person" value={employerFormData.ContactPerson}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        ContactPerson:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Mobile No.</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Mobile No."/> </div>
+                                <input type="text" className="form-control" placeholder="Mobile No." value={employerFormData.MobileNo}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        MobileNo:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Home No</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Home No."/> </div>
+                                <input type="text" className="form-control" placeholder="Home No." value={employerFormData.HomeNo}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        HomeNo:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Email</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="emailme.@gmail.com"/> </div>
+                                <input type="text" className="form-control" placeholder="emailme.@gmail.com" value={employerFormData.EmailId}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        EmailId:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                           </div>
                         </div>
@@ -366,10 +559,15 @@ const EmployerRegistration = () => {
                                 <label>Housing Type</label>
                               </div>
                               <div className="col-lg-6">
-                                <select>
-                                  <option>Landed Property</option>
-                                  <option>Select</option>
-                                  <option>Select</option>
+                                <select id="HousingType"
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        HousingType:  e.target.value
+                                    })
+                                }}>
+                                  <option value="Landed Property">Landed Property</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -379,23 +577,41 @@ const EmployerRegistration = () => {
                               </div>
                               <div className="col-lg-6">
                                 
-                                <select multiple className="selectpicker form-control" id="number-multiple" data-virtual-scroll="true">
-                                  <option>Household Chores</option>
-                                  <option>Cooking</option>
-                                  <option>Looking after age person in the household</option>
-                                  <option>Constact attaention is required</option>
-                                  <option>Babysitting</option>
-                                  <option>Child - minding</option>
-                                  <option>Others</option>
+                                <select multiple className="selectpicker form-control" id="number-multiple" data-virtual-scroll="true" 
+                                value={employerFormData.ExpectedJobScope}
+  onChange={(e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, (option) => ({
+      JobScopeId: option.index,
+      ExpectedJobScope: option.value
+    }));
+
+    setemployerFormData({
+      ...employerFormData,
+      ExpectedJobScope: selectedOptions
+    });
+  }} >
+                                  <option value="Household Chores">Household Chores</option>
+  <option value="Cooking">Cooking</option>
+  <option value="Looking after age person in the household">Looking after age person in the household</option>
+  <option value="Constact attaention is required">Constact attaention is required</option>
+  <option value="Babysitting">Babysitting</option>
+  <option value="Child - minding">Child - minding</option>
+  <option value="Others">Others</option>
                                 </select>
-                              </div>
+                              </div> 
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Number of Bedroom in the house</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Number of Bedroom in the house"/> </div>
+                                <input type="text" className="form-control" placeholder="Number of Bedroom in the house" value={employerFormData.NoOfBedroom}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        NoOfBedroom:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                           </div>
                         </div>
@@ -411,28 +627,52 @@ const EmployerRegistration = () => {
                                 <label>Email Address</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="XXXXXXXXXXXXXXX@gmail.com"/> </div>
+                                <input type="text" className="form-control" placeholder="XXXXXXXXXXXXXXX@gmail.com" value={employerFormData.Email}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        Email:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Password</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="Password" className="form-control"/> </div>
+                                <input type="Password" className="form-control" value={employerFormData.Password}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        Password:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Confirm Password</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="Password" className="form-control"/> </div>
+                                <input type="Password" className="form-control" value={employerFormData.ConfirmPassword}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        ConfirmPassword:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>SMS Contact Number</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control"/> </div>
+                                <input type="text" className="form-control" value={employerFormData.SMSContactNumber}
+                                onChange={(e) => {
+                                    setemployerFormData({
+                                        ...employerFormData,
+                                        SMSContactNumber:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row align-items-center  form-group">
                               <div className="col-lg-4">
@@ -442,11 +682,25 @@ const EmployerRegistration = () => {
                                 <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>Self Processing</span></label>
+                                      <input type="radio" name="r1" value="Self Processing"
+      checked={employerFormData.MethodOfproceed === "Self Processing"}
+      onChange={(e) => {
+        setemployerFormData({
+          ...employerFormData,
+          MethodOfproceed: e.target.value
+        });
+      }}/> <span>Self Processing</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>Using Salespersons/Agency Services</span></label>
+                                      <input type="radio" name="r1" value="Using Salespersons/Agency Services"
+      checked={employerFormData.MethodOfproceed === "Using Salespersons/Agency Services"}
+      onChange={(e) => {
+        setemployerFormData({
+          ...employerFormData,
+          MethodOfproceed: e.target.value
+        });
+      }}/> <span>Using Salespersons/Agency Services</span></label>
                                   </div>
                                 </div>
                               </div>
@@ -458,10 +712,10 @@ const EmployerRegistration = () => {
                     <div className="ctpod col-lg-12 pt20 pb20">
                       <div className="checkbox size-16">
                         <input type="checkbox" id="c1"/>
-                        <label for="c1">I hereby declared that all the above information given are true and correct.</label>
+                        <label htmlFor="c1">I hereby declared that all the above information given are true and correct.</label>
                       </div>
                     </div>
-                    <button type="button" className="action-button previous previous_button custom-button prvs">Back</button> <a href="#" className="action-button custom-button finish">SUBMIT</a> 
+                    <button type="button" className="action-button previous previous_button custom-button prvs">Back</button> <a href="#" onClick={stepThreeHandler} className="action-button custom-button finish">SUBMIT</a> 
                   </fieldset>
                 </form>
               </section>

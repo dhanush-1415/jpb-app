@@ -1,110 +1,75 @@
-import React, {  useEffect } from 'react';
-import $ from "jquery";
+import React, {  useEffect,useState,useCallback } from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link } from 'react-router-dom';
 
 const Login = () => {
-  useEffect(() => {
-   
-    const verificationForm = () => {
-      (function($) {
-        "use strict";
-        //* Form js
-        function verificationForm() {
-          //jQuery time
-          var current_fs, next_fs, previous_fs; //fieldsets
-          var left, opacity, scale; //fieldset properties which we will animate
-          var animating; //flag to prevent quick multi-click glitches
-          $(".next").click(function() {
-            if(animating) return false;
-            animating = true;
-            current_fs = $(this).parent();
-            next_fs = $(this).parent().next();
-            //activate next step on progressbar using the index of next_fs
-            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-            //show the next fieldset
-            next_fs.show();
-            //hide the current fieldset with style
-            current_fs.animate({
-              opacity: 0
-            }, {
-              step: function(now, mx) {
-                //as the opacity of current_fs reduces to 0 - stored in "now"
-                //1. scale current_fs down to 80%
-                //scale = 1 - (1 - now) * 0.2;
-                //2. bring next_fs from the right(50%)
-                //left = now * 50 + "%";
-                //3. increase opacity of next_fs to 1 as it moves in
-                opacity = 1 - now;
-                current_fs.css({
-                  //transform: "scale(" + scale + ")",
-                  //position: "absolute"
-                });
-                next_fs.css({
-                  //left: left,
-                  opacity: opacity
-                });
-              },
-              duration: 400,
-              complete: function() {
-                current_fs.hide();
-                animating = false;
-              },
-              //this comes from the custom easing plugin
-              //easing: "easeInOutBack"
-            });
-          });
-          $(".previous").click(function() {
-            if(animating) return false;
-            animating = true;
-            current_fs = $(this).parent();
-            previous_fs = $(this).parent().prev();
-            //de-activate current step on progressbar
-            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
-            //show the previous fieldset
-            previous_fs.show();
-            //hide the current fieldset with style
-            current_fs.animate({
-              opacity: 0
-            }, {
-              step: function(now, mx) {
-                //as the opacity of current_fs reduces to 0 - stored in "now"
-                //1. scale previous_fs from 80% to 100%
-                scale = 0.8 + (1 - now) * 0.2;
-                //2. take current_fs to the right(50%) - from 0%
-                left = (1 - now) * 50 + "%";
-                //3. increase opacity of previous_fs to 1 as it moves in
-                opacity = 1 - now;
-                current_fs.css({
-                  //left: left
-                });
-                previous_fs.css({
-                  //transform: "scale(" + scale + ")",
-                  opacity: opacity
-                });
-              },
-              duration: 800,
-              complete: function() {
-                current_fs.hide();
-                animating = false;
-              },
-              //this comes from the custom easing plugin
-              //easing: "easeInOutBack"
-            });
-          });
+  const [isloggedin, setisloggedin] = React.useState(false);
+  const [logindata, setlogindata] = React.useState({});
+    const [jwtToken, setjwtToken] = useState('');
+    useEffect(() => {
+      fetchTokenHandler();
+        let token = localStorage.getItem("token")
+        if (token) {
+            setisloggedin(true)
         }
-        verificationForm();
-      })($);
-    };
-    verificationForm();
-
+    }, [])
+    const fetchTokenHandler = useCallback(async () => {
+      const tokenDetail = {
+        Username: "admin",
+        Password: "admin54321",
+      };
+      try {
+        const response = await fetch('http://154.26.130.251:283/api/Token/GenerateToken', {
+          method: 'POST',
+          body: JSON.stringify(tokenDetail),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!response.ok) {
+          console.log('Something went wrong!');
+          throw new Error('Something went wrong!');
+        }
+        const data = await response.json();
+        console.log(data.Jwt_Token);
+        setjwtToken(data.Jwt_Token);
+       // console.log(jwtToken);
+       // return data.Jwt_Token;
+      } catch (error) {
+      }
+    }, []);
+  
     
-    return () => {
-      
-    };
-  }, []);
+    async function handleLogin(event) {
+      const regDetail = {
+        "EmailId": logindata.Username,
+          "Password": logindata.Password,
+      };
+      console.log(regDetail);
+      console.log(JSON.stringify(regDetail));
+      const jwttoken = jwtToken;
+      console.log(jwtToken,jwttoken);
+       const response = await fetch('http://154.26.130.251:283/api/Employer/Login', {
+         method: 'POST',
+         body: JSON.stringify(regDetail),
+         headers: {
+           'Content-Type': 'application/json',
+              Authorization: `Bearer ${jwttoken}`,
+         }
+       });
+       console.log(response);
+       if (!response.ok) {
+         console.log('Something went wrong!');
+       }
+       const data = await response.json();
+       console.log(data);
+    }
+
+
+   
+    
   return(
     <div>
         <div id="wrapper">
@@ -120,7 +85,7 @@ const Login = () => {
               <div className="reg-links">
                 <ul>
                   <li className="selected"><a href="#">Employer Login</a></li>
-                  <li><a href="#">Maid Login</a></li>
+                  <li><a href="#">Helper Login</a></li>
                 </ul>
               </div>
              
@@ -134,21 +99,27 @@ const Login = () => {
                         <label>Email Address <span className="red">*</span></label>
                       </div>
                       <div className="col-lg-8">
-                        <input type="text" className="form-control" placeholder="Email Address"/> </div>
+                        <input type="text" className="form-control" placeholder="Email Address" 
+                        onChange={(e) => {
+                                    setlogindata({ ...logindata, Username: e.target.value })
+                                }}/> </div>
                     </div>
                     <div className="row form-group align-items-center">
                       <div className="col-lg-4">
                         <label>Password <span className="red">*</span></label>
                       </div>
                       <div className="col-lg-8">
-                        <input type="text" className="form-control" placeholder="Password"/> </div>
+                        <input type="text" className="form-control" placeholder="Password"
+                         onChange={(e) => {
+                          setlogindata({ ...logindata, Password: e.target.value })
+                      }}/> </div>
                     </div>
                    
                     <div className="fogot-pass text-center w-100"><Link to="/forgotpassword">Forgot Password?</Link></div>
                     <div className="row align-items-center">
                       <div className="col-lg-12 m-auto align-self-center">
                       <div className="form-action mt30 text-center">
-                        <button className="custom-button">LOGIN</button>
+                        <button className="custom-button" onClick={handleLogin}>LOGIN</button>
                       </div>
                     </div>
                     </div>
