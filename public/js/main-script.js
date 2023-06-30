@@ -100,7 +100,7 @@ $('[data-fancybox]').fancybox({
   ],
 });
 //fancybox END
-$('.form-group select, .NiceSelect select').niceSelect();
+//$('.form-group select, .NiceSelect select').niceSelect();
 //Home Banner Slider
 var sliderInit = $('.homeBannerSlider');
     var $status = $('.pagingInfo');
