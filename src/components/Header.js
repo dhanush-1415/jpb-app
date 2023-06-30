@@ -3,10 +3,19 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 function Header() {
   const [selectedLink, setSelectedLink] = useState('/');
+  const [isloggedin, setisloggedin] = React.useState(false);
+  const navigate = useNavigate();
 
   // const navigate = useNavigate();
   useEffect(() => {
     setSelectedLink(window.location.pathname);
+    
+    let token = localStorage.getItem("token")
+        if (token) {
+            setisloggedin(true)
+        }
+        console.log(token);
+        console.log(isloggedin);
   }, []);
 
   const handleLinkClick = (link) => {
@@ -14,6 +23,11 @@ function Header() {
     window.location.href = link
     setSelectedLink(link);
   };
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    setisloggedin(false);
+    navigate('/');
+}
 
 
   // if (!selectedLink) {
@@ -86,8 +100,26 @@ function Header() {
                     <div className="col-auto account-button">
                       <a href="/" className="top-link top-acc  dropdown-toggle" title="Register/login" data-toggle="dropdown" aria-haspopup="true"><img src="images/user.svg" alt="Register/login" /></a>
                       <div className="dropdown-menu">
-                        <Link className="dropdown-item" to="/login" onClick={() => handleLinkClick('/login')}>Login</Link>
-                        <Link className="dropdown-item" to="/employerregistration" onClick={() => handleLinkClick('/employerregistration')}>Register</Link>
+                      {isloggedin ? (
+  <>
+  <Link className="dropdown-item" to="/employeraccount" onClick={() => handleLinkClick('/employeraccount')}>
+      My Account
+    </Link>
+    <Link className="dropdown-item" to="/" onClick={handleLogout}>
+      Logout
+    </Link>
+    
+  </>
+) : (
+  <>
+    <Link className="dropdown-item" to="/login" onClick={() => handleLinkClick('/login')}>
+      Login
+    </Link>
+    <Link className="dropdown-item" to="/employerregistration" onClick={() => handleLinkClick('/employerregistration')}>
+      Register
+    </Link>
+  </>
+)}
                       </div>
                     </div>
                   </div>

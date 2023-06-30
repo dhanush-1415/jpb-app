@@ -1,71 +1,93 @@
-import React, {  useEffect,useState,useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [isloggedin, setisloggedin] = React.useState(false);
-  const [logindata, setlogindata] = React.useState({});
-    const [jwtToken, setjwtToken] = useState('');
-    useEffect(() => {
-      fetchTokenHandler();
-        let token = localStorage.getItem("token")
-        if (token) {
-            setisloggedin(true)
-        }
-    }, [])
-    const fetchTokenHandler = useCallback(async () => {
-      const tokenDetail = {
-        Username: "admin",
-        Password: "admin54321",
-      };
-      try {
-        const response = await fetch('http://154.26.130.251:283/api/Token/GenerateToken', {
-          method: 'POST',
-          body: JSON.stringify(tokenDetail),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (!response.ok) {
-          console.log('Something went wrong!');
-          throw new Error('Something went wrong!');
-        }
-        const data = await response.json();
-        console.log(data.Jwt_Token);
-        setjwtToken(data.Jwt_Token);
-       // console.log(jwtToken);
-       // return data.Jwt_Token;
-      } catch (error) {
-      }
-    }, []);
-  
-    
-    async function handleLogin(event) {
-      const regDetail = {
-        "EmailId": logindata.Username,
-          "Password": logindata.Password,
-      };
-      console.log(regDetail);
-      console.log(JSON.stringify(regDetail));
-      const jwttoken = jwtToken;
-      console.log(jwtToken,jwttoken);
-       const response = await fetch('http://154.26.130.251:283/api/Employer/Login', {
-         method: 'POST',
-         body: JSON.stringify(regDetail),
-         headers: {
-           'Content-Type': 'application/json',
-              Authorization: `Bearer ${jwttoken}`,
-         }
-       });
-       console.log(response);
-       if (!response.ok) {
-         console.log('Something went wrong!');
-       }
-       const data = await response.json();
-       console.log(data);
+  const [isloggedin, setisloggedin] = useState(false);
+  const [logindata, setlogindata] = useState({});
+  const [jwtToken, setjwtToken] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchTokenHandler();
+    let token = localStorage.getItem('token');
+    if (token) {
+      setisloggedin(true);
     }
+  }, []);
+
+  const fetchTokenHandler = async () => {
+    const tokenDetail = {
+      Username: 'admin',
+      Password: 'admin54321',
+    };
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Token/GenerateToken', {
+        method: 'POST',
+        body: JSON.stringify(tokenDetail),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        throw new Error('Something went wrong!');
+      }
+      const data = await response.json();
+      console.log(data.Jwt_Token);
+      setjwtToken(data.Jwt_Token);
+    } catch (error) {}
+  };
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    const regDetail = {
+      EmailId: logindata.Username,
+      Password: logindata.Password,
+    };
+    console.log(regDetail);
+
+    const jwttoken = jwtToken;
+    console.log(jwtToken, jwttoken);
+
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Employer/Login', {
+        method: 'POST',
+        body: JSON.stringify(regDetail),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwttoken}`,
+        },
+      });
+
+      console.log(response);
+
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.Code === 200 && data.Message === 'Sucess') {
+       // alert(true);
+        const userData = data.Data[0];
+        console.log(userData);
+        localStorage.setItem('token', JSON.stringify(data.Data));
+        setisloggedin(true);
+        console.log(localStorage.getItem('token'));
+        console.log(isloggedin);
+
+        navigate('/employeraccount');
+      }
+    } catch (error) {
+      console.log('An error occurred:', error);
+    }
+  };
 
 
    
