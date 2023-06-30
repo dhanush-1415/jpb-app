@@ -141,9 +141,10 @@ const EmployerProfile = () => {
   };
 
   const handleInputChange = (event) => {
-   // console.log(event);
+   console.log(event.target);
    // this.setState({ value: event.target.value });
     const { name, value } = event.target;
+
     console.log(value,name);
     setprofiledata((prevData) => ({
       ...prevData,
@@ -179,8 +180,8 @@ const EmployerProfile = () => {
         "ResidentialStatusCode": profiledata.ResidentialStatusCode,
         "BlockList": profiledata.BlockList,
         "MartilaStatus": profiledata.MartilaStatus,
-        "ReligionCode":profiledata.EmailId,
-        "Occupation": profiledata.ReligionCode,
+        "ReligionCode":profiledata.ReligionCode,
+        "Occupation": profiledata.Occupation,
         "Employed":profiledata.Employed,
         "ReferralMethod": profiledata.ReferralMethod,
         "CombinedIncome": profiledata.CombinedIncome,
@@ -303,10 +304,16 @@ const EmployerProfile = () => {
                                 value={profiledata.Nationality || ''}
                                 onChange={handleInputChange}
                                 >
+                                   {/* {
+                                    [{label : "Singaporean", value : "Singaporean"}, {label : "Indian", value : "Indian"}, {label : "Select", value : ""} ]
+                                    .map(item=> ( <option key={item.value} selected={ profiledata.Nationality ==  item.value }  value={item.value}>{item.label}</option> ))
+                                  } */}
                                   <option key="Singaporean" value="Singaporean">Singaporean</option>
                                   <option key="Indian" value="Indian">Indian</option>
                                   <option key="" value="">Select</option>
                                 </select>
+
+                               
                               </div>
                             </div>
                       <div className="row form-group align-items-center">
@@ -463,7 +470,7 @@ const EmployerProfile = () => {
                                 value={profiledata.ReligionCode || ''}
                                 onChange={handleInputChange}
                                 >
-                                  <option value="Buddhist">Buddhist</option>
+                                  <option value="1">Buddhist</option>
                                   <option value="">option-2</option>
                                 </select>
                               </div>
@@ -574,7 +581,7 @@ const EmployerProfile = () => {
                                 value={profiledata.MonthlyIncome || ''}
                                 onChange={handleInputChange}
                                 >
-                                  <option value="Above $25,000">Above $25,000</option>
+                                  <option value="25,000">Above $25,000</option>
                                   <option value="">Select</option>
                                 </select>
                               </div>
