@@ -8,11 +8,225 @@ import { Link } from 'react-router-dom';
 
 const EmployerProfile = () => {
   const [selectedLink, setSelectedLink] = useState('/');
+  const [storedData, setstoreddata] = React.useState([]);
+  const [profiledata, setprofiledata] = useState({
+    "OrgId": 1,
+    "EmployerCode": "",
+    "EmployerName": "",
+    "Nationality": "",
+    "NRIC_FIN": "",
+    "PassportNo": "",
+    "DateOfBirth": "",
+    "ICIssueDate": "",
+    "PassportExpiryDate": "",
+    "Gender": "",
+    "RaceCode":0,
+    "ResidentialStatusCode": "",
+    "BlockList": true,
+    "MartilaStatus": "",
+    "ReligionCode": 0,
+    "Occupation": "",
+    "Employed": true,
+    "ReferralMethod": "",
+    "CombinedIncome": true,
+    "MonthlyIncome": 0,
+    "YearofAssesment": 0,
+    "NoofBedroom": 0,
+    "NoofToilet": 0,
+    "ClearWindowExterior": true,
+    "CompanyName": "",
+    "MarriageRegisteredinSG": true,
+    "AnnualIncome": 0,
+    "TypeOfResidence": ""
+  });
+  const [isloggedin, setisloggedin] = React.useState(false);
+  const [jwtToken, setjwtToken] = useState('');
 
   // const navigate = useNavigate();
   useEffect(() => {
     setSelectedLink(window.location.pathname);
+    fetchTokenHandler();
+    let token = localStorage.getItem("token");
+    console.log(token);
+    if (token) {
+      console.log(token);
+      setisloggedin(true);
+      setstoreddata(JSON.parse(token));
+      console.log(storedData);
+    }
+    console.log(isloggedin);
+    console.log(storedData);
   }, []);
+
+  useEffect(() => {
+    if (storedData.length > 0) {
+      setprofiledata({
+        ...profiledata,
+        "OrgId": storedData[0].OrgId,
+        "EmployerCode": storedData[0].EmployerCode,
+        "EmployerName": storedData[0].EmployerName,
+        "Nationality": storedData[0].Nationality ? storedData[0].Nationality : '',
+        "NRIC_FIN": storedData[0].NRIC_FIN,
+        "PassportNo": storedData[0].PassportNo,
+        "DateOfBirth": convertToDate(storedData[0].DateOfBirth),
+        "ICIssueDate": convertToDate(storedData[0].ICIssueDate),
+        "PassportExpiryDate": convertToDate(storedData[0].PassportExpiryDate),
+        "Gender": storedData[0].Gender ? storedData[0].Gender : '',
+        "RaceCode":storedData[0].RaceCode ? storedData[0].RaceCode : '',
+        "ResidentialStatusCode": storedData[0].ResidentialStatusCode ? storedData[0].ResidentialStatusCode : '',
+        "BlockList": storedData[0].BlockList,
+        "MartilaStatus": storedData[0].MartilaStatus ? storedData[0].MartilaStatus : '',
+        "ReligionCode":storedData[0].ReligionCode ? storedData[0].ReligionCode : '',
+        "Occupation": storedData[0].Occupation ? storedData[0].Occupation : '',
+        "Employed":storedData[0].Employed,
+        "ReferralMethod": storedData[0].ReferralMethod ? storedData[0].ReferralMethod : '',
+        "CombinedIncome": storedData[0].CombinedIncome,
+        "MonthlyIncome": storedData[0].MonthlyIncome ? storedData[0].MonthlyIncome : '',
+        "YearofAssesment": storedData[0].YearofAssesment ? storedData[0].YearofAssesment : '',
+        "NoofBedroom":storedData[0].NoofBedroom,
+        "NoofToilet": storedData[0].NoofToilet,
+        "ClearWindowExterior": storedData[0].ClearWindowExterior,
+        "CompanyName": storedData[0].CompanyName,
+        "MarriageRegisteredinSG":storedData[0].MarriageRegisteredinSG,
+        "AnnualIncome": storedData[0].AnnualIncome,
+        "TypeOfResidence": storedData[0].TypeOfResidence ? storedData[0].TypeOfResidence : ''
+      });
+    }
+  }, [storedData]);
+
+  const convertToDate = (dateString) => {
+    const dateObject = new Date(dateString);
+  const day = dateObject.getDate();
+  const month = dateObject.getMonth() + 1; // Months are zero-based
+  const year = dateObject.getFullYear();
+
+  const formattedDateString = `${day}/${month}/${year}`;
+  
+    return formattedDateString;
+  };
+
+  const convertToISODate = (dateString) => {
+    const [day, month, year] = dateString.split('/');
+  
+    // Create a new Date object using the day, month, and year values
+    const dateObject = new Date(`${month}/${day}/${year}`);
+    
+    // Use the toISOString() method to get the date in ISO 8601 format
+    const isoDateString = dateObject.toISOString();
+  
+    return isoDateString;
+  };
+
+  const fetchTokenHandler = async () => {
+    const tokenDetail = {
+      Username: 'admin',
+      Password: 'admin54321',
+    };
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Token/GenerateToken', {
+        method: 'POST',
+        body: JSON.stringify(tokenDetail),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        throw new Error('Something went wrong!');
+      }
+      const data = await response.json();
+      console.log(data.Jwt_Token);
+      setjwtToken(data.Jwt_Token);
+    } catch (error) {}
+  };
+
+  const handleInputChange = (event) => {
+   // console.log(event);
+   // this.setState({ value: event.target.value });
+    const { name, value } = event.target;
+    console.log(value,name);
+    setprofiledata((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleRadioChange = (e) => {
+    const { name, value } = e.target;
+  
+    setprofiledata((prevData) => ({
+      ...prevData,
+      [name]: value === "true" ? true : false, // Convert the string value to boolean
+    }));
+  };
+
+  
+
+  const saveProfileDataHandler = async (event) => {
+    event.preventDefault();
+    const regDetail = {
+      "OrgId": profiledata.OrgId,
+        "EmployerCode": profiledata.EmployerCode,
+        "EmployerName": profiledata.EmployerName,
+        "Nationality": profiledata.Nationality,
+        "NRIC_FIN": profiledata.NRIC_FIN,
+        "PassportNo": profiledata.PassportNo,
+        "DateOfBirth": convertToISODate(profiledata.DateOfBirth),
+        "ICIssueDate": convertToISODate(profiledata.ICIssueDate),
+        "PassportExpiryDate": convertToISODate(profiledata.PassportExpiryDate),
+        "Gender": profiledata.Gender,
+        "RaceCode":profiledata.RaceCode,
+        "ResidentialStatusCode": profiledata.ResidentialStatusCode,
+        "BlockList": profiledata.BlockList,
+        "MartilaStatus": profiledata.MartilaStatus,
+        "ReligionCode":profiledata.EmailId,
+        "Occupation": profiledata.ReligionCode,
+        "Employed":profiledata.Employed,
+        "ReferralMethod": profiledata.ReferralMethod,
+        "CombinedIncome": profiledata.CombinedIncome,
+        "MonthlyIncome": profiledata.MonthlyIncome,
+        "YearofAssesment": profiledata.YearofAssesment,
+        "NoofBedroom":profiledata.NoofBedroom,
+        "NoofToilet": profiledata.NoofToilet,
+        "ClearWindowExterior": profiledata.ClearWindowExterior,
+        "CompanyName": profiledata.CompanyName,
+        "MarriageRegisteredinSG":profiledata.MarriageRegisteredinSG,
+        "AnnualIncome": profiledata.AnnualIncome,
+        "TypeOfResidence": profiledata.TypeOfResidence
+    };
+    console.log(regDetail);
+
+    const jwttoken = jwtToken;
+    console.log(jwtToken, jwttoken);
+
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Employer/ProfileDetails_Updation', {
+        method: 'POST',
+        body: JSON.stringify(regDetail),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwttoken}`,
+        },
+      });
+
+      console.log(response);
+
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.Code === 200 && data.Message === 'Sucess') {
+       // navigate('/employeraccount');
+      }
+    } catch (error) {
+      console.log('An error occurred:', error);
+    }
+  
+  };
 
   const handleLinkClick = (link) => {
     //navigate(link);
@@ -59,7 +273,9 @@ const EmployerProfile = () => {
               </ul>
             </div>
             </div>
+            
             <div className="col-lg-8">
+            <form onSubmit={saveProfileDataHandler}>
               <div className="dashboard-right-wrap eppd-wrap">
                     <div className="main-inner-box">
                       <div className="pageTitle title-fix sm">
@@ -69,17 +285,27 @@ const EmployerProfile = () => {
                           <label>Employer Name</label>
                         </div>
                         <div className="col-lg-7">
-                          <input type="text" className="form-control" placeholder="Employer Name"/> </div>
+                          <input type="text" className="form-control" placeholder="Employer Name"
+                          value={profiledata.EmployerName || ''}
+                          onChange={(e) => {
+                            setprofiledata({ ...profiledata, EmployerName: e.target.value });
+                          }}
+                          /> </div>
                       </div>
                       <div className="row form-group align-items-center">
                               <div className="col-lg-5">
                                 <label>Nationality</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Singaporean</option>
-                                  <option>Indian</option>
-                                  <option>Select</option>
+                                <select 
+                                id="Nationality"
+                                name="Nationality"
+                                value={profiledata.Nationality || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option key="Singaporean" value="Singaporean">Singaporean</option>
+                                  <option key="Indian" value="Indian">Indian</option>
+                                  <option key="" value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -88,7 +314,12 @@ const EmployerProfile = () => {
                           <label>NRIC / FIN</label>
                         </div>
                         <div className="col-lg-7">
-                          <input type="text" className="form-control" placeholder="NRIC / FIN"/> </div>
+                          <input type="text" className="form-control" placeholder="NRIC / FIN"
+                          value={profiledata.NRIC_FIN || ''}
+                          onChange={(e) => {
+                            setprofiledata({ ...profiledata, NRIC_FIN: e.target.value });
+                          }}
+                          /> </div>
                       </div>
 
                       <div className="row form-group align-items-center">
@@ -96,7 +327,12 @@ const EmployerProfile = () => {
                           <label>Passport</label>
                         </div>
                         <div className="col-lg-7">
-                          <input type="text" className="form-control" placeholder="Passport"/> </div>
+                          <input type="text" className="form-control" placeholder="Passport"
+                          value={profiledata.PassportNo || ''}
+                          onChange={(e) => {
+                            setprofiledata({ ...profiledata, PassportNo: e.target.value });
+                          }}
+                          /> </div>
                       </div>
                       
                       <div className="row form-group align-items-center">
@@ -105,7 +341,12 @@ const EmployerProfile = () => {
                         </div>
                         <div className="col-lg-7">
                           <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" 
+                                  value={profiledata.DateOfBirth || ''}
+                                  onChange={(e) => {
+                                    setprofiledata({ ...profiledata, DateOfBirth: e.target.value });
+                                  }}
+                                  /> <i className="fas fa-calendar-alt"></i> 
                           </div> 
                         </div>
                       </div>
@@ -116,7 +357,12 @@ const EmployerProfile = () => {
                         </div>
                         <div className="col-lg-7">
                           <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" 
+                                  value={profiledata.ICIssueDate || ''}
+                                  onChange={(e) => {
+                                    setprofiledata({ ...profiledata, ICIssueDate: e.target.value });
+                                  }}
+                                  /> <i className="fas fa-calendar-alt"></i> 
                           </div> 
                         </div>
                       </div>
@@ -127,7 +373,12 @@ const EmployerProfile = () => {
                         </div>
                         <div className="col-lg-7">
                           <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" 
+                                  value={profiledata.PassportExpiryDate || ''}
+                                  onChange={(e) => {
+                                    setprofiledata({ ...profiledata, PassportExpiryDate: e.target.value });
+                                  }}
+                                  /> <i className="fas fa-calendar-alt"></i> 
                           </div> 
                         </div>
                       </div>
@@ -137,9 +388,15 @@ const EmployerProfile = () => {
                                 <label>Gender</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Male</option>
-                                  <option>Female</option>
+                                <select
+                                id="Gender"
+                                name="Gender"
+                                value={profiledata.Gender || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="Male">Male</option>
+                                  <option value="Female">Female</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -148,9 +405,15 @@ const EmployerProfile = () => {
                                 <label>Race</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Chinese</option>
-                                  <option>option-2</option>
+                                <select 
+                                id="RaceCode"
+                                name="RaceCode"
+                                value={profiledata.RaceCode || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="Chinese">Chinese</option>
+                                  <option value="Indian">Indian</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -159,9 +422,14 @@ const EmployerProfile = () => {
                                 <label>Residential Status</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Singaporean Citizen</option>
-                                  <option>option-2</option>
+                                <select 
+                                id="ResidentialStatusCode"
+                                name="ResidentialStatusCode"
+                                value={profiledata.ResidentialStatusCode || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="Singaporean Citizen">Singaporean Citizen</option>
+                                  <option value="">option-2</option>
                                 </select>
                               </div>
                             </div>
@@ -171,9 +439,16 @@ const EmployerProfile = () => {
                                 <label>Marital Status</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Married</option>
-                                  <option>option-2</option>
+                                <select 
+                                id="MartilaStatus"
+                                name="MartilaStatus"
+                                value={profiledata.MartilaStatus || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="Married">Married</option>
+                                  <option value="Unmarried">Unmarried</option>
+                                  <option value="Divorced">Divorced</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -182,9 +457,14 @@ const EmployerProfile = () => {
                                 <label>Religion</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Buddhist</option>
-                                  <option>option-2</option>
+                                <select 
+                                id="ReligionCode"
+                                name="ReligionCode"
+                                value={profiledata.ReligionCode || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="Buddhist">Buddhist</option>
+                                  <option value="">option-2</option>
                                 </select>
                               </div>
                             </div>
@@ -198,9 +478,14 @@ const EmployerProfile = () => {
                           <label>Occupation</label>
                         </div>
                         <div className="col-lg-7">
-                          <select>
-                                  <option>Professional</option>
-                                  <option>Select</option>
+                          <select 
+                          id="Occupation"
+                          name="Occupation"
+                          value={profiledata.Occupation || ''}
+                          onChange={handleInputChange}
+                          >
+                                  <option value="Professional">Professional</option>
+                                  <option value="">Select</option>
                                 </select>
                         </div>
                       </div>
@@ -212,11 +497,23 @@ const EmployerProfile = () => {
                                 <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>Yes</span></label>
+                                      <input
+                                      type="radio"
+                                      name="Employed"
+                                      value="true"
+                                      checked={profiledata.Employed === true}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>No</span></label>
+                                    <input
+                                      type="radio"
+                                      name="Employed"
+                                      value="false"
+                                      checked={profiledata.Employed === false}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div>
                               </div>
@@ -226,9 +523,14 @@ const EmployerProfile = () => {
                                 <label>Refferal Method</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Walk In</option>
-                                  <option>Select</option>
+                                <select 
+                                id="ReferralMethod"
+                                name="ReferralMethod"
+                                value={profiledata.ReferralMethod || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="Walk In">Walk In</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -240,11 +542,23 @@ const EmployerProfile = () => {
                                 <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>Yes</span></label>
+                                      <input 
+                                      type="radio" 
+                                      name="CombinedIncome"
+                                      value="true"
+                                      checked={profiledata.CombinedIncome === true}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>No</span></label>
+                                      <input 
+                                      type="radio" 
+                                      name="CombinedIncome"
+                                      value="false"
+                                      checked={profiledata.CombinedIncome === false}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div>
                               </div>
@@ -254,9 +568,14 @@ const EmployerProfile = () => {
                                 <label>Monthly Income</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Above $25,000</option>
-                                  <option>Select</option>
+                                <select 
+                                id="MonthlyIncome"
+                                name="MonthlyIncome"
+                                value={profiledata.MonthlyIncome || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="Above $25,000">Above $25,000</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -265,9 +584,15 @@ const EmployerProfile = () => {
                                 <label>Year of Assesment</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>2005</option>
-                                  <option>2003</option>
+                                <select 
+                                id="YearofAssesment"
+                                name="YearofAssesment"
+                                value={profiledata.YearofAssesment || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="2005">2005</option>
+                                  <option value="2003">2003</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -276,29 +601,51 @@ const EmployerProfile = () => {
                           <label>No of Bedroom</label>
                         </div>
                         <div className="col-lg-4">
-                          <input type="text" className="form-control" placeholder="No of Bedroom"/> </div>
+                          <input type="text" className="form-control" placeholder="No of Bedroom"
+                          value={profiledata.NoofBedroom || ''}
+                          onChange={(e) => {
+                            setprofiledata({ ...profiledata, NoofBedroom: e.target.value });
+                          }}
+                          /> </div>
                       </div>
                       <div className="row form-group align-items-center">
                         <div className="col-lg-5">
                           <label>No. of Toilet</label>
                         </div>
                         <div className="col-lg-4">
-                          <input type="text" className="form-control" placeholder="No. of Toilet"/> </div>
+                          <input type="text" className="form-control" placeholder="No. of Toilet"
+                          value={profiledata.NoofToilet || ''}
+                          onChange={(e) => {
+                            setprofiledata({ ...profiledata, NoofToilet: e.target.value });
+                          }}
+                          /> </div>
                       </div>
 
                       <div className="row form-group align-items-center">
                         <div className="col-lg-5">
-                          <label>Clean Window Exterior</label>
+                          <label>Clear Window Exterior</label>
                         </div>
                         <div className="col-lg-7">
                                 <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>Yes</span></label>
+                                      <input 
+                                      type="radio" 
+                                      name="ClearWindowExterior"
+                                      value="true"
+                                      checked={profiledata.ClearWindowExterior === true}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>No</span></label>
+                                      <input 
+                                      type="radio" 
+                                      name="ClearWindowExterior"
+                                      value="false"
+                                      checked={profiledata.ClearWindowExterior === false}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div>
                               </div>
@@ -309,7 +656,12 @@ const EmployerProfile = () => {
                           <label>Company Name</label>
                         </div>
                         <div className="col-lg-7">
-                           <input type="text" className="form-control" placeholder="Company Name" /> 
+                           <input type="text" className="form-control" placeholder="Company Name" 
+                           value={profiledata.CompanyName || ''}
+                           onChange={(e) => {
+                             setprofiledata({ ...profiledata, CompanyName: e.target.value });
+                           }}
+                           /> 
                         </div>
                       </div>
 
@@ -321,11 +673,23 @@ const EmployerProfile = () => {
                                 <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>Yes</span></label>
+                                      <input 
+                                      type="radio" 
+                                      name="MarriageRegisteredinSG"
+                                      value="true"
+                                      checked={profiledata.MarriageRegisteredinSG === true}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>No</span></label>
+                                      <input 
+                                      type="radio" 
+                                      name="MarriageRegisteredinSG"
+                                      value="false"
+                                      checked={profiledata.MarriageRegisteredinSG === false}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div>
                               </div>
@@ -336,7 +700,12 @@ const EmployerProfile = () => {
                           <label>Annual Income ($)</label>
                         </div>
                         <div className="col-lg-7">
-                           <input type="text" className="form-control" placeholder="Annual Income ($)" /> 
+                           <input type="text" className="form-control" placeholder="Annual Income ($)"
+                           value={profiledata.AnnualIncome || ''}
+                           onChange={(e) => {
+                             setprofiledata({ ...profiledata, AnnualIncome: e.target.value });
+                           }}
+                            /> 
                         </div>
                       </div>
                       <div className="row form-group align-items-center">
@@ -344,15 +713,21 @@ const EmployerProfile = () => {
                                 <label>Type of Residence</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Married</option>
-                                  <option>option-2</option>
+                                <select 
+                                id="TypeOfResidence"
+                                name="TypeOfResidence"
+                                value={profiledata.TypeOfResidence || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="Apartment">Apartment</option>
+                                  <option value="House">House</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>      
                         
               </div>
-              <div className="main-inner-box">
+              {/* <div className="main-inner-box">
                       <div className="pageTitle title-fix sm">
                         <h2>Other Details</h2></div>
                       <div className="od-upload-section size-14">
@@ -405,12 +780,14 @@ const EmployerProfile = () => {
                           </div>
                         </div>
                       </div>
-              </div>
+              </div> */}
               <div className="row mt20 justify-content-end">
-                      <div className="col-auto"><button type="button" className="custom-button">SAVE</button></div>
+                      <div className="col-auto"><button type="submit" className="custom-button">SAVE</button></div>
                     </div>
               </div>
+              </form>
             </div>
+           
           </div>
         </div>
         </div>
