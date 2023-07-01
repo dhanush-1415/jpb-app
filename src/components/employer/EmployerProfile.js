@@ -22,7 +22,7 @@ const EmployerProfile = () => {
     "Gender": "",
     "RaceCode":0,
     "ResidentialStatusCode": "",
-    "BlockList": true,
+    "BlockList": null,
     "MartilaStatus": "",
     "ReligionCode": 0,
     "Occupation": "",
@@ -221,7 +221,42 @@ const EmployerProfile = () => {
       console.log(data);
 
       if (data.Code === 200 && data.Message === 'Sucess') {
-       // navigate('/employeraccount');
+
+         const updatedData = [...storedData]; // Clone the array
+        updatedData[0] = { ...updatedData[0],
+          "OrgId": profiledata.OrgId,
+        "EmployerCode": profiledata.EmployerCode,
+        "EmployerName": profiledata.EmployerName,
+        "Nationality": profiledata.Nationality,
+        "NRIC_FIN": profiledata.NRIC_FIN,
+        "PassportNo": profiledata.PassportNo,
+        "DateOfBirth": convertToISODate(profiledata.DateOfBirth),
+        "ICIssueDate": convertToISODate(profiledata.ICIssueDate),
+        "PassportExpiryDate": convertToISODate(profiledata.PassportExpiryDate),
+        "Gender": profiledata.Gender,
+        "RaceCode":profiledata.RaceCode,
+        "ResidentialStatusCode": profiledata.ResidentialStatusCode,
+        "BlockList": profiledata.BlockList,
+        "MartilaStatus": profiledata.MartilaStatus,
+        "ReligionCode":profiledata.ReligionCode,
+        "Occupation": profiledata.Occupation,
+        "Employed":profiledata.Employed,
+        "ReferralMethod": profiledata.ReferralMethod,
+        "CombinedIncome": profiledata.CombinedIncome,
+        "MonthlyIncome": profiledata.MonthlyIncome,
+        "YearofAssesment": profiledata.YearofAssesment,
+        "NoofBedroom":profiledata.NoofBedroom,
+        "NoofToilet": profiledata.NoofToilet,
+        "ClearWindowExterior": profiledata.ClearWindowExterior,
+        "CompanyName": profiledata.CompanyName,
+        "MarriageRegisteredinSG":profiledata.MarriageRegisteredinSG,
+        "AnnualIncome": profiledata.AnnualIncome,
+        "TypeOfResidence": profiledata.TypeOfResidence
+          }; // Update the property
+        setstoreddata(updatedData);
+        console.log(storedData,updatedData);
+        
+        localStorage.setItem('token', JSON.stringify(updatedData));
       }
     } catch (error) {
       console.log('An error occurred:', error);
@@ -298,7 +333,7 @@ const EmployerProfile = () => {
                                 <label>Nationality</label>
                               </div>
                               <div className="col-lg-7">
-                                <select 
+                               <select className='new-select'
                                 id="Nationality"
                                 name="Nationality"
                                 value={profiledata.Nationality || ''}
@@ -412,7 +447,7 @@ const EmployerProfile = () => {
                                 <label>Race</label>
                               </div>
                               <div className="col-lg-7">
-                                <select 
+                               <select className='new-select'
                                 id="RaceCode"
                                 name="RaceCode"
                                 value={profiledata.RaceCode || ''}
@@ -429,7 +464,7 @@ const EmployerProfile = () => {
                                 <label>Residential Status</label>
                               </div>
                               <div className="col-lg-7">
-                                <select 
+                               <select className='new-select'
                                 id="ResidentialStatusCode"
                                 name="ResidentialStatusCode"
                                 value={profiledata.ResidentialStatusCode || ''}
@@ -446,7 +481,7 @@ const EmployerProfile = () => {
                                 <label>Marital Status</label>
                               </div>
                               <div className="col-lg-7">
-                                <select 
+                               <select className='new-select'
                                 id="MartilaStatus"
                                 name="MartilaStatus"
                                 value={profiledata.MartilaStatus || ''}
@@ -464,7 +499,7 @@ const EmployerProfile = () => {
                                 <label>Religion</label>
                               </div>
                               <div className="col-lg-7">
-                                <select 
+                               <select className='new-select'
                                 id="ReligionCode"
                                 name="ReligionCode"
                                 value={profiledata.ReligionCode || ''}
@@ -485,7 +520,7 @@ const EmployerProfile = () => {
                           <label>Occupation</label>
                         </div>
                         <div className="col-lg-7">
-                          <select 
+                         <select className='new-select'
                           id="Occupation"
                           name="Occupation"
                           value={profiledata.Occupation || ''}
@@ -530,7 +565,7 @@ const EmployerProfile = () => {
                                 <label>Refferal Method</label>
                               </div>
                               <div className="col-lg-7">
-                                <select 
+                               <select className='new-select'
                                 id="ReferralMethod"
                                 name="ReferralMethod"
                                 value={profiledata.ReferralMethod || ''}
@@ -575,7 +610,7 @@ const EmployerProfile = () => {
                                 <label>Monthly Income</label>
                               </div>
                               <div className="col-lg-7">
-                                <select 
+                               <select className='new-select'
                                 id="MonthlyIncome"
                                 name="MonthlyIncome"
                                 value={profiledata.MonthlyIncome || ''}
@@ -591,7 +626,7 @@ const EmployerProfile = () => {
                                 <label>Year of Assesment</label>
                               </div>
                               <div className="col-lg-7">
-                                <select 
+                               <select className='new-select'
                                 id="YearofAssesment"
                                 name="YearofAssesment"
                                 value={profiledata.YearofAssesment || ''}
@@ -720,7 +755,7 @@ const EmployerProfile = () => {
                                 <label>Type of Residence</label>
                               </div>
                               <div className="col-lg-7">
-                                <select 
+                               <select className='new-select'
                                 id="TypeOfResidence"
                                 name="TypeOfResidence"
                                 value={profiledata.TypeOfResidence || ''}

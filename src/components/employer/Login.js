@@ -52,6 +52,7 @@ const Login = () => {
 
     const jwttoken = jwtToken;
     console.log(jwtToken, jwttoken);
+    
 
     try {
       const response = await fetch('http://154.26.130.251:283/api/Employer/Login', {
@@ -112,7 +113,7 @@ const Login = () => {
               </div>
              
              <div className="login-holder">
-                <form>
+                <form onSubmit={handleLogin}>
                    <div className="main-inner-box">
                     <div className="mx-575">
                     <div className="pageTitle title-fix text-center md"><h2>Enter The Credentials</h2></div>
@@ -141,7 +142,7 @@ const Login = () => {
                     <div className="row align-items-center">
                       <div className="col-lg-12 m-auto align-self-center">
                       <div className="form-action mt30 text-center">
-                        <button className="custom-button" onClick={handleLogin}>LOGIN</button>
+                        <button type='submit' className="custom-button">LOGIN</button>
                       </div>
                     </div>
                     </div>
