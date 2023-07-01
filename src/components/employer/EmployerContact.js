@@ -127,7 +127,26 @@ const EmployerContact = () => {
       console.log(data);
 
       if (data.Code === 200 && data.Message === 'Sucess') {
-       // navigate('/employeraccount');
+        
+        const updatedData = [...storedData]; // Clone the array
+        updatedData[0] = { ...updatedData[0],
+          OrgId: contactdata.OrgId,
+            EmployerCode: contactdata.EmployerCode,
+            ContactPerson: contactdata.ContactPerson,
+            Contact_MobileNo: contactdata.Contact_MobileNo,
+            Contact_HomeNo: contactdata.Contact_HomeNo,
+            Contact_FaxNo: contactdata.Contact_FaxNo,
+            Contact_Email: contactdata.Contact_Email,
+            Contact_PostalCode: contactdata.Contact_PostalCode,
+            Contact_UnitNo: contactdata.Contact_UnitNo,
+            Contact_StreetName: contactdata.Contact_StreetName,
+            Contact_BuildingName: contactdata.Contact_BuildingName,
+            Contact_Country: contactdata.Contact_Country,
+          }; // Update the property
+        setstoreddata(updatedData);
+        console.log(storedData,updatedData);
+        
+        localStorage.setItem('token', JSON.stringify(updatedData));
       }
     } catch (error) {
       console.log('An error occurred:', error);

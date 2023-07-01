@@ -4778,3 +4778,35 @@ tr.white-transparent{background: transparent !important;}
 .table td input{min-width: 110px;}
 .md-table .sub-table tr:first-child td{    max-width: 150px;}
 .form-group label i{color:#497897;}
+
+.new-select {
+    box-sizing: border-box;
+    border-radius: 50px;
+    float: left;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    text-align: left !important;
+    white-space: nowrap;
+    height: 54px;
+    padding-right: 50px;
+    min-width: 70px;
+    width: 100%;
+    color: #9F9F9F;
+    background-color: var(--white);
+    border: 1px solid #9F9F9F; /* Add border style */
+    padding-left: 25px;
+    padding-right: 30px;
+  }
+  
+  .new-select::placeholder {
+    color: #9F9F9F;
+  }
+  
+  .new-select:focus {
+    border-color: #9F9F9F; /* Add border color when focused */
+  }
+  
+  .new-select option {
+    color: #000000;
+  }

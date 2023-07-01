@@ -106,7 +106,19 @@ if(accountdata.Password === accountdata.ConfirmPassword){
       console.log(data);
 
       if (data.Code === 200 && data.Message === 'Sucess') {
-       // navigate('/employeraccount');
+       
+        const updatedData = [...storedData]; // Clone the array
+        updatedData[0] = { ...updatedData[0],
+          "OrgId": 1,
+            EmployerCode: accountdata.EmployerCode,
+            Email: accountdata.EmailId,
+            Password: accountdata.Password,
+            SMSContactNumber: accountdata.Contact_MobileNo
+          }; // Update the property
+        setstoreddata(updatedData);
+        console.log(storedData,updatedData);
+        
+        localStorage.setItem('token', JSON.stringify(updatedData));
       }
     } catch (error) {
       console.log('An error occurred:', error);

@@ -427,7 +427,7 @@ const EmployerRegistration = () => {
                                 <label>Nationality</label>
                               </div>
                               <div className="col-lg-6">
-                                <select id="Nationality"
+                               <select className='new-select'id="Nationality"
                                 onChange={(e) => {
                                   console.log(e.target.value);
                                   setemployerFormData({
@@ -559,7 +559,7 @@ const EmployerRegistration = () => {
                                 <label>Housing Type</label>
                               </div>
                               <div className="col-lg-6">
-                                <select id="HousingType"
+                               <select className='new-select'id="HousingType"
                                 onChange={(e) => {
                                     setemployerFormData({
                                         ...employerFormData,

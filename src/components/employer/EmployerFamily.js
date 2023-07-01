@@ -9,14 +9,269 @@ import { Link } from 'react-router-dom';
 
 const EmployerFamily = () => {
   const [selectedLink, setSelectedLink] = useState('/');
-
-  // const navigate = useNavigate();
+  const [storedData, setstoreddata] = React.useState([]);
+  const [familydata, setfamilydata] = useState({
+    "FamilyDetails": [
+      {
+        "OrgId": 1,
+        "EmployerCode": "",
+        "Name": "",
+        "SlNo": 0,
+        "Relationship": "",
+        "NRIC_FIN": "",
+        "DateofBirth": "",
+        "Title": "",
+        "Passport": "",
+        "PassportExpiry": "",
+        "Gender": "",
+        "ResidentialStatus": "",
+        "Occupation": "",
+        "Employed": true,
+        "CompanyName": "",
+        "MonthlyIncome": "",
+        "AnnualIncome": true,
+        "YearofAssessment": 0,
+        "MobileNo": "",
+        "Email": "",
+        "OtherNo": ""
+      }
+    ],
+    "JobScopes": {
+      "HousingType": "",
+      "ExpectedJobScope": [
+        {
+          "JobScopeId": 0,
+          "ExpectedJobScope": ""
+        }
+      ],
+      "NoOfBedroom": "",
+      "HelperSleepingArea": "",
+      "OtherFamilyMemberStayinginthehouse": "",
+      "Remarks": ""
+    }
+  });
+  const [isloggedin, setisloggedin] = React.useState(false);
+  const [jwtToken, setjwtToken] = useState('');
+  
   useEffect(() => {
     setSelectedLink(window.location.pathname);
+    fetchTokenHandler();
+    let token = localStorage.getItem("token");
+    console.log(token);
+    if (token) {
+      console.log(token);
+      setisloggedin(true);
+      setstoreddata(JSON.parse(token));
+      console.log(storedData);
+    }
+    console.log(isloggedin);
+    console.log(storedData);
   }, []);
 
+  const convertToDate = (dateString) => {
+    const dateObject = new Date(dateString);
+  const day = dateObject.getDate();
+  const month = dateObject.getMonth() + 1; // Months are zero-based
+  const year = dateObject.getFullYear();
+
+  const formattedDateString = `${day}/${month}/${year}`;
+  
+    return formattedDateString;
+  };
+
+  const convertToISODate = (dateString) => {
+    const [day, month, year] = dateString.split('/');
+  
+    // Create a new Date object using the day, month, and year values
+    const dateObject = new Date(`${month}/${day}/${year}`);
+    
+    // Use the toISOString() method to get the date in ISO 8601 format
+    const isoDateString = dateObject.toISOString();
+  
+    return isoDateString;
+  };
+  
+  useEffect(() => {
+    if (storedData.length > 0) {
+      setfamilydata({
+        ...familydata,
+        "FamilyDetails": [
+          {
+            "OrgId": storedData[0].OrgId,
+            "EmployerCode": storedData[0].EmployerCode,
+            "Name": "",
+            "SlNo": 0,
+            "Relationship": "",
+            "NRIC_FIN": "",
+            "DateofBirth": convertToDate(storedData[0].DateOfBirth),
+            "Title": "",
+            "Passport": "",
+            "PassportExpiry": convertToDate(storedData[0].PassportExpiryDate),
+            "Gender": "",
+            "ResidentialStatus": "",
+            "Occupation": "",
+            "Employed": true,
+            "CompanyName": "",
+            "MonthlyIncome": "",
+            "AnnualIncome": true,
+            "YearofAssessment": 0,
+            "MobileNo": "",
+            "Email": "",
+            "OtherNo": ""
+          }
+        ],
+        "JobScopes": {
+          "HousingType": storedData[0].OrgId,
+          "ExpectedJobScope": [
+            {
+              "JobScopeId": 0,
+              "ExpectedJobScope": ""
+            }
+          ],
+          "NoOfBedroom": storedData[0].NoOfBedroom,
+          "HelperSleepingArea": storedData[0].HelperSleepingArea,
+          "OtherFamilyMemberStayinginthehouse": storedData[0].OFMS,
+          "Remarks": storedData[0].Remarks
+        }
+      });
+    }
+  }, [storedData]);
+
+
+  const fetchTokenHandler = async () => {
+    const tokenDetail = {
+      Username: 'admin',
+      Password: 'admin54321',
+    };
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Token/GenerateToken', {
+        method: 'POST',
+        body: JSON.stringify(tokenDetail),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        throw new Error('Something went wrong!');
+      }
+      const data = await response.json();
+      console.log(data.Jwt_Token);
+      setjwtToken(data.Jwt_Token);
+    } catch (error) {}
+  };
+
+  
+
+  const handleInputChange = (event) => {
+    console.log(event.target);
+    // this.setState({ value: event.target.value });
+     const { name, value } = event.target;
+ 
+     console.log(value,name);
+     setfamilydata((prevData) => ({
+       ...prevData,
+       [name]: value,
+     }));
+   };
+ 
+   const handleRadioChange = (e) => {
+     const { name, value } = e.target;
+   
+     setfamilydata((prevData) => ({
+       ...prevData,
+       [name]: value === "true" ? true : false, // Convert the string value to boolean
+     }));
+   };
+
+  const savefamilydataHandler = async (event) => {
+    event.preventDefault();
+    console.log(familydata.DateofBirth);
+    const regDetail = {
+      "FamilyDetails": [
+        {
+          "OrgId": familydata.OrgId,
+          "EmployerCode": familydata.EmployerCode,
+          "Name": familydata.Name,
+          "SlNo": familydata.SlNo,
+          "Relationship": familydata.Relationship,
+          "NRIC_FIN": familydata.NRIC_FIN,
+          "DateofBirth": convertToISODate(familydata.DateofBirth),
+          "Title": familydata.Title,
+          "Passport": familydata.Passport,
+          "PassportExpiry": convertToISODate(familydata.PassportExpiry),
+          "Gender": familydata.Gender,
+          "ResidentialStatus": familydata.ResidentialStatus,
+          "Occupation": familydata.Occupation,
+          "Employed": familydata.Employed,
+          "CompanyName": familydata.CompanyName,
+          "MonthlyIncome": familydata.MonthlyIncome,
+          "AnnualIncome": familydata.AnnualIncome,
+          "YearofAssessment": familydata.YearofAssessment,
+          "MobileNo": familydata.MobileNo,
+          "Email": familydata.Email,
+          "OtherNo": familydata.OtherNo
+        }
+      ],
+      "JobScopes": {
+        "HousingType": familydata.OrgId,
+        "ExpectedJobScope": familydata.ExpectedJobScope,
+        "NoOfBedroom": familydata.NoOfBedroom,
+        "HelperSleepingArea": familydata.HelperSleepingArea,
+        "OtherFamilyMemberStayinginthehouse": familydata.OFMS,
+        "Remarks": familydata.Remarks
+      }
+    };
+    console.log(regDetail);
+
+    const jwttoken = jwtToken;
+    console.log(jwtToken, jwttoken);
+
+    // try {
+    //   const response = await fetch('http://154.26.130.251:283/api/Employer/FamilyDetails_Updation', {
+    //     method: 'POST',
+    //     body: JSON.stringify(regDetail),
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${jwttoken}`,
+    //     },
+    //   });
+
+    //   console.log(response);
+
+    //   if (!response.ok) {
+    //     console.log('Something went wrong!');
+    //     return;
+    //   }
+
+    //   const data = await response.json();
+    //   console.log(data);
+
+    //   if (data.Code === 200 && data.Message === 'Sucess') {
+        
+    //     const updatedData = [...storedData]; // Clone the array
+    //     updatedData[0] = { ...updatedData[0],
+    //       HousingType: familydata.HousingType,
+    //       ExpectedJobScope: familydata.ExpectedJobScope,
+    //       NoOfBedroom: familydata.NoOfBedroom,
+    //       HelperSleepingArea: familydata.HelperSleepingArea,
+    //       OFMS: familydata.OtherFamilyMemberStayinginthehouse,
+    //       Remarks: familydata.Remarks
+          
+    //       }; // Update the property
+    //     setstoreddata(updatedData);
+    //     console.log(storedData,updatedData);
+        
+    //     localStorage.setItem('token', JSON.stringify(updatedData));
+    //   }
+    // } catch (error) {
+    //   console.log('An error occurred:', error);
+    // }
+  
+  };
+
+ 
   const handleLinkClick = (link) => {
-    //navigate(link);
     window.location.href = link
     setSelectedLink(link);
   };
@@ -61,6 +316,7 @@ const EmployerFamily = () => {
             </div>
             </div>
             <div className="col-lg-8">
+              <form onSubmit={savefamilydataHandler}>
               <div className="dashboard-right-wrap efml-wrap">
                     <div className="main-inner-box">
                       <div className="pageTitle title-fix sm">
@@ -77,10 +333,10 @@ const EmployerFamily = () => {
                                 <label>Relationship</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Please Select</option>
-                                  <option>Select</option>
-                                  <option>Select</option>
+                               <select className='new-select'onChange={(e) => {setfamilydata({...familydata,Relationship:e.target.value});}}>
+                                  <option value="">Please Select</option>
+                                  <option value="Mother">Mother</option>
+                                  <option value="Father">Father</option>
                                 </select>
                               </div>
                             </div>
@@ -89,7 +345,15 @@ const EmployerFamily = () => {
                           <label>NRIC / FIN</label>
                         </div>
                         <div className="col-lg-7">
-                          <input type="text" className="form-control" placeholder="NRIC / FIN"/> </div>
+                          <input type="text" className="form-control" placeholder="NRIC / FIN"
+                          value={familydata.NRIC_FIN}
+                          onChange={(e) => {
+                              setfamilydata({
+                                  ...familydata,
+                                  NRIC_FIN:  e.target.value
+                              })
+                          }}
+                          /> </div>
                       </div>
                       <div className="row form-group align-items-center">
                         <div className="col-lg-5">
@@ -97,7 +361,15 @@ const EmployerFamily = () => {
                         </div>
                         <div className="col-lg-7">
                           <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY"
+                                   value={familydata.DateOfBirth || ''}
+                                  onChange={(e) => {
+                                      setfamilydata({
+                                          ...familydata,
+                                          DateofBirth:  e.target.value
+                                      })
+                                  }}
+                                   /> <i className="fas fa-calendar-alt"></i> 
                           </div> 
                         </div>
                       </div>
@@ -106,26 +378,31 @@ const EmployerFamily = () => {
                           <label>Title</label>
                         </div>
                         <div className="col-lg-7">
-                          <input type="text" className="form-control" placeholder="Title"/> </div>
+                          <input type="text" className="form-control" placeholder="Title"
+                          value={familydata.Title}
+                          onChange={(e) => {
+                              setfamilydata({
+                                  ...familydata,
+                                  Title:  e.target.value
+                              })
+                          }}
+                          /> </div>
                       </div>
-                      <div className="row form-group align-items-center">
-                              <div className="col-lg-5">
-                                <label>Nationality</label>
-                              </div>
-                              <div className="col-lg-7">
-                                <select>
-                                  <option>Please Select</option>
-                                  <option>Select</option>
-                                  <option>Select</option>
-                                </select>
-                              </div>
-                            </div>
+                      
                       <div className="row form-group align-items-center">
                         <div className="col-lg-5">
                           <label>Passport</label>
                         </div>
                         <div className="col-lg-7">
-                          <input type="text" className="form-control" placeholder="Passport"/> </div>
+                          <input type="text" className="form-control" placeholder="Passport"
+                          value={familydata.Passport}
+                          onChange={(e) => {
+                              setfamilydata({
+                                  ...familydata,
+                                  Passport:  e.target.value
+                              })
+                          }}
+                          /> </div>
                       </div>
                       
                       
@@ -136,7 +413,15 @@ const EmployerFamily = () => {
                         </div>
                         <div className="col-lg-7">
                           <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY"
+                                   value={familydata.PassportExpiry || ''}
+                                  onChange={(e) => {
+                                      setfamilydata({
+                                          ...familydata,
+                                          PassportExpiry:  e.target.value
+                                      })
+                                  }}
+                                   /> <i className="fas fa-calendar-alt"></i> 
                           </div> 
                         </div>
                       </div>
@@ -146,9 +431,17 @@ const EmployerFamily = () => {
                                 <label>Gender</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Male</option>
-                                  <option>Female</option>
+                                <select
+                                onChange={(e) => {
+                                    setfamilydata({
+                                        ...familydata,
+                                        Gender:  e.target.value
+                                    })
+                                }}
+                                >
+                                  <option value="Male">Male</option>
+                                  <option value="Female">Female</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -158,7 +451,15 @@ const EmployerFamily = () => {
                                 <label>Residential Status</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Residential Status"/> </div>
+                                <input type="text" className="form-control" placeholder="Residential Status"
+                                value={familydata.ResidentialStatus}
+                                onChange={(e) => {
+                                    setfamilydata({
+                                        ...familydata,
+                                        ResidentialStatus:  e.target.value
+                                    })
+                                }}
+                                /> </div>
                               </div>
 
                               <div className="row form-group align-items-center">
@@ -166,9 +467,16 @@ const EmployerFamily = () => {
                                 <label>Occupation</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Please Select</option>
-                                  <option>Occupation</option>
+                                <select
+                                onChange={(e) => {
+                                    setfamilydata({
+                                        ...familydata,
+                                        Occupation:  e.target.value
+                                    })
+                                }}
+                                >
+                                  <option value="">Please Select</option>
+                                  <option value="Occupation">Occupation</option>
                                 </select>
                               </div>
                             </div>
@@ -178,14 +486,26 @@ const EmployerFamily = () => {
                                 <label>Employed</label>
                               </div>
                               <div className="col-lg-7">
-                                <div className="radio-inline">
+                              <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>Yes</span></label>
+                                      <input
+                                      type="radio"
+                                      name="Employed"
+                                      value="true"
+                                      checked={familydata.Employed === true}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="r1"/> <span>No</span></label>
+                                    <input
+                                      type="radio"
+                                      name="Employed"
+                                      value="false"
+                                      checked={familydata.Employed === false}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div>
                               </div>
@@ -197,7 +517,12 @@ const EmployerFamily = () => {
                                 <label>Company Name</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Company Name"/> </div>
+                                <input type="text" className="form-control" placeholder="Company Name"
+                                 value={familydata.CompanyName || ''}
+                                 onChange={(e) => {
+                                   setfamilydata({ ...familydata, CompanyName: e.target.value });
+                                 }}
+                                /> </div>
                               </div>
 
 
@@ -206,9 +531,14 @@ const EmployerFamily = () => {
                                 <label>Monthly Income ($)</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Please Select</option>
-                                  <option>option-2</option>
+                             <select className='new-select'
+                                id="MonthlyIncome"
+                                name="MonthlyIncome"
+                                value={familydata.MonthlyIncome || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="25,000">Above $25,000</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -218,10 +548,12 @@ const EmployerFamily = () => {
                                 <label>Annual Income ($)</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Please Select</option>
-                                  <option>option-2</option>
-                                </select>
+                              <input type="text" className="form-control" placeholder="Annual Income ($)"
+                           value={familydata.AnnualIncome || ''}
+                           onChange={(e) => {
+                             setfamilydata({ ...familydata, AnnualIncome: e.target.value });
+                           }}
+                            /> 
                               </div>
                             </div>
 
@@ -230,9 +562,15 @@ const EmployerFamily = () => {
                                 <label>Year of Assessment</label>
                               </div>
                               <div className="col-lg-7">
-                                <select>
-                                  <option>Please Select</option>
-                                  <option>option-2</option>
+                             <select className='new-select'
+                                id="YearofAssesment"
+                                name="YearofAssesment"
+                                value={familydata.YearofAssesment || ''}
+                                onChange={handleInputChange}
+                                >
+                                  <option value="2005">2005</option>
+                                  <option value="2003">2003</option>
+                                  <option value="">Select</option>
                                 </select>
                               </div>
                             </div>
@@ -242,7 +580,10 @@ const EmployerFamily = () => {
                                 <label>Mobile No.</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Mobile No."/> </div>
+                                <input type="text" className="form-control" placeholder="Mobile No."
+                                value={familydata.MobileNo}
+                                onChange={(e) => {setfamilydata({...familydata,MobileNo:e.target.value});}}
+                                /> </div>
                               </div>
 
                               <div className="row form-group align-items-center">
@@ -250,7 +591,10 @@ const EmployerFamily = () => {
                                 <label>Email</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Email"/> </div>
+                                <input type="text" className="form-control" placeholder="Email"
+                                 value={familydata.Email}
+                                 onChange={(e) => {setfamilydata({...familydata,Email:e.target.value});}}
+                                /> </div>
                               </div>
 
                               <div className="row form-group align-items-center">
@@ -258,14 +602,17 @@ const EmployerFamily = () => {
                                 <label>Other No.</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Other No."/> </div>
+                                <input type="text" className="form-control" placeholder="Other No."
+                                 value={familydata.OtherNo}
+                                 onChange={(e) => {setfamilydata({...familydata,OtherNo:e.target.value});}}
+                                /> </div>
                               </div>
 
-                              <div className="row form-group align-items-center">
+                              {/* <div className="row form-group align-items-center">
                                 <div className="col-lg-12">
                                   <button name="add-more" className="add-more"><i className="fas fa-plus"></i> Add More</button>
                                 </div>
-                              </div>
+                              </div> */}
 
 
                             
@@ -278,9 +625,13 @@ const EmployerFamily = () => {
                           <label>Housing Type</label>
                         </div>
                         <div className="col-lg-7">
-                          <select>
-                                  <option>Landed Property</option>
-                                  <option>Select</option>
+                       <select className='new-select' id="HousingType" 
+                        name='HousingType'
+                         value={familydata.HousingType || ''}
+                         onChange={handleInputChange}
+                               >
+                                  <option value="Landed Property">Landed Property</option>
+                                  <option value="">Select</option>
                                 </select>
                         </div>
                       </div>
@@ -289,23 +640,40 @@ const EmployerFamily = () => {
                                 <label>Expected Job Scope</label>
                               </div>
                               <div className="col-lg-7">
-                                <select multiple className="selectpicker form-control" id="number-multiple" data-virtual-scroll="true">
-                                  <option>Household Chores</option>
-                                  <option>Cooking</option>
-                                  <option>Looking after age person in the household</option>
-                                  <option>Constact attaention is required</option>
-                                  <option>Babysitting</option>
-                                  <option>Child - minding</option>
-                                  <option>Others</option>
+                             <select multiple className="selectpicker form-control" name="Job[]" id="number-multiple" data-virtual-scroll="true" 
+                                value={familydata.ExpectedJobScope}
+                                onChange={(e) => {
+                                  const selectedOptions = Array.from(e.target.selectedOptions, (option) => ({
+                                    JobScopeId: option.index,
+                                    ExpectedJobScope: option.value
+                                  }));
+
+                                  setfamilydata({
+                                    ...familydata,
+                                    ExpectedJobScope: selectedOptions
+                                  });
+                                }} >
+                                <option value="Household Chores">Household Chores</option>
+                                <option value="Cooking">Cooking</option>
+                                <option value="Looking after age person in the household">Looking after age person in the household</option>
+                                <option value="Constact attaention is required">Constact attaention is required</option>
+                                <option value="Babysitting">Babysitting</option>
+                                <option value="Child - minding">Child - minding</option>
+                                <option value="Others">Others</option>
                                 </select>
                               </div>
                             </div>
                       <div className="row form-group align-items-center">
                         <div className="col-lg-5">
-                          <label>Number of Bedroom in the house</label>
+                          <label>Number of Bedrooms</label>
                         </div>
                         <div className="col-lg-7">
-                           <input type="text" className="form-control" placeholder="Number of Bedroom in the house" /> 
+                           <input type="text" className="form-control" placeholder="Number of Bedroom in the house" 
+                           value={familydata.NoofBedroom || ''}
+                           onChange={(e) => {
+                             setfamilydata({ ...familydata, NoofBedroom: e.target.value });
+                           }}
+                           /> 
                         </div>
                       </div>
 
@@ -314,7 +682,12 @@ const EmployerFamily = () => {
                           <label>Helper Sleeping Area</label>
                         </div>
                         <div className="col-lg-7">
-                           <input type="text" className="form-control" placeholder="Helper Sleeping Area" /> 
+                           <input type="text" className="form-control" placeholder="Helper Sleeping Area" 
+                           value={familydata.HelperSleepingArea || ''}
+                           onChange={(e) => {
+                             setfamilydata({ ...familydata, HelperSleepingArea: e.target.value });
+                           }}
+                           /> 
                         </div>
                       </div>
                    
@@ -323,7 +696,12 @@ const EmployerFamily = () => {
                                 <label>Other Family Member staying in the house</label>
                               </div>
                               <div className="col-lg-7">
-                                <textarea className="form-control" placeholder="Other Family Member staying in the house"></textarea>
+                                <textarea className="form-control" placeholder="Other Family Member staying in the house"
+                                value={familydata.OtherFamilyMemberStayinginthehouse || ''}
+                                onChange={(e) => {
+                                  setfamilydata({ ...familydata, OtherFamilyMemberStayinginthehouse: e.target.value });
+                                }}
+                                ></textarea>
                               </div>
                             </div>     
                             <div className="row form-group align-items-center">
@@ -331,16 +709,22 @@ const EmployerFamily = () => {
                                 <label>Remarks</label>
                               </div>
                               <div className="col-lg-7">
-                                <textarea className="form-control" placeholder="Remarks"></textarea>
+                                <textarea className="form-control" placeholder="Remarks"
+                                value={familydata.Remarks || ''}
+                                onChange={(e) => {
+                                  setfamilydata({ ...familydata, Remarks: e.target.value });
+                                }}
+                                ></textarea>
                               </div>
                             </div>  
                         
               </div>
               
               <div className="row mt20 justify-content-end">
-                      <div className="col-auto"><button type="button" className="custom-button">SAVE</button></div>
+                      <div className="col-auto"><button type="submit" className="custom-button">SAVE</button></div>
                     </div>
               </div>
+              </form>
             </div>
           </div>
         </div>
