@@ -29,6 +29,7 @@ import EmployerRegistration from './components/employer/EmployerRegistration';
 import EmployerSearchResult from './components/employer/EmployerSearchResult';
 import HelperDetails from './components/employer/HelperDetails';
 
+import HelperLogin from './components/helper/HelperLogin';
 import HelperAccount from './components/helper/HelperAccount';
 import HelperBooking from './components/helper/HelperBooking';
 import HelperContact from './components/helper/HelperContact';
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
         { path:'/news', element:<News/> },
         { path:'/contact', element:<Contact/> },
         { path:'/login', element:<Login/> },
+        { path:'/helperlogin', element:<HelperLogin/> },
         { path:'/forgetpassword', element:<ForgetPassword/> },
         { path:'/maidregistration', element:<MaidRegistration/> },
         { path:'/makeappointment', element:<MakeAppointment/> },

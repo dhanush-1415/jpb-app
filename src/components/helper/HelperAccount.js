@@ -8,11 +8,128 @@ import { Link } from 'react-router-dom';
 
 const HelperAccount = () => {
   const [selectedLink, setSelectedLink] = useState('/');
-
-  // const navigate = useNavigate();
+  const [storedData, setstoreddata] = React.useState([]);
+  const [ishelperloggedin, setishelperloggedin] = React.useState(false);
+  const [jwtToken, setjwtToken] = useState('');
+  const [accountdata, setaccountdata] = useState({
+    EmailId: '',
+    Password: '',
+    ConfirmPassword: '',
+    Contact_MobileNo: '',
+    HelperCode: ''
+  });
+ 
+  
   useEffect(() => {
     setSelectedLink(window.location.pathname);
+    fetchTokenHandler();
+    let token = localStorage.getItem("helpertoken");
+    console.log(token);
+    if (token) {
+      console.log(token);
+      setishelperloggedin(true);
+      setstoreddata(JSON.parse(token));
+      console.log(storedData);
+    }
+    console.log(ishelperloggedin);
+    console.log(storedData);
   }, []);
+  
+  useEffect(() => {
+    if (storedData.length > 0) {
+      setaccountdata({
+        ...accountdata,
+        EmailId: storedData[0].EmailId,
+        Password: storedData[0].Password,
+        Contact_MobileNo: storedData[0].MobileNo,
+        HelperCode: storedData[0].HelperCode
+      });
+    }
+  }, [storedData]);
+
+
+  const fetchTokenHandler = async () => {
+    const tokenDetail = {
+      Username: 'admin',
+      Password: 'admin54321',
+    };
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Token/GenerateToken', {
+        method: 'POST',
+        body: JSON.stringify(tokenDetail),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        throw new Error('Something went wrong!');
+      }
+      const data = await response.json();
+      console.log(data.Jwt_Token);
+      setjwtToken(data.Jwt_Token);
+    } catch (error) {}
+  };
+
+  const saveAccountDataHandler = async (event) => {
+    event.preventDefault();
+if(accountdata.Password === accountdata.ConfirmPassword){
+    const regDetail = {
+      OrgId: 1,
+      HelperCode: accountdata.HelperCode,
+  Email: accountdata.EmailId,
+  Password: accountdata.Password,
+  ConfirmPassword: accountdata.ConfirmPassword,
+  SMSContactNumber: accountdata.Contact_MobileNo
+    };
+    console.log(regDetail);
+
+    const jwttoken = jwtToken;
+    console.log(jwtToken, jwttoken);
+
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Helper/AccountDetails_Updation', {
+        method: 'POST',
+        body: JSON.stringify(regDetail),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwttoken}`,
+        },
+      });
+
+      console.log(response);
+
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.Code === 200 && data.Message === 'Sucess') {
+       
+        const updatedData = [...storedData]; // Clone the array
+        updatedData[0] = { ...updatedData[0],
+          "OrgId": 1,
+          HelperCode: accountdata.HelperCode,
+            Email: accountdata.EmailId,
+            Password: accountdata.Password,
+            SMSContactNumber: accountdata.Contact_MobileNo
+          }; // Update the property
+        setstoreddata(updatedData);
+        console.log(storedData,updatedData);
+        
+        localStorage.setItem('helpertoken', JSON.stringify(updatedData));
+      }
+    } catch (error) {
+      console.log('An error occurred:', error);
+    }
+  }else{
+   // return;
+   console.log('Passwords do not match');
+  }
+  };
 
   const handleLinkClick = (link) => {
     //navigate(link);
@@ -68,38 +185,83 @@ const HelperAccount = () => {
                    
                       <div className="pageTitle title-fix sm">
                         <h2>Account Details</h2></div>
-                      <div className="row form-group align-items-center">
-                        <div className="col-lg-5">
-                          <label>Email Address</label>
-                        </div>
-                        <div className="col-lg-7">
-                          <input type="text" className="form-control" placeholder="timothylim@gmail.com"/> </div>
-                      </div>
-                      <div className="row form-group align-items-center">
-                        <div className="col-lg-5">
-                          <label>Password </label>
-                        </div>
-                        <div className="col-lg-7">
-                          <input type="Password" className="form-control" placeholder="Password"/> </div>
-                      </div>
-                      <div className="row form-group align-items-center">
-                        <div className="col-lg-5">
-                          <label>Confirm Password</label>
-                        </div>
-                        <div className="col-lg-7">
-                          <input type="Password" className="form-control" placeholder="Confirm Password"/> </div>
-                      </div>
-                      
-                      <div className="row form-group align-items-center">
-                        <div className="col-lg-5">
-                          <label>SMS Contact Number</label>
-                        </div>
-                        <div className="col-lg-7">
-                          <input type="text" className="form-control" placeholder="+65 9123 456789"/> </div>
-                      </div>
-                    <div className="row mt20 justify-content-end">
-                      <div className="col-auto"><button type="button" className="custom-button">SAVE</button></div>
-                    </div>
+                        <form onSubmit={saveAccountDataHandler}>
+      <div className="row form-group align-items-center">
+        <div className="col-lg-5">
+          <label>Email Address</label>
+        </div>
+        <div className="col-lg-7">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="timothylim@gmail.com"
+            value={accountdata.EmailId}
+            onChange={(e) => {
+              setaccountdata({ ...accountdata, EmailId: e.target.value });
+            }}
+            readOnly
+          />
+        </div>
+      </div>
+      <div className="row form-group align-items-center">
+        <div className="col-lg-5">
+          <label>Password</label>
+        </div>
+        <div className="col-lg-7">
+          <input
+            type="password"
+            className="form-control"
+            placeholder="Password"
+            value={accountdata.Password}
+            onChange={(e) => {
+              setaccountdata({ ...accountdata, Password: e.target.value });
+            }}
+            required
+          />
+        </div>
+      </div>
+      <div className="row form-group align-items-center">
+        <div className="col-lg-5">
+          <label>Confirm Password</label>
+        </div>
+        <div className="col-lg-7">
+          <input
+            type="password"
+            className="form-control"
+            placeholder="Confirm Password"
+            value={accountdata.ConfirmPassword}
+            onChange={(e) => {
+              setaccountdata({ ...accountdata, ConfirmPassword: e.target.value });
+            }}
+            required
+          />
+        </div>
+      </div>
+      <div className="row form-group align-items-center">
+        <div className="col-lg-5">
+          <label>SMS Contact Number</label>
+        </div>
+        <div className="col-lg-7">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="+65 9123 456789"
+            value={accountdata.Contact_MobileNo}
+            onChange={(e) => {
+              setaccountdata({ ...accountdata, Contact_MobileNo: e.target.value });
+            }}
+            required
+          />
+        </div>
+      </div>
+      <div className="row mt20 justify-content-end">
+        <div className="col-auto">
+          <button type="submit" className="custom-button">
+            SAVE
+          </button>
+        </div>
+      </div>
+    </form>
                     
                   
               </div>

@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom';
 const EmployerAccount = () => {
   const [selectedLink, setSelectedLink] = useState('/');
   const [storedData, setstoreddata] = React.useState([]);
+  const [isloggedin, setisloggedin] = React.useState(false);
+  const [jwtToken, setjwtToken] = useState('');
   const [accountdata, setaccountdata] = useState({
     EmailId: '',
     Password: '',
@@ -16,8 +18,7 @@ const EmployerAccount = () => {
     Contact_MobileNo: '',
     EmployerCode: ''
   });
-  const [isloggedin, setisloggedin] = React.useState(false);
-  const [jwtToken, setjwtToken] = useState('');
+ 
   
   useEffect(() => {
     setSelectedLink(window.location.pathname);
@@ -124,7 +125,8 @@ if(accountdata.Password === accountdata.ConfirmPassword){
       console.log('An error occurred:', error);
     }
   }else{
-    return;
+   // return;
+   console.log('Passwords do not match');
   }
   };
 
