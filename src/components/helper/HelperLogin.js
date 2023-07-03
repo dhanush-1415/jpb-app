@@ -4,8 +4,8 @@ import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Login = () => {
-  const [isloggedin, setisloggedin] = useState(false);
+const HelperLogin= () => {
+  const [ishelperloggedin, setishelperloggedin] = useState(false);
   const [logindata, setlogindata] = useState({});
   const [jwtToken, setjwtToken] = useState('');
   const [selectedLink, setSelectedLink] = useState('/');
@@ -14,9 +14,9 @@ const Login = () => {
   useEffect(() => {
     setSelectedLink(window.location.pathname);
     fetchTokenHandler();
-    let token = localStorage.getItem('token');
-    if (token) {
-      setisloggedin(true);
+    let helpertoken = localStorage.getItem('helpertoken');
+    if (helpertoken) {
+      setishelperloggedin(true);
     }
   }, []);
   const handleLinkClick = (link) => {
@@ -48,7 +48,7 @@ const Login = () => {
     } catch (error) {}
   };
 
-  const handleLogin = async (event) => {
+  const handleLogin= async (event) => {
     event.preventDefault();
 
     const regDetail = {
@@ -62,7 +62,7 @@ const Login = () => {
     
 
     try {
-      const response = await fetch('http://154.26.130.251:283/api/Employer/Login', {
+      const response = await fetch('http://154.26.130.251:283/api/Helper/Login', {
         method: 'POST',
         body: JSON.stringify(regDetail),
         headers: {
@@ -85,12 +85,12 @@ const Login = () => {
        // alert(true);
         const userData = data.Data[0];
         console.log(userData);
-        localStorage.setItem('token', JSON.stringify(data.Data));
-        setisloggedin(true);
-        console.log(localStorage.getItem('token'));
-        console.log(isloggedin);
+        localStorage.setItem('helpertoken', JSON.stringify(data.Data));
+        setishelperloggedin(true);
+        console.log(localStorage.getItem('helpertoken'));
+        console.log(ishelperloggedin);
 
-        navigate('/employeraccount');
+        navigate('/helperaccount');
       }
     } catch (error) {
       console.log('An error occurred:', error);
@@ -114,7 +114,7 @@ const Login = () => {
             <div className="main-box-wrapper">
               <div className="reg-links">
                 <ul>
-                <li className={selectedLink === '/login' ? 'selected' : ''}><Link to="/login" onClick={() => handleLinkClick('/login')}>Employer Login</Link></li>
+                  <li className={selectedLink === '/login' ? 'selected' : ''}><Link to="/login" onClick={() => handleLinkClick('/login')}>Employer Login</Link></li>
                   <li className={selectedLink === '/helperlogin' ? 'selected' : ''}><Link to="/helperlogin" onClick={() => handleLinkClick('/helperlogin')}>Helper Login</Link></li>
                 </ul>
               </div>
@@ -175,4 +175,4 @@ const Login = () => {
     </div>
   );
 }
-export default Login;
+export default HelperLogin;

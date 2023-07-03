@@ -1,4 +1,4 @@
-import React, {  useEffect } from 'react';
+import React, {  useEffect,useState } from 'react';
 import $ from "jquery";
 import Header from '../Header';
 import Footer from '../Footer';
@@ -7,8 +7,9 @@ import { Link } from 'react-router-dom';
 
 
 const MaidRegistration = () => {
+  const [selectedLink, setSelectedLink] = useState('/');
   useEffect(() => {
-   
+    setSelectedLink(window.location.pathname);
     const verificationForm = () => {
       (function($) {
         "use strict";
@@ -106,6 +107,14 @@ const MaidRegistration = () => {
       
     };
   }, []);
+
+  
+
+  const handleLinkClick = (link) => {
+    //navigate(link);
+    window.location.href = link
+    setSelectedLink(link);
+  };
   
   return(
     <div>
@@ -122,10 +131,14 @@ const MaidRegistration = () => {
           <div className="container">
             <div className="main-box-wrapper">
               <div className="reg-links">
-                <ul>
+                {/* <ul>
                   <li><Link to="/employerregistration">Employer Registration</Link></li>
-                  <li className="selected"><Link to="/maidregistration">Maid Registration</Link></li>
+                  <li className="selected"><Link to="/maidregistration">Maid Registration</Link></li> */}
+                  <ul>
+                  <li className={selectedLink === '/employerregistration' ? 'selected' : ''}><Link to="/employerregistration" onClick={() => handleLinkClick('/employerregistration')}>Employer Registration</Link></li>
+                  <li className={selectedLink === '/maidregistration' ? 'selected' : ''}><Link to="/maidregistration" onClick={() => handleLinkClick('/maidregistration')}>Helper Registration</Link></li>
                 </ul>
+                {/* </ul> */}
               </div>
             
               <section className="multi_step_form form-holder">

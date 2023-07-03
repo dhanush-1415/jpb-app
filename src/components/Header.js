@@ -4,19 +4,27 @@ import { useNavigate } from "react-router-dom";
 function Header() {
   const [selectedLink, setSelectedLink] = useState('/');
   const [isloggedin, setisloggedin] = React.useState(false);
+  const [ishelperloggedin, setishelperloggedin] = useState(false);
   const navigate = useNavigate();
 
   // const navigate = useNavigate();
   useEffect(() => {
     setSelectedLink(window.location.pathname);
     
-    let token = localStorage.getItem("token")
+        let token = localStorage.getItem("token")
         if (token) {
             setisloggedin(true)
         }
         console.log(token);
         console.log(isloggedin);
+        let helpertoken = localStorage.getItem("helpertoken")
+        if (helpertoken) {
+          setishelperloggedin(true)
+        }
+        console.log(helpertoken);
+        console.log(ishelperloggedin);
   }, []);
+
 
   const handleLinkClick = (link) => {
     //navigate(link);
@@ -27,6 +35,12 @@ function Header() {
     localStorage.removeItem("token")
     setisloggedin(false);
     navigate('/');
+}
+
+const handlehelperLogout = () => {
+  localStorage.removeItem("helpertoken")
+    setishelperloggedin(false);
+  navigate('/');
 }
 
 
@@ -100,7 +114,16 @@ function Header() {
                     <div className="col-auto account-button">
                       <a href="/" className="top-link top-acc  dropdown-toggle" title="Register/login" data-toggle="dropdown" aria-haspopup="true"><img src="images/user.svg" alt="Register/login" /></a>
                       <div className="dropdown-menu">
-                      {isloggedin ? (
+                      {ishelperloggedin ? (
+  <>
+    <Link className="dropdown-item" to="/helperaccount" onClick={() => handleLinkClick('/helperaccount')}>
+      My Account
+    </Link>
+    <Link className="dropdown-item" to="/" onClick={handlehelperLogout}>
+      Logout
+    </Link>
+  </>
+) :isloggedin ? (
   <>
   <Link className="dropdown-item" to="/employeraccount" onClick={() => handleLinkClick('/employeraccount')}>
       My Account
