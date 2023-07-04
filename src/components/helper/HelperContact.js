@@ -126,7 +126,7 @@ const HelperContact = () => {
                           <button name="add-more" className="add-more"><i className="fas fa-plus"></i> Add More</button>
                         </div>
                       </div> 
-                      <div className="row mb15 sub-title-row form-group align-items-center">
+                      {/* <div className="row mb15 sub-title-row form-group align-items-center">
                               <div className="col-lg-12">
                                 <h6>Next of Kin</h6>
                               </div>
@@ -144,7 +144,7 @@ const HelperContact = () => {
                               </div>
                               <div className="col-lg-7">
                                 <input type="text" className="form-control" placeholder="Contact Number"/> </div>
-                            </div>
+                            </div> */}
                         
               </div>
               <div className="row mt20 justify-content-end">
