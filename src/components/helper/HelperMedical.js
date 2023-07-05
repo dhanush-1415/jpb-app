@@ -8,11 +8,189 @@ import { Link } from 'react-router-dom';
 
 const HelperMedical = () => {
   const [selectedLink, setSelectedLink] = useState('/');
-
-  // const navigate = useNavigate();
+  const [storedData, setstoreddata] = React.useState([]);
+  const [ishelperloggedin, setishelperloggedin] = React.useState(false);
+  const [jwtToken, setjwtToken] = useState('');
+  const [medicaldata, setmedicaldata] = useState({
+    "OrgId": 1,
+    "HelperCode": "",
+    "Allergies": "No",
+    "Mental_illness": "No",
+    "Epilepsy": "No",
+    "Asthma": "No",
+    "Diabetes": "No",
+    "Hypertension": "No",
+    "Tuberculosis": "No",
+    "HeartDisease": "No",
+    "Malaria": "No",
+    "Operations": "No",
+    "Others": "No",
+    "PhyscialDisabilities": "No",
+    "Dietary_NoPork": "No",
+    "Dietary_NoBeef": "No",
+    "Dietary_Others": "No",
+    "FoodHanding_YesPork": "No",
+    "FoodHanding_YesBeef": "No",
+    "FoodHanding_Others": "No"
+  });
+ 
+  
   useEffect(() => {
     setSelectedLink(window.location.pathname);
+    fetchTokenHandler();
+    let token = localStorage.getItem("helpertoken");
+    console.log(token);
+    if (token) {
+      console.log(token);
+      setishelperloggedin(true);
+      setstoreddata(JSON.parse(token));
+      console.log(storedData);
+    }
+    console.log(ishelperloggedin);
+    console.log(storedData);
   }, []);
+  
+  useEffect(() => {
+    if (storedData.length > 0) {
+      setmedicaldata({
+        ...medicaldata,
+        "OrgId": 1,
+        "HelperCode": storedData[0].HelperCode,
+        // "Allergies": storedData[0].Allergies,
+        // "Mental_illness": storedData[0].Mental_illness,
+        // "Epilepsy": storedData[0].Epilepsy,
+        // "Asthma": storedData[0].Asthma,
+        // "Diabetes": storedData[0].Diabetes,
+        // "Hypertension": storedData[0].Hypertension,
+        // "Tuberculosis": storedData[0].Tuberculosis,
+        // "HeartDisease": storedData[0].HeartDisease,
+        // "Malaria": storedData[0].Malaria,
+        // "Operations": storedData[0].Operations,
+        // "Others": storedData[0].Others,
+        // "PhyscialDisabilities": storedData[0].PhyscialDisabilities,
+        // "Dietary_NoPork": storedData[0].Dietary_NoPork,
+        // "Dietary_NoBeef": storedData[0].Dietary_NoBeef,
+        // "Dietary_Others": storedData[0].Dietary_Others,
+        // "FoodHanding_YesPork": storedData[0].FoodHanding_YesPork,
+        // "FoodHanding_YesBeef": storedData[0].FoodHanding_YesBeef,
+        // "FoodHanding_Others": storedData[0].FoodHanding_Others
+      });
+    }
+  }, [storedData]);
+
+
+  const fetchTokenHandler = async () => {
+    const tokenDetail = {
+      Username: 'admin',
+      Password: 'admin54321',
+    };
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Token/GenerateToken', {
+        method: 'POST',
+        body: JSON.stringify(tokenDetail),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        throw new Error('Something went wrong!');
+      }
+      const data = await response.json();
+      console.log(data.Jwt_Token);
+      setjwtToken(data.Jwt_Token);
+    } catch (error) {}
+  };
+
+  const handleRadioChange = (e) => {
+    const { name, value } = e.target;
+    setmedicaldata({...medicaldata,[name]: value});
+  };
+
+  const savemedicaldataHandler = async (event) => {
+    event.preventDefault();
+    const regDetail = {
+        "OrgId": 1,
+        "HelperCode": medicaldata.HelperCode,
+        "Allergies": medicaldata.Allergies,
+        "Mental_illness": medicaldata.Mental_illness,
+        "Epilepsy": medicaldata.Epilepsy,
+        "Asthma": medicaldata.Asthma,
+        "Diabetes": medicaldata.Diabetes,
+        "Hypertension": medicaldata.Hypertension,
+        "Tuberculosis": medicaldata.Tuberculosis,
+        "HeartDisease": medicaldata.HeartDisease,
+        "Malaria": medicaldata.Malaria,
+        "Operations": medicaldata.Operations,
+        "Others": medicaldata.Others,
+        "PhyscialDisabilities": medicaldata.PhyscialDisabilities,
+        "Dietary_NoPork": medicaldata.Dietary_NoPork,
+        "Dietary_NoBeef": medicaldata.Dietary_NoBeef,
+        "Dietary_Others": medicaldata.Dietary_Others,
+        "FoodHanding_YesPork": medicaldata.FoodHanding_YesPork,
+        "FoodHanding_YesBeef": medicaldata.FoodHanding_YesBeef,
+        "FoodHanding_Others": medicaldata.FoodHanding_Others
+    };
+    console.log(regDetail);
+
+    const jwttoken = jwtToken;
+    console.log(jwtToken, jwttoken);
+
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Helper/MedicalDetails', {
+        method: 'POST',
+        body: JSON.stringify(regDetail),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwttoken}`,
+        },
+      });
+
+      console.log(response);
+
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.Code === 200 && data.Message === 'Sucess') {
+       
+        const updatedData = [...storedData]; // Clone the array
+        updatedData[0] = { ...updatedData[0],
+          "OrgId": 1,
+          "HelperCode": medicaldata.HelperCode,
+          "Allergies": medicaldata.Allergies,
+          "Mental_illness": medicaldata.Mental_illness,
+          "Epilepsy": medicaldata.Epilepsy,
+          "Asthma": medicaldata.Asthma,
+          "Diabetes": medicaldata.Diabetes,
+          "Hypertension": medicaldata.Hypertension,
+          "Tuberculosis": medicaldata.Tuberculosis,
+          "HeartDisease": medicaldata.HeartDisease,
+          "Malaria": medicaldata.Malaria,
+          "Operations": medicaldata.Operations,
+          "Others": medicaldata.Others,
+          "PhyscialDisabilities": medicaldata.PhyscialDisabilities,
+          "Dietary_NoPork": medicaldata.Dietary_NoPork,
+          "Dietary_NoBeef": medicaldata.Dietary_NoBeef,
+          "Dietary_Others": medicaldata.Dietary_Others,
+          "FoodHanding_YesPork": medicaldata.FoodHanding_YesPork,
+          "FoodHanding_YesBeef": medicaldata.FoodHanding_YesBeef,
+          "FoodHanding_Others": medicaldata.FoodHanding_Others
+          }; // Update the property
+        setstoreddata(updatedData);
+        console.log(storedData,updatedData);
+        
+       // localStorage.setItem('helpertoken', JSON.stringify(updatedData));
+      }
+    } catch (error) {
+      console.log('An error occurred:', error);
+    }
+  
+  };
 
   const handleLinkClick = (link) => {
     //navigate(link);
@@ -64,6 +242,7 @@ const HelperMedical = () => {
             </div>
             </div>
             <div className="col-lg-8">
+              <form onSubmit={savemedicaldataHandler}>
               <div className="dashboard-right-wrap hiad-wrap">
                 <div className="main-inner-box">
                   <div className="pageTitle title-fix sm"><h2>Medical Details</h2></div>
@@ -84,11 +263,19 @@ const HelperMedical = () => {
                               <td> <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a1"/> <span>Yes</span></label>
+                                      <input type="radio" name="Allergies"
+                                      value="Yes"
+                                      checked={medicaldata.Allergies === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a1"/> <span>No</span></label>
+                                      <input type="radio" name="Allergies"
+                                      value="No"
+                                      checked={medicaldata.Allergies === "No"}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div></td>
                              
@@ -99,11 +286,22 @@ const HelperMedical = () => {
                               <td> <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a2"/> <span>Yes</span></label>
+                                      <input type="radio" 
+                                      name="Mental_illness"
+                                      value="Yes"
+                                      checked={medicaldata.Mental_illness === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a2"/> <span>No</span></label>
+                                      <input type="radio"
+                                      name="Mental_illness"
+                                      value="No"
+                                      checked={medicaldata.Mental_illness === "No"}
+                                      onChange={handleRadioChange} 
+
+                                      /> <span>No</span></label>
                                   </div>
                                 </div></td>
                              
@@ -114,11 +312,21 @@ const HelperMedical = () => {
                               <td> <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a3"/> <span>Yes</span></label>
+                                      <input type="radio"
+                                      name="Epilepsy"
+                                      value="Yes"
+                                      checked={medicaldata.Epilepsy === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a3"/> <span>No</span></label>
+                                      <input type="radio"
+                                      name="Epilepsy"
+                                      value="No"
+                                      checked={medicaldata.Epilepsy === "No"}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div></td>
                              
@@ -129,11 +337,21 @@ const HelperMedical = () => {
                               <td> <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a4"/> <span>Yes</span></label>
+                                      <input type="radio"
+                                      name="Asthma"
+                                      value="Yes"
+                                      checked={medicaldata.Asthma === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a4"/> <span>No</span></label>
+                                      <input type="radio"
+                                      name="Asthma"
+                                      value="No"
+                                      checked={medicaldata.Asthma === "No"}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div></td>
                              
@@ -144,11 +362,21 @@ const HelperMedical = () => {
                               <td> <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a5"/> <span>Yes</span></label>
+                                      <input type="radio"
+                                      name="Diabetes"
+                                      value="Yes"
+                                      checked={medicaldata.Diabetes === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a5"/> <span>No</span></label>
+                                      <input type="radio"
+                                      name="Diabetes"
+                                      value="No"
+                                      checked={medicaldata.Diabetes === "No"}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div></td>
                              
@@ -159,11 +387,21 @@ const HelperMedical = () => {
                               <td> <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a6"/> <span>Yes</span></label>
+                                      <input type="radio"
+                                      name="Hypertension"
+                                      value="Yes"
+                                      checked={medicaldata.Hypertension === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a6"/> <span>No</span></label>
+                                      <input type="radio"
+                                      name="Hypertension"
+                                      value="No"
+                                      checked={medicaldata.Hypertension === "No"}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div></td>
                              
@@ -174,11 +412,21 @@ const HelperMedical = () => {
                               <td> <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a7"/> <span>Yes</span></label>
+                                      <input type="radio"
+                                      name="Tuberculosis"
+                                      value="Yes"
+                                      checked={medicaldata.Tuberculosis === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a7"/> <span>No</span></label>
+                                      <input type="radio"
+                                      name="Tuberculosis"
+                                      value="No"
+                                      checked={medicaldata.Tuberculosis === "No"}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div></td>
                              
@@ -189,11 +437,21 @@ const HelperMedical = () => {
                               <td> <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a8"/> <span>Yes</span></label>
+                                      <input type="radio"
+                                      name="HeartDisease"
+                                      value="Yes"
+                                      checked={medicaldata.HeartDisease === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a8"/> <span>No</span></label>
+                                      <input type="radio"
+                                      name="HeartDisease"
+                                      value="No"
+                                      checked={medicaldata.HeartDisease === "No"}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div></td>
                              
@@ -204,11 +462,21 @@ const HelperMedical = () => {
                               <td> <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a9"/> <span>Yes</span></label>
+                                      <input type="radio"
+                                      name="Malaria"
+                                      value="Yes"
+                                      checked={medicaldata.Malaria === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a9"/> <span>No</span></label>
+                                      <input type="radio"
+                                      name="Malaria"
+                                      value="No"
+                                      checked={medicaldata.Malaria === "No"}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div></td>
                              
@@ -220,11 +488,21 @@ const HelperMedical = () => {
                                 <div className="radio-inline">
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a10"/> <span>Yes</span></label>
+                                      <input type="radio"
+                                      name="Operations"
+                                      value="Yes"
+                                      checked={medicaldata.Operations === "Yes"}
+                                      onChange={handleRadioChange}
+                                      /> <span>Yes</span></label>
                                   </div>
                                   <div className="radio">
                                     <label>
-                                      <input type="radio" name="a10"/> <span>No</span></label>
+                                      <input type="radio"
+                                      name="Operations"
+                                      value="No"
+                                      checked={medicaldata.Operations === "No"}
+                                      onChange={handleRadioChange}
+                                      /> <span>No</span></label>
                                   </div>
                                 </div>
                               </td>
@@ -233,13 +511,13 @@ const HelperMedical = () => {
                             <tr>
                               <td> 11 </td>
                               <td> Others </td>
-                              <td className="pl0"><div className="form-group col-lg-8"><input type="text" className="form-control" /></div></td>
+                              <td className="pl0"><div className="form-group col-lg-8"><input type="text" className="form-control" value={medicaldata.Others} onChange={(e)=>{setmedicaldata({...medicaldata,Others:e.target.value});}} /></div></td>
                              
                             </tr>
                             <tr>
                               <td> 12 </td>
                               <td> Physcial Disabilities </td>
-                              <td className="pl0"><div className="form-group col-lg-8"><input type="text" className="form-control" /></div></td>
+                              <td className="pl0"><div className="form-group col-lg-8"><input type="text" className="form-control" value={medicaldata.PhyscialDisabilities} onChange={(e)=>{setmedicaldata({...medicaldata,PhyscialDisabilities:e.target.value});}} /></div></td>
                              
                             </tr>
                             <tr className="white-transparent">
@@ -253,11 +531,21 @@ const HelperMedical = () => {
                                       <div className="radio-inline">
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" name="a10"/> <span>Yes</span></label>
+                                            <input type="radio"
+                                            name="Dietary_NoPork"
+                                            value="Yes"
+                                            checked={medicaldata.Dietary_NoPork === "Yes"}
+                                            onChange={handleRadioChange}
+                                            /> <span>Yes</span></label>
                                         </div>
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" name="a10"/> <span>No</span></label>
+                                            <input type="radio"
+                                            name="Dietary_NoPork"
+                                            value="No"
+                                            checked={medicaldata.Dietary_NoPork === "No"}
+                                            onChange={handleRadioChange}
+                                            /> <span>No</span></label>
                                         </div>
                                       </div>
                                     </td>
@@ -268,11 +556,21 @@ const HelperMedical = () => {
                                       <div className="radio-inline">
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" name="a11"/> <span>Yes</span></label>
+                                            <input type="radio"
+                                            name="Dietary_NoBeef"
+                                            value="Yes"
+                                            checked={medicaldata.Dietary_NoBeef === "Yes"}
+                                            onChange={handleRadioChange}
+                                            /> <span>Yes</span></label>
                                         </div>
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" name="a11"/> <span>No</span></label>
+                                            <input type="radio"
+                                            name="Dietary_NoBeef"
+                                            value="No"
+                                            checked={medicaldata.Dietary_NoBeef === "No"}
+                                            onChange={handleRadioChange}
+                                            /> <span>No</span></label>
                                         </div>
                                       </div>
                                     </td>
@@ -280,7 +578,7 @@ const HelperMedical = () => {
                                   <tr>
                                     <td className="pl0">Others</td>
                                     <td className="pl0">
-                                      <div className="form-group col-lg-8"><input type="text" className="form-control"/></div>
+                                      <div className="form-group col-lg-8"><input type="text" className="form-control" value={medicaldata.Dietary_Others} onChange={(e)=>{setmedicaldata({...medicaldata,Dietary_Others:e.target.value});}}/></div>
                                     </td>
                                   </tr>
                                 </table>
@@ -298,11 +596,21 @@ const HelperMedical = () => {
                                       <div className="radio-inline">
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" name="a12"/> <span>Yes</span></label>
+                                            <input type="radio"
+                                            name="FoodHanding_YesPork"
+                                            value="Yes"
+                                            checked={medicaldata.FoodHanding_YesPork === "Yes"}
+                                            onChange={handleRadioChange}
+                                            /> <span>Yes</span></label>
                                         </div>
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" name="a12"/> <span>No</span></label>
+                                            <input type="radio"
+                                            name="FoodHanding_YesPork"
+                                            value="No"
+                                            checked={medicaldata.FoodHanding_YesPork === "No"}
+                                            onChange={handleRadioChange}
+                                            /> <span>No</span></label>
                                         </div>
                                       </div>
                                     </td>
@@ -313,11 +621,21 @@ const HelperMedical = () => {
                                       <div className="radio-inline">
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" name="a13"/> <span>Yes</span></label>
+                                            <input type="radio"
+                                            name="FoodHanding_YesBeef"
+                                            value="Yes"
+                                            checked={medicaldata.FoodHanding_YesBeef === "Yes"}
+                                            onChange={handleRadioChange}
+                                            /> <span>Yes</span></label>
                                         </div>
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" name="a13"/> <span>No</span></label>
+                                            <input type="radio"
+                                            name="FoodHanding_YesBeef"
+                                            value="No"
+                                            checked={medicaldata.Mental_illness === "No"}
+                                            onChange={handleRadioChange}
+                                            /> <span>No</span></label>
                                         </div>
                                       </div>
                                     </td>
@@ -325,7 +643,7 @@ const HelperMedical = () => {
                                   <tr>
                                     <td className="pl0">Others</td>
                                     <td className="pl0">
-                                      <div className="form-group col-lg-8"><input type="text" className="form-control"/></div>
+                                      <div className="form-group col-lg-8"><input type="text" className="form-control" value={medicaldata.FoodHanding_Others} onChange={(e)=>{setmedicaldata({...medicaldata,FoodHanding_Others:e.target.value});}}/></div>
                                     </td>
                                   </tr>
                                 </table>
@@ -338,9 +656,10 @@ const HelperMedical = () => {
 
               </div>
               <div className="row mt20 justify-content-end">
-                      <div className="col-auto"><button type="button" className="custom-button">SAVE</button></div>
+                      <div className="col-auto"><button type="submit" className="custom-button">SAVE</button></div>
                     </div>
               </div>
+              </form>
             </div>
           </div>
         </div>
