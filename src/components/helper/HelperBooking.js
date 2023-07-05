@@ -8,11 +8,141 @@ import { Link } from 'react-router-dom';
 
 const HelperBooking = () => {
   const [selectedLink, setSelectedLink] = useState('/');
-
-  // const navigate = useNavigate();
+  const [storedData, setstoreddata] = React.useState([]);
+  const [ishelperloggedin, setishelperloggedin] = React.useState(false);
+  const [jwtToken, setjwtToken] = useState('');
+  const [bookingdata, setbookingdata] = useState({
+    "OrgId": 1,
+    "HelperCode": "",
+    "PlacementFees": 0,
+    "BasicSalary": 0,
+    "OffDayDailyRate": 0,
+    "HelperFee": 0,
+    "PocketMoney": 0,
+    "SelectOffDays": "",
+    "NoOffDays": 0
+  });
+ 
+  
   useEffect(() => {
     setSelectedLink(window.location.pathname);
+    fetchTokenHandler();
+    let token = localStorage.getItem("helpertoken");
+    console.log(token);
+    if (token) {
+      console.log(token);
+      setishelperloggedin(true);
+      setstoreddata(JSON.parse(token));
+      console.log(storedData);
+    }
+    console.log(ishelperloggedin);
+    console.log(storedData);
   }, []);
+  
+  useEffect(() => {
+    if (storedData.length > 0) {
+      setbookingdata({
+        ...bookingdata,
+        "OrgId": 1,
+        "HelperCode": storedData[0].HelperCode,
+        "PlacementFees": storedData[0].PlacementFees,
+        "BasicSalary": storedData[0].BasicSalary,
+        "OffDayDailyRate": storedData[0].OffDayDailyRate,
+        "HelperFee": storedData[0].HelperFee,
+        "PocketMoney": storedData[0].PocketMoney,
+        "SelectOffDays": storedData[0].SelectOffDays,
+        "NoOffDays": storedData[0].NoOffDays
+      });
+    }
+  }, [storedData]);
+
+
+  const fetchTokenHandler = async () => {
+    const tokenDetail = {
+      Username: 'admin',
+      Password: 'admin54321',
+    };
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Token/GenerateToken', {
+        method: 'POST',
+        body: JSON.stringify(tokenDetail),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        throw new Error('Something went wrong!');
+      }
+      const data = await response.json();
+      console.log(data.Jwt_Token);
+      setjwtToken(data.Jwt_Token);
+    } catch (error) {}
+  };
+
+  const savebookingdataHandler = async (event) => {
+    event.preventDefault();
+
+    const regDetail = {
+        "OrgId": 1,
+        "HelperCode": bookingdata.HelperCode,
+        "PlacementFees": bookingdata.PlacementFees,
+        "BasicSalary": bookingdata.BasicSalary,
+        "OffDayDailyRate": bookingdata.OffDayDailyRate,
+        "HelperFee": bookingdata.HelperFee,
+        "PocketMoney": bookingdata.PocketMoney,
+        "SelectOffDays": bookingdata.SelectOffDays,
+        "NoOffDays": bookingdata.NoOffDays
+    };
+    console.log(regDetail);
+
+    const jwttoken = jwtToken;
+    console.log(jwtToken, jwttoken);
+
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Helper/BookingRelatedInfo_Updation', {
+        method: 'POST',
+        body: JSON.stringify(regDetail),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwttoken}`,
+        },
+      });
+
+      console.log(response);
+
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.Code === 200 && data.Message === 'Sucess') {
+       
+        const updatedData = [...storedData]; // Clone the array
+        updatedData[0] = { ...updatedData[0],
+          "OrgId": 1,
+          "HelperCode": bookingdata.HelperCode,
+          "PlacementFees": bookingdata.PlacementFees,
+          "BasicSalary": bookingdata.BasicSalary,
+          "OffDayDailyRate": bookingdata.OffDayDailyRate,
+          "HelperFee": bookingdata.HelperFee,
+          "PocketMoney": bookingdata.PocketMoney,
+          "SelectOffDays": bookingdata.SelectOffDays,
+          "NoOffDays": bookingdata.NoOffDays
+          }; // Update the property
+        setstoreddata(updatedData);
+        console.log(storedData,updatedData);
+        
+        localStorage.setItem('helpertoken', JSON.stringify(updatedData));
+      }
+    } catch (error) {
+      console.log('An error occurred:', error);
+    }
+  
+  };
 
   const handleLinkClick = (link) => {
     //navigate(link);
@@ -64,6 +194,7 @@ const HelperBooking = () => {
             </div>
             </div>
             <div className="col-lg-8">
+              <form onSubmit={savebookingdataHandler}>
               <div className="dashboard-right-wrap hbd-wrap">
                     <div className="main-inner-box">
                       <div className="pageTitle title-fix sm">
@@ -72,12 +203,12 @@ const HelperBooking = () => {
                      
                 <div className="row form-group align-items-center justify-content-between">
                               <div className="col-lg-auto ml-auto">
-                                  <div className="ehp-status row justify-content-between">
+                                  {/* <div className="ehp-status row justify-content-between">
                                     <div className="col-lg-auto"><span>Status:</span></div>
                                     <div className="col-lg-auto">
                                     <div className="e-stts available">Available</div>
                                     </div>
-                                  </div>
+                                  </div> */}
                               </div>
                             </div>
                             <div className="row form-group align-items-center">
@@ -85,28 +216,40 @@ const HelperBooking = () => {
                                 <label>Placement Fees ($)</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Placement Fees ($)" readonly/> </div>
+                                <input type="text" className="form-control" placeholder="Placement Fees ($)" 
+                                  value={bookingdata.PlacementFees}
+                                  onChange={(e)=>{setbookingdata({...bookingdata,PlacementFees:e.target.value});}}
+                                /> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-5">
                                 <label>Basic Salary ($)</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Basic Salary ($)"/> </div>
+                                <input type="text" className="form-control" placeholder="Basic Salary ($)"
+                                value={bookingdata.BasicSalary}
+                                onChange={(e)=>{setbookingdata({...bookingdata,BasicSalary:e.target.value});}}
+                                /> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-5">
                                 <label>Off Day Daily Rate ($)</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Off Day Daily Rate ($)"/> </div>
+                                <input type="text" className="form-control" placeholder="Off Day Daily Rate ($)"
+                                value={bookingdata.OffDayDailyRate}
+                                onChange={(e)=>{setbookingdata({...bookingdata,OffDayDailyRate:e.target.value});}}
+                                /> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-5">
                                 <label>Helper Fee ($)</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Helper Fee ($)" readonly/> </div>
+                                <input type="text" className="form-control" placeholder="Helper Fee ($)"
+                                value={bookingdata.HelperFee}
+                                onChange={(e)=>{setbookingdata({...bookingdata,HelperFee:e.target.value});}} 
+                                /> </div>
                             </div>
                             
                             <div className="row form-group align-items-center">
@@ -114,16 +257,23 @@ const HelperBooking = () => {
                                 <label>Pocket Money ($)</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Pocket Money ($)" readonly/> </div>
+                                <input type="text" className="form-control" placeholder="Pocket Money ($)" 
+                                value={bookingdata.PocketMoney}
+                                onChange={(e)=>{setbookingdata({...bookingdata,PocketMoney:e.target.value});}}
+                                /> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-5">
                                 <label>Select Off Days</label>
                               </div>
                               <div className="col-lg-7">
-                                 <select disabled>
-                                  <option>Monthly</option>
-                                  <option>Year</option>
+                                 <select className='new-select'
+                                 value={bookingdata.SelectOffDays}
+                                 onChange={(e)=>{setbookingdata({...bookingdata,SelectOffDays:e.target.value});}}
+                                 >
+                                  <option value="Monthly">Monthly</option>
+                                  <option value="Year">Year</option>
+                                  <option value="Sunday">Sunday</option>
                                 </select>
                               </div>
                             </div>
@@ -132,16 +282,19 @@ const HelperBooking = () => {
                                 <label>Enter Off Days</label>
                               </div>
                               <div className="col-lg-7">
-                                <input type="text" className="form-control" placeholder="Enter Off Days" readonly/> </div>
+                                <input type="text" className="form-control" placeholder="Enter Off Days" 
+                                value={bookingdata.NoOffDays}
+                                onChange={(e)=>{setbookingdata({...bookingdata,NoOffDays:e.target.value});}}
+                                /> </div>
                             </div>
                            
-                            <div className="row mb15 sub-title-row form-group align-items-center">
+                           {/* <div className="row mb15 sub-title-row form-group align-items-center">
                               <div className="col-lg-12">
                                 <h6>Availability of FDW to be Interview by Prospective Employer</h6>
                               </div>
                             </div>
                             
-                       <div className="row form-group select-group select-slot-group align-items-center">
+                        <div className="row form-group select-group select-slot-group align-items-center">
                         <div className="col-lg-5">
                           <label>Avaialable Time (SGT)</label>
                         </div>
@@ -181,13 +334,14 @@ const HelperBooking = () => {
                               <div className="col-lg-7">
                                 <textarea className="form-control" placeholder="Other Remarks"></textarea>
                               </div>
-                            </div>
+                            </div> */}
                         
               </div>
               <div className="row mt20 justify-content-end">
-                      <div className="col-auto"><button type="button" className="custom-button">SAVE</button></div>
+                      <div className="col-auto"><button type="submit" className="custom-button">SAVE</button></div>
                     </div>
               </div>
+              </form>
             </div>
           </div>
         </div>
