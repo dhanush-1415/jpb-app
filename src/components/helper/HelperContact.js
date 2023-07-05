@@ -59,14 +59,14 @@ const HelperContact = () => {
         "WhatsApp": storedData[0].WhatsApp,
         "Viber": storedData[0].Viber,
         "Facebook": storedData[0].Facebook,
-        "OtherContact": [
-          {
-            "OrgId": 1,
-            "HelperCode": storedData[0].HelperCode,
-            "Type": "",
-            "Information": ""
-          }
-        ]
+        // "OtherContact": [
+        //   {
+        //     "OrgId": 1,
+        //     "HelperCode": storedData[0].HelperCode,
+        //     "Type": "",
+        //     "Information": ""
+        //   }
+        // ]
       });
     }
   }, [storedData]);
@@ -95,9 +95,11 @@ const HelperContact = () => {
     } catch (error) {}
   };
 
-  const handleAdd = () => {
+  const handleAdd = (e) => {
+    e.preventDefault();
     if (typeValue !== "" && infoValue !== "") {
       setList((prevList) => [...prevList, { Type: typeValue, Information: infoValue ,OrgId:1,HelperCode:storedData[0].HelperCode }]);
+      console.log(list);
       setTypeValue("");
       setInfoValue("");
     }
@@ -113,7 +115,14 @@ const HelperContact = () => {
 
   const savecontactdataHandler = async (event) => {
     event.preventDefault();
-
+    const transformedData = list.map((item) => {
+      return {
+        OrgId: item.OrgId,
+        HelperCode: item.HelperCode,
+        Type: item.Type,
+        Information: item.Information
+      };
+    });
     const regDetail = {
       "OrgId": 1,
       "HelperCode": contactdata.HelperCode,
@@ -122,14 +131,7 @@ const HelperContact = () => {
       "WhatsApp": contactdata.WhatsApp,
       "Viber": contactdata.Viber,
       "Facebook": contactdata.Facebook,
-      "OtherContact": [
-        {
-          "OrgId": 1,
-          "HelperCode": contactdata.HelperCode,
-          "Type": "",
-          "Information": ""
-        }
-      ]
+      "OtherContact": transformedData
     };
     console.log(regDetail);
 
@@ -319,7 +321,7 @@ const HelperContact = () => {
 
                       <div className="row form-group align-items-center">
                         <div className="col-lg-12">
-                          <button name="add-more" onClick={handleAdd} className="add-more"><i className="fas fa-plus"></i> Add More</button>
+                          <button name="add-more" onClick={handleAdd} className="add-more"> Add <i className="fas fa-plus"></i></button>
                         </div>
                       </div> 
                       {/* <ul>
@@ -329,7 +331,28 @@ const HelperContact = () => {
                           </li>
                         ))}
                       </ul> */}
-
+                      {list.length > 0 && (
+                       <div className="table-holder md-table Scrollcontent" data-mcs-theme="dark">
+                        <table className="table" style={{ width: "80%" }}>
+                          <thead>
+                            <tr>
+                              <th>S/No</th>
+                              <th>Type</th>
+                              <th>Information</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {list.map((item, index) => (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{item.Type}</td>
+                                <td>{item.Information}</td>
+                              </tr>
+                            ))}
+                            </tbody>
+                            </table>
+                            </div>
+                      )}
                      
                       {/* <div className="row mb15 sub-title-row form-group align-items-center">
                               <div className="col-lg-12">

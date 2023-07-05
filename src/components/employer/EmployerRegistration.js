@@ -246,7 +246,7 @@ const EmployerRegistration = () => {
    }
 
    async function stepThreeHandler(event) {
-    // event.preventDefault();
+     event.preventDefault();
   // fetchTokenHandler();
      const regDetail = {
       PersonalDetails: {
@@ -295,9 +295,13 @@ const EmployerRegistration = () => {
      if (!response.ok) {
        console.log('SOMETHING WENT WRONG');
      }
+     console.log(response);
      console.log(response.json());
      const data = await response.json();
      console.log(data);
+     if (data.Code === 200 && data.Message === 'Sucess') {
+      //
+     }
    }
 
  
