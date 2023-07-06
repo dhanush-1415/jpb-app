@@ -3,7 +3,7 @@ import $ from "jquery";
 import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 
@@ -15,6 +15,7 @@ const EmployerRegistration = () => {
   const emailRef = useRef('');
   const phoneRef = useRef('');
   const otpRef = useRef('');
+  const navigate = useNavigate();
   const [employerFormData, setemployerFormData] = React.useState({
     PersonalDetails: {
       OrgId: 1,
@@ -245,6 +246,32 @@ const EmployerRegistration = () => {
      console.log(employerCode);
    }
 
+   const convertToDate = (dateString) => {
+    const dateObject = new Date(dateString);
+  const day = dateObject.getDate();
+  const month = dateObject.getMonth() + 1; // Months are zero-based
+  const year = dateObject.getFullYear();
+
+  const formattedDateString = `${day}/${month}/${year}`;
+  
+    return formattedDateString;
+  };
+
+  const convertToISODate = (dateString) => {
+    if (!dateString) {
+      return null; // or a default value if needed
+    }
+    const [day, month, year] = dateString.split('/');
+  
+    // Create a new Date object using the day, month, and year values
+    const dateObject = new Date(`${month}/${day}/${year}`);
+    
+    // Use the toISOString() method to get the date in ISO 8601 format
+    const isoDateString = dateObject.toISOString();
+  
+    return isoDateString;
+  };
+
    async function stepThreeHandler(event) {
      event.preventDefault();
   // fetchTokenHandler();
@@ -256,7 +283,7 @@ const EmployerRegistration = () => {
         Nationality:document.getElementById('Nationality').value,
        NRIC_FIN: employerFormData.NRIC_FIN,
         PassportNo: employerFormData.PassportNo,
-        DateOfBirth: employerFormData.DateOfBirth
+        DateOfBirth: convertToISODate(document.getElementById('DateOfBirth').value)
       },
       ContactDetails: {
         ContactPerson: employerFormData.ContactPerson,
@@ -296,11 +323,12 @@ const EmployerRegistration = () => {
        console.log('SOMETHING WENT WRONG');
      }
      console.log(response);
-     console.log(response.json());
+   //  console.log(response.json());
      const data = await response.json();
      console.log(data);
      if (data.Code === 200 && data.Message === 'Sucess') {
-      //
+     // alert('updated successfully')
+     navigate('login');
      }
    }
 
@@ -479,7 +507,7 @@ const EmployerRegistration = () => {
                               </div>
                               <div className="col-lg-6">
                                 <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" value={employerFormData.DateOfBirth}
+                                  <input type="text" className="form-control datepicker" id="DateOfBirth" placeholder="DD/MM/YYYY" value={employerFormData.DateOfBirth}
                                 onChange={(e) => {
                                     setemployerFormData({
                                         ...employerFormData,
