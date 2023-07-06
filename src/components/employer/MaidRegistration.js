@@ -1,4 +1,4 @@
-import React, {  useEffect,useState } from 'react';
+import React, {  useCallback, useRef, useEffect,useState } from 'react';
 import $ from "jquery";
 import Header from '../Header';
 import Footer from '../Footer';
@@ -8,8 +8,110 @@ import { Link } from 'react-router-dom';
 
 const MaidRegistration = () => {
   const [selectedLink, setSelectedLink] = useState('/');
+  const [jwtToken, setjwtToken] = useState('');
+  const [helperCode, setHelperCode] = useState('');
+  const nameRef = useRef('');
+  const emailRef = useRef('');
+  const phoneRef = useRef('');
+  const otpRef = useRef('');
+  const [helperFormData, setHelperFormData] = React.useState({
+    "HelperBioDetails": {
+      "OrgId": 1,
+      "HelperCode": helperCode,
+      "HelperName": "",
+      "EmailId": "",
+      "Password": "",
+      "MobileNo": "",
+      "NRIC_FIN": "",
+      "Nationality": "",
+      "PassportNo": "",
+      "PassportIssuePlace": "",
+      "PassIssueDate": "2023-03-25T12:35:49.646Z",
+      "PassportExpiryDate": "2023-03-25T12:35:49.646Z",
+      "WorkPermitNo": "",
+      "WorkPermitExpiry": "2023-03-25T12:35:49.646Z",
+      "Religion": "",
+      "DateOfBirth": "2023-03-25T12:35:49.646Z",
+      "MartilaStatus": "",
+      "BirthPlace": "",
+      "Specialization_Preference": "",
+      "RepatraiteAirport": "",
+      "Status": "",
+      "OtherInfo": "",
+      "DirectHire": true,
+      "TrainingCenter": "",
+      "EmailAddress": "",
+      "FileName": "Helper.jpg",
+      "Helper_Img_Base64String": "",
+      "IsActive": true,
+      "CreatedBy": "HLP20261B91"
+    },
+    "HelperContacts": {
+      "HomeAddress": "",
+      "HomeTelephone": "",
+      "WhatsApp": "",
+      "Viber": "",
+      "Facebook": "",
+      "OtherContact": [
+        {
+          "OrgId": 1,
+          "HelperCode": helperCode,
+          "Type": "",
+          "Information": ""
+        }
+      ]
+    },
+    "FamilyBackground": {
+      "FatherOccupation": "",
+      "MotherOccupation": "",
+      "FatherAge": "",
+      "MotherAge": "",
+      "SiblingsPosition": "3",
+      "NoOfBrother": "",
+      "NoOfSister": "",
+      "BrotherAge": "",
+      "SisterAge": "",
+      "HusbandName": "",
+      "HusbandOccupation": "",
+      "HusbandAge": "",
+      "NoOfChildren": "",
+      "ChildAge": ""
+    },
+    "PhysicalAttribute": {
+      "Complexion": "",
+      "Height_CM": "",
+      "Height_Feet": "",
+      "Weight_KG": "",
+      "Weight_Pound": ""
+    },
+    "BookingRealtedInformation": {
+      "BasicSalary": "",
+      "OffDayDailyRate": "",
+      "HelperFee": "",
+      "PocketMoney": "",
+      "SelectOffDays": "",
+      "NoOffDays": ""
+    },
+    "Interview": [
+      {
+        "OrgId": 1,
+        "HelperCode": helperCode,
+        "InterviewDate": "2023-03-28T10:04:04.107Z",
+        "InterviewTime": "",
+        "Remarks": ""
+      }
+    ],
+    "AccountDetails": {
+      "Email": "",
+      "Password": "",
+      "ConfirmPassword": "",
+      "SMSContactNumber": ""
+    }
+})
+
   useEffect(() => {
     setSelectedLink(window.location.pathname);
+    fetchTokenHandler();
     const verificationForm = () => {
       (function($) {
         "use strict";
@@ -108,7 +210,163 @@ const MaidRegistration = () => {
     };
   }, []);
 
+  const fetchTokenHandler = useCallback(async () => {
+    const tokenDetail = {
+      Username: "admin",
+      Password: "admin54321",
+    };
+    try {
+      const response = await fetch('http://154.26.130.251:283/api/Token/GenerateToken', {
+        method: 'POST',
+        body: JSON.stringify(tokenDetail),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        console.log('Something went wrong!');
+        throw new Error('Something went wrong!');
+      }
+      const data = await response.json();
+      console.log(data.Jwt_Token);
+      setjwtToken(data.Jwt_Token);
+     // console.log(jwtToken);
+     // return data.Jwt_Token;
+    } catch (error) {
+    }
+  }, []);
+
+
+
+  async function stepFirstHandler(event) {
+    console.log("in")
+   // event.preventDefault();
   
+    const regDetail = {
+      OrgId: 1,
+      Name: nameRef.current.value,
+      Email: emailRef.current.value,
+      Phone: phoneRef.current.value,
+      viaOTP: 'EMAIL',
+    };
+    console.log(regDetail);
+    console.log(JSON.stringify(regDetail));
+   
+    const token = jwtToken;
+    console.log(jwtToken);
+    console.log(token);
+    if (regDetail.Email !="" && regDetail.Phone !=""){
+      console.log("test done");
+      const response = await fetch('http://154.26.130.251:283/api/Helper/Register', {
+        method: 'POST',
+        body: JSON.stringify(regDetail),
+        headers: {
+          'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        }
+      });
+      if (!response.ok) {
+        console.log('Something went wrong!');
+      }
+      const data = await response.json();
+      console.log(data);
+    }else{
+      console.log("mandatory are missing");
+    }
+    
+  }
+
+  async function stepTwoHandler(event) {
+    // event.preventDefault();
+  // fetchTokenHandler();
+     const regDetail = {
+       OrgId: 1,
+       Email: emailRef.current.value,
+       OTP: otpRef.current.value
+     };
+     console.log(regDetail);
+     console.log(JSON.stringify(regDetail));
+    
+     const token = jwtToken;
+     console.log(jwtToken);
+     console.log(token);
+     if (regDetail.OTP !=""){
+      console.log("present otp");
+      const response = await fetch('http://154.26.130.251:283/api/Helper/VerifyOTP', {
+       method: 'POST',
+       body: JSON.stringify(regDetail),
+       headers: {
+         'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+       }
+      });
+      if (!response.ok) {
+        console.log('Please enter correct OTP!');
+      }
+      const data = await response.json();
+      console.log(data);
+      // setemployerCode(data.EmployerCode );
+      // console.log(employerCode);
+     }else{
+        console.log("empty");
+     }
+     
+  }
+
+  async function stepThreeHandler(event) {
+    // event.preventDefault();
+  // fetchTokenHandler();
+     const regDetail = {
+      PersonalDetails: {
+        OrgId: 1,
+        HelperCode: "JPB35BD34FC",
+        HelperName: helperFormData.EmployerName,
+        Nationality:document.getElementById('Nationality').value,
+       NRIC_FIN: helperFormData.NRIC_FIN,
+        PassportNo: helperFormData.PassportNo,
+        DateOfBirth: helperFormData.DateOfBirth
+      },
+      ContactDetails: {
+        ContactPerson: helperFormData.ContactPerson,
+        MobileNo: helperFormData.MobileNo,
+        HomeNo: helperFormData.HomeNo,
+        EmailId: helperFormData.EmailId
+      },
+      JobScopes: {
+        HousingType: document.getElementById('HousingType').value,
+        ExpectedJobScope: helperFormData.ExpectedJobScope,
+        NoOfBedroom: helperFormData.NoOfBedroom
+      },
+      AccountDetails: {
+        Email: helperFormData.Email,
+        Password: helperFormData.Password,
+        ConfirmPassword: helperFormData.ConfirmPassword,
+        SMSContactNumber:helperFormData.SMSContactNumber,
+        MethodOfproceed: helperFormData.MethodOfproceed
+      }
+     };
+     console.log(regDetail);
+     console.log(helperFormData.Nationality);
+     console.log(JSON.stringify(regDetail));
+    
+     const token = jwtToken;
+     console.log(jwtToken);
+     console.log(token);
+    //  const response = await fetch('http://154.26.130.251:283/api/Employer/DataFormUpdation', {
+    //    method: 'POST',
+    //    body: JSON.stringify(regDetail),
+    //    headers: {
+    //      'Content-Type': 'application/json',
+    //         Authorization: `Bearer ${token}`,
+    //    }
+    //  });
+    //  if (!response.ok) {
+    //    console.log('SOMETHING WENT WRONG');
+    //  }
+    //  console.log(response.json());
+    //  const data = await response.json();
+    //  console.log(data);
+   }
 
   const handleLinkClick = (link) => {
     //navigate(link);
@@ -159,21 +417,21 @@ const MaidRegistration = () => {
                           <label>Name <span className="red">*</span></label>
                         </div>
                         <div className="col-lg-8">
-                          <input type="text" className="form-control" placeholder="Your Name"/> </div>
+                          <input type="text" ref={nameRef} className="form-control" placeholder="Your Name"/> </div>
                       </div>
                       <div className="row form-group align-items-center">
                         <div className="col-lg-4">
                           <label>Email Address <span className="red">*</span></label>
                         </div>
                         <div className="col-lg-8">
-                          <input type="text" className="form-control" placeholder="Your Email Address"/> </div>
+                          <input type="text" ref={emailRef} className="form-control" placeholder="Your Email Address"/> </div>
                       </div>
                       <div className="row form-group align-items-center">
                         <div className="col-lg-4">
                           <label>Phone Number <span className="red">*</span></label>
                         </div>
                         <div className="col-lg-8">
-                          <input type="text" className="form-control" placeholder="Your Phone Number"/> </div>
+                          <input type="text" ref={phoneRef} className="form-control" placeholder="Your Phone Number"/> </div>
                       </div>
                       <div className="row align-items-center justify-content-center form-group">
                         <div className="col-lg-auto">
@@ -190,7 +448,7 @@ const MaidRegistration = () => {
                         </div>
                       </div>
                     </div>
-                    <button type="button" className="next action-button custom-button center-btn">Next</button>
+                    <button type="button" onClick={stepFirstHandler} className="next action-button custom-button center-btn">Next</button>
                   </fieldset>
                   <fieldset>
                     <div className="pageTitle title-fix text-center md">
@@ -200,20 +458,20 @@ const MaidRegistration = () => {
                       <label>Enter the OTP <span className="red">*</span></label>
                       <div className="row gutters-10 otp-row align-items-center justify-content-center">
                         <div className="col-auto">
+                          <input ref={otpRef} type="text" className="form-control"/> </div>
+                        {/* <div className="col-auto">
                           <input type="text" className="form-control"/> </div>
                         <div className="col-auto">
                           <input type="text" className="form-control"/> </div>
                         <div className="col-auto">
                           <input type="text" className="form-control"/> </div>
                         <div className="col-auto">
-                          <input type="text" className="form-control"/> </div>
-                        <div className="col-auto">
-                          <input type="text" className="form-control"/> </div>
+                          <input type="text" className="form-control"/> </div> */}
                       </div>
                       <div className="resend-otp"><a href="#">Resend OTP <i className="fas fa-redo-alt"></i></a></div>
                     </div>
                     <button type="button" className="action-button previous previous_button custom-button prvs">Back</button>
-                    <button type="button" className="next action-button custom-button ">Next</button>
+                    <button type="button" onClick={stepTwoHandler} className="next action-button custom-button ">Next</button>
                   </fieldset>
                   <fieldset>
                     <div className="pageTitle title-fix text-center md">
