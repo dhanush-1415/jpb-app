@@ -129,8 +129,6 @@ const HelperExperience = () => {
     console.log(countryValue,startdateValue,enddateValue,dutyValue,reasonValue,testimonialValue);
     if (countryValue !== "" ) {
       setList((prevList) => [...prevList, { 
-         OrgId:1,
-         HelperCode:storedData[0].HelperCode ,
          CountryName: countryValue,
          StartDate: document.getElementById('StartDate').value,
          EndDate : document.getElementById('EndDate').value,
@@ -196,9 +194,9 @@ const HelperExperience = () => {
     const regDetail = {
       "OrgId": 1,
       "HelperCode": experiencedata.HelperCode,
-      "Laguage": transformedData
+      "ExperienceDetails": transformedData
     };
-    console.log(regDetail);
+    console.log(JSON.stringify(regDetail));
 
     const jwttoken = jwtToken;
     console.log(jwtToken, jwttoken);
@@ -316,7 +314,7 @@ const HelperExperience = () => {
                               </div>
                               <div className="col-lg-7">
                                 <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" name="StartDate" id="StartDate" placeholder="DD/MM/YYYY"  onChange={handleStartdateChange}/> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" name="StartDate" id="StartDate" placeholder="DD/MM/YYYY"  onChange={handleStartdateChange} /> <i className="fas fa-calendar-alt"></i> 
                           </div>
                               </div>
                             </div>
@@ -327,7 +325,7 @@ const HelperExperience = () => {
                               </div>
                               <div className="col-lg-7">
                                 <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" name="EndDate" id="EndDate" placeholder="DD/MM/YYYY" value={enddateValue} onChange={handleEnddateChange}/> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" name="EndDate" id="EndDate" placeholder="DD/MM/YYYY"  onChange={handleEnddateChange} /> <i className="fas fa-calendar-alt"></i> 
                           </div>
                               </div>
                             </div>

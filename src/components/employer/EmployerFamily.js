@@ -95,49 +95,49 @@ const EmployerFamily = () => {
   };
   
   useEffect(() => {
-    if (storedData.length > 0) {
-      setfamilydata({
-        ...familydata,
-        "FamilyDetails": [
-          {
-            "OrgId": 1,
-            "EmployerCode": storedData[0].EmployerCode,
-            "Name": "",
-            "SlNo": 0,
-            "Relationship": "",
-            "NRIC_FIN": "",
-            "DateofBirth": convertToDate(storedData[0].DateOfBirth),
-            "Title": "",
-            "Passport": "",
-            "PassportExpiry": convertToDate(storedData[0].PassportExpiryDate),
-            "Gender": "",
-            "ResidentialStatus": "",
-            "Occupation": "",
-            "Employed": true,
-            "CompanyName": "",
-            "MonthlyIncome": "",
-            "AnnualIncome": true,
-            "YearofAssessment": 0,
-            "MobileNo": "",
-            "Email": "",
-            "OtherNo": ""
-          }
-        ],
-        "JobScopes": {
-          "HousingType": "",
-          "ExpectedJobScope": [
-            {
-              "JobScopeId": 0,
-              "ExpectedJobScope": ""
-            }
-          ],
-          "NoOfBedroom": storedData[0].NoOfBedroom,
-          "HelperSleepingArea": storedData[0].HelperSleepingArea,
-          "OtherFamilyMemberStayinginthehouse": storedData[0].OFMS,
-          "Remarks": storedData[0].Remarks
-        }
-      });
-    }
+    // if (storedData.length > 0) {
+    //   setfamilydata({
+    //     ...familydata,
+    //     "FamilyDetails": [
+    //       {
+    //         "OrgId": 1,
+    //         "EmployerCode": storedData[0].EmployerCode,
+    //         "Name": "",
+    //         "SlNo": 0,
+    //         "Relationship": "",
+    //         "NRIC_FIN": "",
+    //         "DateofBirth": convertToDate(storedData[0].DateOfBirth),
+    //         "Title": "",
+    //         "Passport": "",
+    //         "PassportExpiry": convertToDate(storedData[0].PassportExpiryDate),
+    //         "Gender": "",
+    //         "ResidentialStatus": "",
+    //         "Occupation": "",
+    //         "Employed": true,
+    //         "CompanyName": "",
+    //         "MonthlyIncome": "",
+    //         "AnnualIncome": true,
+    //         "YearofAssessment": 0,
+    //         "MobileNo": "",
+    //         "Email": "",
+    //         "OtherNo": ""
+    //       }
+    //     ],
+    //     "JobScopes": {
+    //       "HousingType": "",
+    //       "ExpectedJobScope": [
+    //         {
+    //           "JobScopeId": 0,
+    //           "ExpectedJobScope": ""
+    //         }
+    //       ],
+    //       "NoOfBedroom": storedData[0].NoOfBedroom,
+    //       "HelperSleepingArea": storedData[0].HelperSleepingArea,
+    //       "OtherFamilyMemberStayinginthehouse": storedData[0].OFMS,
+    //       "Remarks": storedData[0].Remarks
+    //     }
+    //   });
+    // }
   }, [storedData]);
 
 

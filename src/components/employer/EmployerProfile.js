@@ -430,7 +430,7 @@ const EmployerProfile = () => {
                                 <label>Gender</label>
                               </div>
                               <div className="col-lg-7">
-                                <select
+                                <select className='new-select'
                                 id="Gender"
                                 name="Gender"
                                 value={profiledata.Gender || ''}
