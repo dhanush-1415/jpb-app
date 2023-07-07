@@ -242,7 +242,7 @@ const EmployerRegistration = () => {
      }
      const data = await response.json();
      console.log(data);
-     setemployerCode(data.EmployerCode );
+     setemployerCode(data.EmployerCode);
      console.log(employerCode);
    }
 
@@ -278,7 +278,7 @@ const EmployerRegistration = () => {
      const regDetail = {
       PersonalDetails: {
         OrgId: 1,
-        EmployerCode: "JPB35BD34FC",
+        EmployerCode: employerCode,
        EmployerName: employerFormData.EmployerName,
         Nationality:document.getElementById('Nationality').value,
        NRIC_FIN: employerFormData.NRIC_FIN,
@@ -328,7 +328,7 @@ const EmployerRegistration = () => {
      console.log(data);
      if (data.Code === 200 && data.Message === 'Sucess') {
      // alert('updated successfully')
-     navigate('login');
+     navigate('/login');
      }
    }
 
