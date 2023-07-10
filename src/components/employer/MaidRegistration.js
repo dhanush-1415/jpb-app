@@ -3,7 +3,7 @@ import $ from "jquery";
 import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const MaidRegistration = () => {
@@ -14,37 +14,39 @@ const MaidRegistration = () => {
   const emailRef = useRef('');
   const phoneRef = useRef('');
   const otpRef = useRef('');
+  const [intTime, setIntTime] = useState([]);
+  const navigate = useNavigate();
   const [helperFormData, setHelperFormData] = React.useState({
-    "HelperBioDetails": {
-      "OrgId": 1,
-      "HelperCode": helperCode,
-      "HelperName": "",
-      "EmailId": "",
-      "Password": "",
-      "MobileNo": "",
-      "NRIC_FIN": "",
-      "Nationality": "",
-      "PassportNo": "",
-      "PassportIssuePlace": "",
-      "PassIssueDate": "2023-03-25T12:35:49.646Z",
-      "PassportExpiryDate": "2023-03-25T12:35:49.646Z",
-      "WorkPermitNo": "",
-      "WorkPermitExpiry": "2023-03-25T12:35:49.646Z",
-      "Religion": "",
-      "DateOfBirth": "2023-03-25T12:35:49.646Z",
-      "MartilaStatus": "",
-      "BirthPlace": "",
-      "Specialization_Preference": "",
-      "RepatraiteAirport": "",
-      "Status": "",
-      "OtherInfo": "",
-      "DirectHire": true,
-      "TrainingCenter": "",
-      "EmailAddress": "",
-      "FileName": "Helper.jpg",
-      "Helper_Img_Base64String": "",
-      "IsActive": true,
-      "CreatedBy": "HLP20261B91"
+    HelperBioDetails: {
+      OrgId: 1,
+      HelperCode: helperCode,
+      HelperName: "",
+      EmailId: "",
+      Password: "",
+      MobileNo: "",
+      NRIC_FIN: "",
+      Nationality: "",
+      PassportNo: "",
+      PassportIssuePlace: "",
+      PassIssueDate: "",
+      PassportExpiryDate: "",
+      WorkPermitNo: "",
+      WorkPermitExpiry: "",
+      Religion: "",
+      DateOfBirth: "",
+      MartilaStatus: "",
+      BirthPlace: "",
+      Specialization_Preference: "",
+      RepatraiteAirport: "",
+      Status: "",
+      OtherInfo: "",
+      DirectHire: true,
+      TrainingCenter: "",
+      EmailAddress: "",
+      FileName: "Helper.jpg",
+      Helper_Img_Base64String: "",
+      IsActive: true,
+      CreatedBy: "HLP20261B91"
     },
     "HelperContacts": {
       "HomeAddress": "",
@@ -96,7 +98,7 @@ const MaidRegistration = () => {
       {
         "OrgId": 1,
         "HelperCode": helperCode,
-        "InterviewDate": "2023-03-28T10:04:04.107Z",
+        "InterviewDate": "",
         "InterviewTime": "",
         "Remarks": ""
       }
@@ -305,75 +307,262 @@ const MaidRegistration = () => {
       }
       const data = await response.json();
       console.log(data);
-      // setemployerCode(data.EmployerCode );
-      // console.log(employerCode);
+      setHelperCode(data.HelperCode );
      }else{
         console.log("empty");
      }
      
   }
 
+  const convertToISODate = (dateString) => {
+
+    console.log(dateString);
+    if (!dateString) {
+      return null; // or a default value if needed
+    }
+    const [day, month, year] = dateString.split('/');
+  
+    // Create a new Date object using the day, month, and year values
+    const dateObject = new Date(`${month}/${day}/${year}`);
+    
+    // Use the toISOString() method to get the date in ISO 8601 format
+    const isoDateString = dateObject.toISOString();
+  
+    return isoDateString;
+  };
+
   async function stepThreeHandler(event) {
-    // event.preventDefault();
-  // fetchTokenHandler();
+    console.log("in")
+    console.log(intTime);
+    event.preventDefault();
+    console.log(helperFormData.Religion)
+    console.log(helperFormData.Nationality);
+    console.log(helperFormData.Status);
+    console.log(helperFormData.WorkPermitExpiry);
+    console.log(helperFormData.DirectHire)
+    console.log();
+    fetchTokenHandler();
+
      const regDetail = {
-      PersonalDetails: {
+      HelperBioDetails: {
         OrgId: 1,
-        HelperCode: "JPB35BD34FC",
-        HelperName: helperFormData.EmployerName,
-        Nationality:document.getElementById('Nationality').value,
-       NRIC_FIN: helperFormData.NRIC_FIN,
-        PassportNo: helperFormData.PassportNo,
-        DateOfBirth: helperFormData.DateOfBirth
+        HelperCode: "HLPE75014F5",
+        HelperName: helperFormData.HelperName,
+        EmailId: helperFormData.Email,
+        Password:helperFormData.Password,
+        MobileNo:helperFormData.SMSContactNumber,
+        NRIC_FIN:helperFormData.NRIC_FIN,
+        Nationality:helperFormData.Nationality,
+        PassportNo:helperFormData.PassportNo,
+        PassportIssuePlace:helperFormData.PassportIssuePlace,
+        PassIssueDate:convertToISODate(document.getElementById('PassIssueDate').value),
+        PassportExpiryDate:convertToISODate(document.getElementById('PassportExpiryDate').value),
+        WorkPermitNo:helperFormData.WorkPermitNo,
+        WorkPermitExpiry:convertToISODate(document.getElementById('WorkPermitExpiry').value),
+        Religion:helperFormData.Religion,
+        DateOfBirth:convertToISODate(document.getElementById('DateOfBirth').value),
+        MartilaStatus:helperFormData.MartilaStatus,
+        BirthPlace:helperFormData.BirthPlace,
+        Specialization_Preference:helperFormData.Specialization_Preference,
+        RepatraiteAirport:helperFormData.RepatraiteAirport,
+        Status:helperFormData.Status,
+        OtherInfo:helperFormData.OtherInfo,
+        DirectHire:true,
+        TrainingCenter:helperFormData.TrainingCenter,
+        EmailAddress:helperFormData.Email,
+        // FileName:helperFormData.FileName,
+        FileName:"helper.jpg",
+        Helper_Img_Base64String:"",
+        IsActive:true,
+        CreatedBy:"HLPE75014F5"
       },
-      ContactDetails: {
-        ContactPerson: helperFormData.ContactPerson,
-        MobileNo: helperFormData.MobileNo,
-        HomeNo: helperFormData.HomeNo,
-        EmailId: helperFormData.EmailId
+      HelperContacts: {
+        HomeAddress: helperFormData.HomeAddress,
+        HomeTelephone: helperFormData.HomeTelephone,
+        WhatsApp: helperFormData.WhatsApp,
+        Viber: helperFormData.Viber,
+        Facebook:helperFormData.Facebook,
+        OtherContact: [
+          {
+            OrgId: 1,
+            HelperCode: "HLPE75014F5",
+            Type:helperFormData.Type,
+            Information:helperFormData.Information
+          }
+        ]
       },
-      JobScopes: {
-        HousingType: document.getElementById('HousingType').value,
-        ExpectedJobScope: helperFormData.ExpectedJobScope,
-        NoOfBedroom: helperFormData.NoOfBedroom
+      FamilyBackground: {
+        FatherOccupation: helperFormData.FatherOccupation,
+        MotherOccupation: helperFormData.MotherOccupation,
+        FatherAge:helperFormData.FatherAge,
+        MotherAge:helperFormData.MotherAge,
+        SiblingsPosition:helperFormData.SiblingsPosition,
+        NoOfBrother:helperFormData.NoOfBrother,
+        NoOfSister:helperFormData.NoOfSister,
+        BrotherAge:helperFormData.BrotherAge,
+        SisterAge:helperFormData.SisterAge,
+        HusbandName:helperFormData.HusbandName,
+        HusbandOccupation:helperFormData.HusbandOccupation,
+        HusbandAge:helperFormData.HusbandAge,
+        NoOfChildren:helperFormData.NoOfChildren,
+        ChildAge:helperFormData.ChildAge,
       },
+      PhysicalAttribute: {
+        Complexion:helperFormData.Complexion,
+        Height_CM:helperFormData.Height_CM,
+        Height_Feet:helperFormData.Height_Feet,
+        Weight_KG:helperFormData.Weight_KG,
+        Weight_Pound:helperFormData.Weight_Pound
+      },
+      BookingRealtedInformation: {
+        BasicSalary:helperFormData.BasicSalary,
+        OffDayDailyRate:helperFormData.OffDayDailyRate,
+        HelperFee:helperFormData.HelperFee,
+        PocketMoney:helperFormData.PocketMoney,
+        SelectOffDays:helperFormData.SelectOffDays,
+        NoOffDays:helperFormData.NoOffDays
+      },
+      Interview: [
+        {
+          OrgId: 1,
+          HelperCode: "HLPE75014F5",
+          InterviewDate:convertToISODate(document.getElementById('InterviewDate').value),
+          InterviewTime: intTime,
+          Remarks:helperFormData.Remarks
+        }
+      ],
       AccountDetails: {
-        Email: helperFormData.Email,
-        Password: helperFormData.Password,
-        ConfirmPassword: helperFormData.ConfirmPassword,
-        SMSContactNumber:helperFormData.SMSContactNumber,
-        MethodOfproceed: helperFormData.MethodOfproceed
+        Email:helperFormData.Email,
+        Password:helperFormData.Password,
+        ConfirmPassword:helperFormData.ConfirmPassword,
+        SMSContactNumber:helperFormData.SMSContactNumber
       }
-     };
-     console.log(regDetail);
-     console.log(helperFormData.Nationality);
+    }
+
+    //  const regDetail={
+    //   "HelperBioDetails": {
+    //     "OrgId": 1,
+    //     "HelperCode": "HLPE75014F5",
+    //     "HelperName": helperFormData.HelperName,
+    //     "EmailId": helperFormData.Email,
+    //     "Password": helperFormData.Password,
+    //     "MobileNo": helperFormData.SMSContactNumber,
+    //     "NRIC_FIN": helperFormData.NRIC_FIN,
+    //     "Nationality": "INDIAN",
+    //     "PassportNo": "PK000125",
+    //     "PassportIssuePlace": "CHENNAI",
+    //     "PassIssueDate": "2023-03-25T12:35:49.646Z",
+    //     "PassportExpiryDate": "2023-03-25T12:35:49.646Z",
+    //     "WorkPermitNo": "PRM00001",
+    //     "WorkPermitExpiry": "2023-03-25T12:35:49.646Z",
+    //     "Religion": "MUSLIM",
+    //     "DateOfBirth": "2023-03-25T12:35:49.646Z",
+    //     "MartilaStatus": "YES",
+    //     "BirthPlace": "TRICHY",
+    //     "Specialization_Preference": "Caregiver",
+    //     "RepatraiteAirport": "Airport1",
+    //     "Status": "Active",
+    //     "OtherInfo": "Nothing",
+    //     "DirectHire": true,
+    //     "TrainingCenter": "FACK TRAINING",
+    //     "EmailAddress": "Helper@gmail.com",
+    //     "FileName": "Helper.jpg",
+    //     "Helper_Img_Base64String": "",
+    //     "IsActive": true,
+    //     "CreatedBy": "HLP20261B91"
+    //   },
+    //   "HelperContacts": {
+    //     "HomeAddress": "Home Add-1",
+    //     "HomeTelephone": "044 52220",
+    //     "WhatsApp": "65555555555",
+    //     "Viber": "900000000",
+    //     "Facebook": "Noface5655",
+    //     "OtherContact": [
+    //       {
+    //         "OrgId": 1,
+    //         "HelperCode": "HLP20261B91",
+    //         "Type": "NEW TYPE",
+    //         "Information": "NOTHING"
+    //       }
+    //     ]
+    //   },
+    //   "FamilyBackground": {
+    //     "FatherOccupation": "VIP",
+    //     "MotherOccupation": "HOME MAKER",
+    //     "FatherAge": 50,
+    //     "MotherAge": 40,
+    //     "SiblingsPosition": "3",
+    //     "NoOfBrother": 1,
+    //     "NoOfSister": 2,
+    //     "BrotherAge": 40,
+    //     "SisterAge": 20,
+    //     "HusbandName": "NO IDEA",
+    //     "HusbandOccupation": "NOTHING",
+    //     "HusbandAge": 40,
+    //     "NoOfChildren": 2,
+    //     "ChildAge": 10
+    //   },
+    //   "PhysicalAttribute": {
+    //     "Complexion": "RELAX",
+    //     "Height_CM": "5.5",
+    //     "Height_Feet": "5",
+    //     "Weight_KG": 60,
+    //     "Weight_Pound": 50
+    //   },
+    //   "BookingRealtedInformation": {
+    //     "BasicSalary": 1000,
+    //     "OffDayDailyRate": 2,
+    //     "HelperFee": 2,
+    //     "PocketMoney": 100,
+    //     "SelectOffDays": "SUNDAY",
+    //     "NoOffDays": 1
+    //   },
+    //   "Interview": [
+    //     {
+    //       "OrgId": 1,
+    //       "HelperCode": "HLP20261B91",
+    //       "InterviewDate": "2023-03-28T10:04:04.107Z",
+    //       "InterviewTime": ["10:30","11:00"],
+    //       "Remarks": "TESTING INETRVIEW"
+    //     }
+    //   ],
+    //   "AccountDetails": {
+    //     "Email": "Helper@gmail.com",
+    //     "Password": "welcome123",
+    //     "ConfirmPassword": "welcome123",
+    //     "SMSContactNumber": "987456321"
+    //   }
+    // }
      console.log(JSON.stringify(regDetail));
     
-     const token = jwtToken;
-     console.log(jwtToken);
-     console.log(token);
-    //  const response = await fetch('http://154.26.130.251:283/api/Employer/DataFormUpdation', {
-    //    method: 'POST',
-    //    body: JSON.stringify(regDetail),
-    //    headers: {
-    //      'Content-Type': 'application/json',
-    //         Authorization: `Bearer ${token}`,
-    //    }
-    //  });
-    //  if (!response.ok) {
-    //    console.log('SOMETHING WENT WRONG');
-    //  }
+     const token = jwtToken;  
+
+     const response = await fetch('http://154.26.130.251:283/api/Helper/DataFormUpdation', {
+       method: 'POST',
+       body: JSON.stringify(regDetail),
+       headers: {
+         'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+       }
+     });
+     if (!response.ok) {
+       console.log('SOMETHING WENT WRONG');
+     }
     //  console.log(response.json());
-    //  const data = await response.json();
-    //  console.log(data);
+     const data =  await response.json();
+     console.log(data);
+     if (data.Code === 200 && data.Message === 'Sucess') {
+      // alert('updated successfully')
+      navigate('/helperlogin');
+      }
    }
 
   const handleLinkClick = (link) => {
-    //navigate(link);
+    // navigate(link);
     window.location.href = link
     setSelectedLink(link);
   };
-  
+
   return(
     <div>
     <div id="wrapper">
@@ -502,24 +691,45 @@ const MaidRegistration = () => {
                                 <label>Name</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Name"/> </div>
+                                <input type="text" className="form-control" placeholder="Name"value={helperFormData.HelperName}
+                                onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        HelperName:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>FIN No.</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Your NRIC / FIN"/> </div>
+                                <input type="text" className="form-control" placeholder="Your NRIC / FIN" value={helperFormData.NRIC_FIN}
+                                onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        NRIC_FIN:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Nationality</label>
                               </div>
                               <div className="col-lg-6">
-                                <select>
+                                <select className="form-control select" value={helperFormData.Nationality}
+                                  onChange={(e) => {
+                                  console.log(e.target.value);
+                                  setHelperFormData({
+                                      ...helperFormData,
+                                      Nationality: e.target.value
+                                  })
+                              }}>
+                                  <option>Select Nationality</option>
                                   <option>Indonesian</option>
-                                  <option>Select</option>
-                                  <option>Select</option>
+                                  <option>Indian</option>
+                                  <option>Pakistan</option>
+                                  <option>test</option>
                                 </select>
                               </div>
                             </div>
@@ -528,7 +738,13 @@ const MaidRegistration = () => {
                                 <label>Passport No.</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Passport No."/> </div>
+                                <input type="text" className="form-control" placeholder="Passport No." value={helperFormData.PassportNo}
+                                onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        PassportNo:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
                             
 
@@ -537,37 +753,62 @@ const MaidRegistration = () => {
                                 <label>Passport Issue Place</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Passport Issue Place"/> </div>
+                                <input type="text" className="form-control" placeholder="Passport Issue Place"  value={helperFormData.PassportIssuePlace}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        PassportIssuePlace:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
-
-                            <div className="row form-group align-items-center">
+                         <div className="row form-group align-items-center">
                         <div className="col-lg-3">
-                          <label>Passport Expiry Date</label>
+                          <label>Passport Issue Date</label>
                         </div>
                         <div className="col-lg-6">
                           <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" id="PassIssueDate" placeholder="DD/MM/YYYY"   value={helperFormData.PassIssueDate}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        PassIssueDate:  e.target.value
+                                    })
+                                }} /> <i className="fas fa-calendar-alt"></i> 
                           </div> 
                         </div>
                       </div>
 
                       <div className="row form-group align-items-center">
                         <div className="col-lg-3">
-                          <label>Passport Issue Date</label>
+                          <label>Passport Expiry Date</label>
                         </div>
                         <div className="col-lg-6">
                           <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" id="PassportExpiryDate" placeholder="DD/MM/YYYY" value={helperFormData.PassportExpiryDate}
+                                    onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        PassportExpiryDate:  e.target.value
+                                    })
+                                }} /> <i className="fas fa-calendar-alt"></i> 
                           </div> 
                         </div>
                       </div>
+
+                     
 
                       <div className="row form-group align-items-center">
                         <div className="col-lg-3">
                           <label>Work Permit No.</label>
                         </div>
                         <div className="col-lg-6">
-                          <input type="text" className="form-control" placeholder="Passport Issue Place"/> 
+                          <input type="text" className="form-control" placeholder="Work Permit No" value={helperFormData.WorkPermitNo}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        WorkPermitNo:  e.target.value
+                                    })
+                                }}/> 
                         </div>
                       </div>
 
@@ -577,7 +818,13 @@ const MaidRegistration = () => {
                         </div>
                         <div className="col-lg-6">
                           <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="Work Permit No." /> <i className="fas fa-calendar-alt"></i> 
+                                  <input type="text" className="form-control datepicker" id="WorkPermitExpiry" placeholder="Work Permit Expiry" value={helperFormData.WorkPermitExpiry}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        WorkPermitExpiry:  e.target.value
+                                    })
+                                }} /> <i className="fas fa-calendar-alt"></i> 
                           </div> 
                         </div>
                       </div>
@@ -587,33 +834,52 @@ const MaidRegistration = () => {
                                 <label>Religion</label>
                               </div>
                               <div className="col-lg-6">
-                                <select>
-                                  <option>Others</option>
-                                  <option>option-2</option>
+                                <select className="form-control select" value={helperFormData.Religion}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        Religion:  e.target.value
+                                    })
+                                }} >
+                                  <option>Select Religion</option>
+                                  <option>Hindu</option>
+                                  <option>Muslim</option>
+                                  <option>Christian</option>
                                 </select>
                               </div>
                             </div>
-
                             <div className="row form-group align-items-center">
-                        <div className="col-lg-3">
-                          <label>Date of Birth</label>
-                        </div>
-                        <div className="col-lg-6">
-                          <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> 
-                          </div> 
-                        </div>
-                      
-                      </div>
+                              <div className="col-lg-3">
+                                <label>Date of Birth</label>
+                              </div>
+                              <div className="col-lg-6">
+                                <div className="inrow date-wrap datepicker-wrap">
+                                  <input type="text" className="form-control datepicker" id="DateOfBirth"  placeholder="DD/MM/YYYY" value={helperFormData.DateOfBirth}
+                                onChange={(e) => {
+                                  setHelperFormData({
+                                        ...helperFormData,
+                                        DateOfBirth:  e.target.value
+                                    })
+                                }}/> <i className="fas fa-calendar-alt"></i> </div>
+                              </div>
+                            </div>
 
                       <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Martial Status</label>
                               </div>
                               <div className="col-lg-6">
-                                <select>
-                                  <option>Others</option>
-                                  <option>option-2</option>
+                                <select className="form-control select" value={helperFormData.MartilaStatus}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        MartilaStatus:  e.target.value
+                                    })
+                                }}>
+                                  <option>Select Marital Status</option>
+                                  <option>Single</option>
+                                  <option>Married</option>
+                                  <option>Divorced</option>
                                 </select>
                               </div>
                             </div>
@@ -624,7 +890,13 @@ const MaidRegistration = () => {
                                 <label>Birth Place</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Passport Issue Place"/> </div>
+                                <input type="text" className="form-control" placeholder="Birth Place" value={helperFormData.BirthPlace}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        BirthPlace:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
 
                             <div className="row form-group align-items-center">
@@ -632,9 +904,16 @@ const MaidRegistration = () => {
                                 <label>Specialization/Preference</label>
                               </div>
                               <div className="col-lg-6">
-                                <select>
+                                <select className="form-control select" value={helperFormData.Specialization_Preference}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        Specialization_Preference:  e.target.value
+                                    })
+                                }}>
+                                  <option>Select Specialization</option>
                                   <option>Caregiver</option>
-                                  <option>option-2</option>
+                                  <option>MaidServant</option>
                                 </select>
                               </div>
                             </div>
@@ -645,7 +924,13 @@ const MaidRegistration = () => {
                                 <label>Repatraite Airport</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder=""/> </div>
+                                <input type="text" className="form-control" placeholder="" value={helperFormData.RepatraiteAirport}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        RepatraiteAirport:  e.target.value
+                                    })
+                                }}/> </div>
                             </div>
 
                             <div className="row form-group align-items-center">
@@ -653,9 +938,16 @@ const MaidRegistration = () => {
                                 <label>Status</label>
                               </div>
                               <div className="col-lg-6">
-                                <select>
+                                <select className="form-control select" value={helperFormData.Status}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        Status:  e.target.value
+                                    })
+                                }}>
+                                  <option>Select Status</option>
                                   <option>Incoming Only</option>
-                                  <option>option-2</option>
+                                  <option>Active</option>
                                 </select>
                               </div>
                             </div>
@@ -665,7 +957,13 @@ const MaidRegistration = () => {
                                 <label>Other Info</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder=""/> 
+                                <input type="text" className="form-control" placeholder="" value={helperFormData.OtherInfo}
+                                  onChange={(e) => {
+                                    setHelperFormData({
+                                        ...helperFormData,
+                                        OtherInfo:  e.target.value
+                                    })
+                                }}/> 
                               </div>
                             </div>
 
@@ -677,11 +975,23 @@ const MaidRegistration = () => {
                                       <div className="radio-inline">
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" defaultChecked name="r1"/> <span>Yes</span></label>
+                                            <input type="radio" defaultChecked name="r1" value="Yes"
+                                              onChange={(e) => {
+                                                setHelperFormData({
+                                                    ...helperFormData,
+                                                    DirectHire:  true
+                                                })
+                                            }}/> <span>Yes</span></label>
                                         </div>
                                         <div className="radio">
                                           <label>
-                                            <input type="radio" name="r1"/> <span>No</span></label>
+                                            <input type="radio" name="r1" value="No"
+                                              onChange={(e) => {
+                                                setHelperFormData({
+                                                    ...helperFormData,
+                                                    DirectHire:  false
+                                                })
+                                            }}/> <span>No</span></label>
                                         </div>
                                       </div>
                                     </div>
@@ -692,7 +1002,13 @@ const MaidRegistration = () => {
                                 <label>Training Center</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder=""/> </div>
+                                <input type="text" className="form-control" placeholder="" value={helperFormData.TrainingCenter}
+                                              onChange={(e) => {
+                                                setHelperFormData({
+                                                    ...helperFormData,
+                                                    TrainingCenter:  e.target.value
+                                                })
+                                            }}/> </div>
                             </div>
 
 
@@ -711,7 +1027,13 @@ const MaidRegistration = () => {
                                 <label>Home Address</label>
                               </div>
                               <div className="col-lg-6">
-                                <textarea className="form-control" placeholder="Home Address"></textarea>
+                                <textarea className="form-control" placeholder="Home Address" value={helperFormData.HomeAddress}
+                                              onChange={(e) => {
+                                                setHelperFormData({
+                                                    ...helperFormData,
+                                                    HomeAddress:  e.target.value
+                                                })
+                                            }}></textarea>
                               </div>
                             </div>
                             <div className="row form-group align-items-center">
@@ -719,28 +1041,52 @@ const MaidRegistration = () => {
                                 <label>Home Telephone</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Telephone No."/> </div>
+                                <input type="text" className="form-control" placeholder="Telephone No." value={helperFormData.HomeTelephone}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          HomeTelephone:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>WhatsApp</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="WhatsApp"/> </div>
+                                <input type="text" className="form-control" placeholder="WhatsApp" value={helperFormData.WhatsApp}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          WhatsApp:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Viber</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Viber"/> </div>
+                                <input type="text" className="form-control" placeholder="Viber" value={helperFormData.Viber}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Viber:  e.target.value
+                                      })
+                                  }} /> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Facebook</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Facebook"/> </div>
+                                <input type="text" className="form-control" placeholder="Facebook" value={helperFormData.Facebook}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Facebook:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row mb15 sub-title-row form-group align-items-center">
                               <div className="col-lg-12">
@@ -752,14 +1098,26 @@ const MaidRegistration = () => {
                                 <label>Type</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="WeChat"/> </div>
+                                <input type="text" className="form-control" placeholder="WeChat" value={helperFormData.Type}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Type:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Information</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="WeChat Account ID/Name"/> </div>
+                                <input type="text" className="form-control" placeholder="WeChat Account ID/Name" value={helperFormData.Information}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Information:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-12">
@@ -783,35 +1141,65 @@ const MaidRegistration = () => {
                                 <label>Father Occupation</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Occupation"/> </div>
+                                <input type="text" className="form-control" placeholder="Occupation" value={helperFormData.FatherOccupation}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          FatherOccupation:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Mother Occupation</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Occupation"/> </div>
+                                <input type="text" className="form-control" placeholder="Occupation" value={helperFormData.MotherOccupation}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          MotherOccupation:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Father Age</label>
                               </div>
                               <div className="col-lg-2">
-                                <input type="text" className="form-control" placeholder="Age"/> </div>
+                                <input type="text" className="form-control" placeholder="Age" value={helperFormData.FatherAge}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          FatherAge:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Mother Age</label>
                               </div>
                               <div className="col-lg-2">
-                                <input type="text" className="form-control" placeholder="Age"/> </div>
+                                <input type="text" className="form-control" placeholder="Age" value={helperFormData.MotherAge}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          MotherAge:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Siblings Position</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Position"/> </div>
+                                <input type="text" className="form-control" placeholder="Position" value={helperFormData.SiblingsPosition}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          SiblingsPosition:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             
                             <div className="row form-group align-items-center">
@@ -819,28 +1207,52 @@ const MaidRegistration = () => {
                                 <label>No. of Brother</label>
                               </div>
                               <div className="col-lg-2">
-                                <input type="text" className="form-control" placeholder="No."/> </div>
+                                <input type="text" className="form-control" placeholder="No." value={helperFormData.NoOfBrother}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          NoOfBrother:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>No. of Sister</label>
                               </div>
                               <div className="col-lg-2">
-                                <input type="text" className="form-control" placeholder="No."/> </div>
+                                <input type="text" className="form-control" placeholder="No." value={helperFormData.NoOfSister}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          NoOfSister:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Brother Age</label>
                               </div>
                               <div className="col-lg-2">
-                                <input type="text" className="form-control" placeholder="No."/> </div>
+                                <input type="text" className="form-control" placeholder="No." value={helperFormData.BrotherAge}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          BrotherAge:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Sister Age</label>
                               </div>
                               <div className="col-lg-2">
-                                <input type="text" className="form-control" placeholder="No."/> </div>
+                                <input type="text" className="form-control" placeholder="No." value={helperFormData.SisterAge}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          SisterAge:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                            
                             <div className="row form-group align-items-center">
@@ -848,35 +1260,65 @@ const MaidRegistration = () => {
                                 <label>Husband Name</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Husband Name"/> </div>
+                                <input type="text" className="form-control" placeholder="Husband Name" value={helperFormData.HusbandName}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          HusbandName:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Husband Occupation</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Husband Occupation"/> </div>
+                                <input type="text" className="form-control" placeholder="Husband Occupation" value={helperFormData.HusbandOccupation}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          HusbandOccupation:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Husband Age</label>
                               </div>
                               <div className="col-lg-2">
-                                <input type="text" className="form-control" placeholder="Age"/> </div>
+                                <input type="text" className="form-control" placeholder="Age" value={helperFormData.HusbandAge}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          HusbandAge:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>No. Of Children</label>
                               </div>
                               <div className="col-lg-2">
-                                <input type="text" className="form-control" placeholder="No."/> </div>
+                                <input type="text" className="form-control" placeholder="No." value={helperFormData.NoOfChildren}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          NoOfChildren:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Child Age</label>
                               </div>
                               <div className="col-lg-2">
-                                <input type="text" className="form-control" placeholder="Age"/> </div>
+                                <input type="text" className="form-control" placeholder="Age" value={helperFormData.ChildAge}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          ChildAge:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                           </div>
                         </div>
@@ -892,10 +1334,20 @@ const MaidRegistration = () => {
                                 <label>Complexion</label>
                               </div>
                               <div className="col-lg-6">
-                                <select>
+                                <select className="form-control select" value={helperFormData.Complexion}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Complexion:  e.target.value
+                                      })
+                                  }}>
+                                  <option>Select Complexion</option>
+                                  <option>Very Fair</option>
+                                  <option>Fair</option>
+                                  <option>Medium</option>
+                                  <option>Olive</option>
+                                  <option>Brown</option>
                                   <option>Dark</option>
-                                  <option>Select</option>
-                                  <option>Select</option>
                                 </select>
                               </div>
                             </div>
@@ -909,7 +1361,13 @@ const MaidRegistration = () => {
                                   <div className="col-lg-6">
                                     <div className="row gutters-5 align-items-center">
                                       <div className="col-lg-8">
-                                         <input type="text" className="form-control" placeholder="CM"/> 
+                                         <input type="text" className="form-control" placeholder="CM" value={helperFormData.Height_CM}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Height_CM:  e.target.value
+                                      })
+                                  }}/> 
                                       </div>
                                       <div className="col-lg-4">
                                         <label>CM</label>
@@ -919,7 +1377,13 @@ const MaidRegistration = () => {
                                   <div className="col-lg-6">
                                    <div className="row gutters-5 align-items-center">
                                       <div className="col-lg-8">
-                                         <input type="text" className="form-control" placeholder="Feet"/> 
+                                         <input type="text" className="form-control" placeholder="Feet" value={helperFormData.Height_Feet}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Height_Feet:  e.target.value
+                                      })
+                                  }}/> 
                                       </div>
                                       <div className="col-lg-4">
                                         <label>Feet</label>
@@ -939,7 +1403,13 @@ const MaidRegistration = () => {
                                   <div className="col-lg-6">
                                     <div className="row gutters-5 align-items-center">
                                       <div className="col-lg-8">
-                                         <input type="text" className="form-control" placeholder="KG"/> 
+                                         <input type="text" className="form-control" placeholder="KG" value={helperFormData.Weight_KG}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Weight_KG:  e.target.value
+                                      })
+                                  }}/> 
                                       </div>
                                       <div className="col-lg-4">
                                         <label>KG</label>
@@ -949,7 +1419,13 @@ const MaidRegistration = () => {
                                   <div className="col-lg-6">
                                    <div className="row gutters-5 align-items-center">
                                       <div className="col-lg-8">
-                                         <input type="text" className="form-control" placeholder="Pound"/> 
+                                         <input type="text" className="form-control" placeholder="Pound" value={helperFormData.Weight_Pound}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Weight_Pound:  e.target.value
+                                      })
+                                  }}/> 
                                       </div>
                                       <div className="col-lg-4">
                                         <label>Pounds</label>
@@ -976,39 +1452,69 @@ const MaidRegistration = () => {
                                 <label>Basic Salary ($)</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Basic Salary"/> </div>
+                                <input type="text" className="form-control" placeholder="Basic Salary" value={helperFormData.BasicSalary}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          BasicSalary:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Off Day Daily Rate ($)</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Off Day Daily Rate"/> </div>
+                                <input type="text" className="form-control" placeholder="Off Day Daily Rate" value={helperFormData.OffDayDailyRate}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          OffDayDailyRate:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Helper Fee ($)</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Helper Fee"/> </div>
+                                <input type="text" className="form-control" placeholder="Helper Fee" value={helperFormData.HelperFee}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          HelperFee:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Pocket Money ($)</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="Pocket Money"/> </div>
+                                <input type="text" className="form-control" placeholder="Pocket Money" value={helperFormData.PocketMoney}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          PocketMoney:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Select Off Days</label>
                               </div>
                               <div className="col-lg-6">
-                                <select>
+                                <select className="form-control select" value={helperFormData.SelectOffDays}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          SelectOffDays:  e.target.value
+                                      })
+                                  }}>
+                                  <option>Select Off Days</option>
                                   <option>Monthly</option>
-                                  <option>Select</option>
-                                  <option>Select</option>
-                                </select>
+                                  <option>Weekly</option>
+                                 </select>
                               </div>
                             </div>
                             <div className="row form-group align-items-center">
@@ -1016,7 +1522,13 @@ const MaidRegistration = () => {
                                 <label>No.</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="No."/> </div>
+                                <input type="text" className="form-control" placeholder="No." value={helperFormData.NoOffDays}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          NoOffDays:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
 
                             <div className="row mb15 sub-title-row form-group align-items-center">
@@ -1027,11 +1539,17 @@ const MaidRegistration = () => {
 
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
-                                <label>Avaialable Date (SGT)</label>
+                                <label>Available Date (SGT)</label>
                               </div>
                               <div className="col-lg-6">
                                 <div className="inrow date-wrap datepicker-wrap">
-                                  <input type="text" className="form-control datepicker" placeholder="DD/MM/YYYY" /> <i className="fas fa-calendar-alt"></i> </div>
+                                  <input type="text" className="form-control datepicker" id="InterviewDate" placeholder="DD/MM/YYYY" value={helperFormData.InterviewDate}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          InterviewDate:  e.target.value
+                                      })
+                                  }}/> <i className="fas fa-calendar-alt"></i> </div>
                               </div>
                           </div>
 
@@ -1040,27 +1558,40 @@ const MaidRegistration = () => {
                                 <label>Avaialable Time (SGT)</label>
                               </div>
                               <div className="col-lg-6">
-                                <select multiple className="selectpicker form-control" id="number-multiple" data-virtual-scroll="true">
-                                  <option>Morning Slot 1 : 10: AM to 10:30 AM</option>
-                                  <option>Morning Slot 2 : 10:30 AM to 11 AM</option>
-                                  <option>Morning Slot 3 : 11 AM to 11:30 AM</option>
-                                  <option>Morning Slot 4 : 11:30 AM to 12 PM</option>
-                                  <option>Afternoon Slot 1 : 12 PM to 12:30 PM</option>
-                                  <option>Afternoon Slot 2 : 12:30 PM to 1 PM</option>
-                                  <option>Afternoon Slot 3 : 1 PM to 1:30 PM</option>
-                                  <option>Afternoon Slot 4 : 1:30 PM to 2 PM</option>
-                                  <option>Afternoon Slot 5 : 2 PM to 2:30 PM</option>
-                                  <option>Afternoon Slot 6 : 2:30 PM to 3 PM</option>
-                                  <option>Afternoon Slot 7 : 3 PM to 3:30 PM</option>
-                                  <option>Afternoon Slot 8 : 3 :30 PM to 4 PM</option>
-                                  <option>Afternoon Slot 9 : 4 PM to 4:30 PM</option>
-                                  <option>Afternoon Slot 10 : 4:30 PM to 5 PM</option>
-                                  <option>Afternoon Slot 11 : 5 PM to 5:30 PM</option>
-                                  <option>Afternoon Slot 12 : 5:30 PM to 6 PM</option>
+                                <select className="form-control select" placeholder='Select Slot' value={intTime}
+                                    onChange={(e) => {
+                                      setIntTime([...intTime,e.target.value])
+
+                                      // setHelperFormData({
+                                      //     ...helperFormData,
+                                      //     InterviewTime:  e.target.value
+                                      // })
+                                  }} >
+                                  <option >Select Slot</option>
+                                  <option value="10:00">Morning Slot 1 : 10: AM to 10:30 AM</option>
+                                  <option value="10:30">Morning Slot 2 : 10:30 AM to 11 AM</option>
+                                  <option value="11:00">Morning Slot 3 : 11 AM to 11:30 AM</option>
+                                  <option value="11:30">Morning Slot 4 : 11:30 AM to 12 PM</option>
+                                  <option value="12:00">Afternoon Slot 1 : 12 PM to 12:30 PM</option>
+                                  <option value="12:30">Afternoon Slot 2 : 12:30 PM to 1 PM</option>
+                                  <option value="01:00">Afternoon Slot 3 : 1 PM to 1:30 PM</option>
+                                  <option value="01:30">Afternoon Slot 4 : 1:30 PM to 2 PM</option>
+                                  <option value="02:00">Afternoon Slot 5 : 2 PM to 2:30 PM</option>
+                                  <option value="02:30">Afternoon Slot 6 : 2:30 PM to 3 PM</option>
+                                  <option value="03:00">Afternoon Slot 7 : 3 PM to 3:30 PM</option>
+                                  <option value="03:30">Afternoon Slot 8 : 3 :30 PM to 4 PM</option>
+                                  <option value="04:00">Afternoon Slot 9 : 4 PM to 4:30 PM</option>
+                                  <option value="04:30">Afternoon Slot 10 : 4:30 PM to 5 PM</option>
+                                  <option value="05:00">Afternoon Slot 11 : 5 PM to 5:30 PM</option>
+                                  <option value="05:30">Afternoon Slot 12 : 5:30 PM to 6 PM</option>
                                 </select>
                               </div>
                             </div>
-
+                              {intTime.length!=0? 
+                                <>{intTime.map((time)=><div key={time} className="row select-group select-slot-group align-items-center">
+                                  <div className="col-lg-3"></div>
+                                  <div className="col-lg-6">Selected Slot @ {time}</div>
+                                </div>)}</>:<></>}
                       <div className="row form-group align-items-center">
                         <div className="col-lg-12">
                           <button name="add-more" className="add-more"><i className="fas fa-plus"></i> Add More</button>
@@ -1072,7 +1603,13 @@ const MaidRegistration = () => {
                                 <label>Other Remarks</label>
                               </div>
                               <div className="col-lg-6">
-                                <textarea className="form-control" placeholder="Other Remarks"></textarea>
+                                <textarea className="form-control" placeholder="Other Remarks" value={helperFormData.Remarks}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Remarks:  e.target.value
+                                      })
+                                  }}></textarea>
                               </div>
                             </div>
 
@@ -1090,28 +1627,52 @@ const MaidRegistration = () => {
                                 <label>Email Address</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control" placeholder="XXXXXXXXXXXXXXX@gmail.com"/> </div>
+                                <input type="text" className="form-control" placeholder="XXXXXXXXXXXXXXX@gmail.com" value={helperFormData.Email}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Email:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Password</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="Password" className="form-control"/> </div>
+                                <input type="Password" className="form-control" value={helperFormData.Password}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          Password:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Confirm Password</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="Password" className="form-control"/> </div>
+                                <input type="Password" className="form-control" value={helperFormData.ConfirmPassword}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          ConfirmPassword:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>SMS Contact Number</label>
                               </div>
                               <div className="col-lg-6">
-                                <input type="text" className="form-control"/> </div>
+                                <input type="text" className="form-control" value={helperFormData.SMSContactNumber}
+                                    onChange={(e) => {
+                                      setHelperFormData({
+                                          ...helperFormData,
+                                          SMSContactNumber:  e.target.value
+                                      })
+                                  }}/> </div>
                             </div>
                             
                           </div>
@@ -1125,7 +1686,7 @@ const MaidRegistration = () => {
                         <label htmlFor="c1">I hereby declared that all the above information given are true and correct.</label>
                       </div>
                     </div>
-                    <button type="button" className="action-button previous previous_button custom-button prvs">Back</button> <a href="#" className="action-button custom-button finish">SUBMIT</a> 
+                    <button type="button" className="action-button previous previous_button custom-button prvs">Back</button> <a href="#" onClick={stepThreeHandler} className="action-button custom-button finish">SUBMIT</a> 
                   </fieldset>
                 </form>
               </section>
