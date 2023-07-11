@@ -335,12 +335,7 @@ const MaidRegistration = () => {
     console.log("in")
     console.log(intTime);
     event.preventDefault();
-    console.log(helperFormData.Religion)
-    console.log(helperFormData.Nationality);
-    console.log(helperFormData.Status);
-    console.log(helperFormData.WorkPermitExpiry);
-    console.log(helperFormData.DirectHire)
-    console.log();
+
     fetchTokenHandler();
 
      const regDetail = {
