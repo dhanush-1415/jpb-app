@@ -20,7 +20,7 @@ const EmployerRegistration = () => {
     PersonalDetails: {
       OrgId: 1,
       EmployerCode: employerCode,
-     EmployerName: "string",
+     EmployerName: nameRef.current.value,
       Nationality: "Singaporean",
      NRIC_FIN: "string",
       PassportNo: "string",
@@ -43,7 +43,7 @@ const EmployerRegistration = () => {
       NoOfBedroom: "string"
     },
     AccountDetails: {
-      Email: emailRef,
+      Email: emailRef.current.value,
       Password: "string",
       ConfirmPassword: "string",
       SMSContactNumber: "string",
@@ -242,7 +242,7 @@ const EmployerRegistration = () => {
      }
      const data = await response.json();
      console.log(data);
-     setemployerCode(data.EmployerCode);
+     setemployerCode(data.ReferenceNo);
      console.log(employerCode);
    }
 
