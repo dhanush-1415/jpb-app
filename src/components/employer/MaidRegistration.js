@@ -307,7 +307,7 @@ const MaidRegistration = () => {
       }
       const data = await response.json();
       console.log(data);
-      setHelperCode(data.HelperCode );
+      setHelperCode(data.ReferenceNo );
      }else{
         console.log("empty");
      }
@@ -341,7 +341,7 @@ const MaidRegistration = () => {
      const regDetail = {
       HelperBioDetails: {
         OrgId: 1,
-        HelperCode: "HLPE75014F5",
+        HelperCode: helperCode,
         HelperName: helperFormData.HelperName,
         EmailId: helperFormData.Email,
         Password:helperFormData.Password,

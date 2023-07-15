@@ -139,7 +139,7 @@ const HelperLogin= () => {
                         <label>Password <span className="red">*</span></label>
                       </div>
                       <div className="col-lg-8">
-                        <input type="text" className="form-control" placeholder="Password"
+                        <input type="password" className="form-control" placeholder="Password"
                          onChange={(e) => {
                           setlogindata({ ...logindata, Password: e.target.value })
                       }}/> </div>
