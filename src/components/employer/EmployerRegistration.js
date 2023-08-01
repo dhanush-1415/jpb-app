@@ -4,6 +4,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 
@@ -239,9 +240,11 @@ const EmployerRegistration = () => {
      });
      if (!response.ok) {
        console.log('Please enter correct OTP!');
+       toast.error('Please enter correct OTP!');
      }
      const data = await response.json();
      console.log(data);
+     toast.success('OTP Verified Successfully!');
      setemployerCode(data.ReferenceNo);
      console.log(employerCode);
    }
@@ -321,13 +324,14 @@ const EmployerRegistration = () => {
      });
      if (!response.ok) {
        console.log('SOMETHING WENT WRONG');
+       toast.error('Something went wrong!');
      }
      console.log(response);
    //  console.log(response.json());
      const data = await response.json();
      console.log(data);
      if (data.Code === 200 && data.Message === 'Sucess') {
-     // alert('updated successfully')
+      toast.success('Registered Successfully');
      navigate('/login');
      }
    }

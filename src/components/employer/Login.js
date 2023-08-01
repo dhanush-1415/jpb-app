@@ -3,6 +3,8 @@ import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 
 const Login = () => {
   const [isloggedin, setisloggedin] = useState(false);
@@ -75,6 +77,7 @@ const Login = () => {
 
       if (!response.ok) {
         console.log('Something went wrong!');
+        toast.error('Login Failure!');
         return;
       }
 
@@ -89,10 +92,12 @@ const Login = () => {
         setisloggedin(true);
         console.log(localStorage.getItem('token'));
         console.log(isloggedin);
-
+        toast.success('Login Successfully!');
         navigate('/employeraccount');
+        window.location.reload();
       }
     } catch (error) {
+      toast.error('Failure!');
       console.log('An error occurred:', error);
     }
   };

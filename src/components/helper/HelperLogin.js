@@ -91,6 +91,7 @@ const HelperLogin= () => {
         console.log(ishelperloggedin);
 
         navigate('/helperaccount');
+        window.location.reload();
       }
     } catch (error) {
       console.log('An error occurred:', error);

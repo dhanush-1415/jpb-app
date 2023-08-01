@@ -1,6 +1,7 @@
 import React , { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 function Header() {
   const [selectedLink, setSelectedLink] = useState('/');
   const [isloggedin, setisloggedin] = React.useState(false);
@@ -34,7 +35,9 @@ function Header() {
   const handleLogout = () => {
     localStorage.removeItem("token")
     setisloggedin(false);
+    toast.success('Logged out Successfully!');
     navigate('/');
+    window.location.reload();
 }
 
 const handlehelperLogout = () => {

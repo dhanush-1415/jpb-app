@@ -7,6 +7,8 @@ import './components/css/responsive.css';
 import './App.css';
 import RouterPage from './components/RouterPage';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Home from './components/HomeFirst';
 import About from './components/About';
 import Contact from './components/Contact';
@@ -99,6 +101,7 @@ const router = createBrowserRouter([
 
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
+       <ToastContainer />
       <RouterProvider router={router} />
     </React.StrictMode>
   );
