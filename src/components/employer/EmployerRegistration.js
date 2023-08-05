@@ -5,6 +5,7 @@ import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Select from 'react-select';
 
 
 
@@ -36,10 +37,7 @@ const EmployerRegistration = () => {
     JobScopes: {
       HousingType: "string",
       ExpectedJobScope: [
-        {
-          JobScopeId: 0,
-          ExpectedJobScope: "string"
-        }
+        
       ],
       NoOfBedroom: "string"
     },
@@ -51,6 +49,18 @@ const EmployerRegistration = () => {
       MethodOfproceed: "string"
     }
 })
+
+const jobscopeoptions = [
+  {JobScopeId: 1, value: 'Household Chores', label: 'Household Chores' },
+  {JobScopeId: 2, value: 'Cooking', label: 'Cooking' },
+  {JobScopeId: 3, value: 'Looking after age person in the household', label: 'Looking after age person in the household' },
+  {JobScopeId: 4, value: 'Constact attaention is required', label: 'Constact attaention is required' },
+  {JobScopeId: 5, value: 'Babysitting', label: 'Babysitting' },
+  {JobScopeId: 6, value: 'Child - minding', label: 'Child - minding' },
+  {JobScopeId: 7, value: 'Others', label: 'Others' },
+];
+
+
 
 
  
@@ -155,7 +165,37 @@ const EmployerRegistration = () => {
       };
     }, []);
 
+    const handleChange = (selectedOptions) => {
+      setemployerFormData((prevFormData) => ({
+        ...prevFormData,
+        JobScopes: {
+          ...prevFormData.JobScopes,
+          ExpectedJobScope: selectedOptions.map((option) => ({
+            JobScopeId: option.JobScopeId,
+            ExpectedJobScope: option.value,
+          })),
+        },
+      }));
+      console.log(employerFormData.JobScopes.ExpectedJobScope);
+    };
 
+    const updateExpectedJobScope = (selectedOptions) => {
+
+      const updatedExpectedJobScope = selectedOptions.map((option, index) => (
+        {
+
+        JobScopeId: index,
+        ExpectedJobScope: option.value,
+      }));
+      setemployerFormData((prevFormData) => ({
+        ...prevFormData,
+        JobScopes: {
+          ...prevFormData.JobScopes,
+          ExpectedJobScope: updatedExpectedJobScope,
+        },
+      }));
+      console.log(updatedExpectedJobScope,);
+    };
    
   const fetchTokenHandler = useCallback(async () => {
     const tokenDetail = {
@@ -296,7 +336,7 @@ const EmployerRegistration = () => {
       },
       JobScopes: {
         HousingType: document.getElementById('HousingType').value,
-        ExpectedJobScope: employerFormData.ExpectedJobScope,
+        ExpectedJobScope: employerFormData.JobScopes.ExpectedJobScope,
         NoOfBedroom: employerFormData.NoOfBedroom
       },
       AccountDetails: {
@@ -335,6 +375,17 @@ const EmployerRegistration = () => {
      navigate('/login');
      }
    }
+
+   const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    zIndex: 1, 
+  }),
+  menu: (provided, state) => ({
+    ...provided,
+    zIndex: 2, 
+  }),
+};
 
  
   const handleLinkClick = (link) => {
@@ -463,7 +514,7 @@ const EmployerRegistration = () => {
                                 <label>Nationality</label>
                               </div>
                               <div className="col-lg-6">
-                               <select className='new-select'id="Nationality"
+                               <select className='form-control' id="Nationality"
                                 onChange={(e) => {
                                   console.log(e.target.value);
                                   setemployerFormData({
@@ -595,7 +646,7 @@ const EmployerRegistration = () => {
                                 <label>Housing Type</label>
                               </div>
                               <div className="col-lg-6">
-                               <select className='new-select'id="HousingType"
+                               <select className='form-control'id="HousingType"
                                 onChange={(e) => {
                                     setemployerFormData({
                                         ...employerFormData,
@@ -613,7 +664,7 @@ const EmployerRegistration = () => {
                               </div>
                               <div className="col-lg-6">
                                 
-                                <select multiple className="selectpicker form-control" id="number-multiple" data-virtual-scroll="true" 
+                                {/* <select multiple className="selectpicker form-control" id="number-multiple" data-virtual-scroll="true" 
                                 value={employerFormData.ExpectedJobScope}
   onChange={(e) => {
     const selectedOptions = Array.from(e.target.selectedOptions, (option) => ({
@@ -633,7 +684,21 @@ const EmployerRegistration = () => {
   <option value="Babysitting">Babysitting</option>
   <option value="Child - minding">Child - minding</option>
   <option value="Others">Others</option>
-                                </select>
+                                </select> */}
+                                {/* <Select
+        isMulti
+        options={jobscopeoptions} // Assuming you have defined options array somewhere
+        value={employerFormData.JobScopes.ExpectedJobScope}
+        onChange={updateExpectedJobScope}
+      /> */}
+     <Select
+      isMulti
+      options={jobscopeoptions}
+      value={jobscopeoptions.filter((option) => employerFormData.JobScopes.ExpectedJobScope.some((selectedOption) => selectedOption.JobScopeId === option.JobScopeId))}
+      onChange={handleChange}
+      getOptionValue={(option) => option.JobScopeId}
+      getOptionLabel={(option) => option.value}
+    />
                               </div> 
                             </div>
                             <div className="row form-group align-items-center">

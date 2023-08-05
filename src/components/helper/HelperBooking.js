@@ -267,7 +267,7 @@ const HelperBooking = () => {
                                 <label>Select Off Days</label>
                               </div>
                               <div className="col-lg-7">
-                                 <select className='new-select'
+                                 <select className='form-control'
                                  value={bookingdata.SelectOffDays}
                                  onChange={(e)=>{setbookingdata({...bookingdata,SelectOffDays:e.target.value});}}
                                  >

@@ -256,7 +256,7 @@ const HelperLanguage = () => {
                                 <label>Choose the Language</label>
                               </div>
                               <div className="col-lg-7">
-                                 <select className='new-select' value={langValue} onChange={handleLangChange}>
+                                 <select className='form-control' value={langValue} onChange={handleLangChange}>
                                   <option value="">Please Select</option>
                                   <option value="Spanish">Spanish</option>
                                   <option value="Chinese">Chinese</option>
@@ -271,7 +271,7 @@ const HelperLanguage = () => {
                                 <label>Understanding Level</label>
                               </div>
                               <div className="col-lg-7">
-                                 <select className='new-select' value={understandingValue} onChange={handleUnderstandingChange}>
+                                 <select className='form-control' value={understandingValue} onChange={handleUnderstandingChange}>
                                   <option value="">Please Select</option>
                                   <option value="Basic">Basic</option>
                                   <option value="Intermediate">Intermediate</option>
@@ -285,7 +285,7 @@ const HelperLanguage = () => {
                                 <label>Speaking Level</label>
                               </div>
                               <div className="col-lg-7">
-                                 <select className='new-select' value={speakingValue} onChange={handleSpeakingChange}>
+                                 <select className='form-control' value={speakingValue} onChange={handleSpeakingChange}>
                                  <option value="">Please Select</option>
                                   <option value="Basic">Basic</option>
                                   <option value="Intermediate">Intermediate</option>

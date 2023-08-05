@@ -439,7 +439,7 @@ const HelperProfileDetail = () => {
                                 <label>Nationality</label>
                               </div>
                               <div className="col-lg-6">
-                                <select className='new-select'
+                                <select className='form-control'
                                 value={profiledata.HelperBioDetails.Nationality}
                                 onChange={(e)=>{setprofiledata((prevData)=>({...prevData,HelperBioDetails:{...prevData.HelperBioDetails,Nationality:e.target.value}}));}}
                                 >
@@ -531,7 +531,7 @@ const HelperProfileDetail = () => {
                                 <label>Religion</label>
                               </div>
                               <div className="col-lg-6">
-                                <select className='new-select'
+                                <select className='form-control'
                                 value={profiledata.HelperBioDetails.Religion}
                                 onChange={(e)=>{setprofiledata((prevData)=>({...prevData,HelperBioDetails:{...prevData.HelperBioDetails,Religion:e.target.value}}));}}
                                 >
@@ -562,7 +562,7 @@ const HelperProfileDetail = () => {
                                 <label>Martial Status</label>
                               </div>
                               <div className="col-lg-6">
-                                <select className='new-select'
+                                <select className='form-control'
                                 value={profiledata.HelperBioDetails.MartilaStatus || ''}
                                 onChange={(e)=>{setprofiledata((prevData)=>({...prevData,HelperBioDetails:{...prevData.HelperBioDetails,MartilaStatus:e.target.value}}));}}
                                 >
@@ -590,7 +590,7 @@ const HelperProfileDetail = () => {
                                 <label>Specialization/Preference</label>
                               </div>
                               <div className="col-lg-6">
-                                <select className='new-select'
+                                <select className='form-control'
                                 value={profiledata.HelperBioDetails.Specialization_Preference || ''}
                                 onChange={(e)=>{setprofiledata((prevData)=>({...prevData,HelperBioDetails:{...prevData.HelperBioDetails,Specialization_Preference:e.target.value}}));}}
                                 >
@@ -617,7 +617,7 @@ const HelperProfileDetail = () => {
                                 <label>Status</label>
                               </div>
                               <div className="col-lg-6">
-                                <select className='new-select'
+                                <select className='form-control'
                                 value={profiledata.HelperBioDetails.Status || ''}
                                 onChange={(e)=>{setprofiledata((prevData)=>({...prevData,HelperBioDetails:{...prevData.HelperBioDetails,Status:e.target.value}}));}}
                                 >
@@ -692,7 +692,7 @@ const HelperProfileDetail = () => {
                                 <label>Complexion</label>
                               </div>
                               <div className="col-lg-6">
-                                <select className='new-select'
+                                <select className='form-control'
                                 value={profiledata.Helper_PhysicalAttribute.Complexion || ''}
                                 onChange={(e)=>{setprofiledata((prevData)=>({...prevData,Helper_PhysicalAttribute:{...prevData.Helper_PhysicalAttribute,Complexion:e.target.value}}));}}
                                 >

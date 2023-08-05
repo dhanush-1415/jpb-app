@@ -299,7 +299,7 @@ const HelperExperience = () => {
                                 <label>Country</label>
                               </div>
                               <div className="col-lg-7">
-                                 <select className='new-select' value={countryValue} onChange={handleCountryChange}>
+                                 <select className='form-control' value={countryValue} onChange={handleCountryChange}>
                                   <option value="">Please Select</option>
                                   <option value="India">India</option>
                                   <option value="China">China</option>

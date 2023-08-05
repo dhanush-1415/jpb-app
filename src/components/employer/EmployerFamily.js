@@ -364,7 +364,7 @@ const EmployerFamily = () => {
                                 <label>Relationship</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select' 
+                               <select className='form-control' 
                                value={familydata.FamilyDetails[0].Relationship}
                                //onChange={(e) => {setfamilydata({...familydata,Relationship:e.target.value});}}
                                onChange={(e) => {
@@ -505,7 +505,7 @@ const EmployerFamily = () => {
                                 <label>Gender</label>
                               </div>
                               <div className="col-lg-7">
-                                <select className='new-select'
+                                <select className='form-control'
                                 value={familydata.FamilyDetails[0].Gender}
                                 onChange={(e) => {
                                   setfamilydata((prevData) => ({
@@ -552,7 +552,7 @@ const EmployerFamily = () => {
                                 <label>Occupation</label>
                               </div>
                               <div className="col-lg-7">
-                                <select className='new-select'
+                                <select className='form-control'
                                 value={familydata.FamilyDetails[0].Occupation}
                                 onChange={(e) => {
                                   setfamilydata((prevData) => ({
@@ -630,7 +630,7 @@ const EmployerFamily = () => {
                                 <label>Monthly Income ($)</label>
                               </div>
                               <div className="col-lg-7">
-                             <select className='new-select'
+                             <select className='form-control'
                                 id="MonthlyIncome"
                                 name="MonthlyIncome"
                                 value={familydata.FamilyDetails[0].MonthlyIncome}
@@ -679,7 +679,7 @@ const EmployerFamily = () => {
                                 <label>Year of Assessment</label>
                               </div>
                               <div className="col-lg-7">
-                             <select className='new-select'
+                             <select className='form-control'
                                 id="YearofAssesment"
                                 name="YearofAssesment"
                                 value={familydata.FamilyDetails[0].YearofAssessment || ''}
@@ -782,7 +782,7 @@ const EmployerFamily = () => {
                           <label>Housing Type</label>
                         </div>
                         <div className="col-lg-7">
-                       <select className='new-select' id="HousingType" 
+                       <select className='form-control' id="HousingType" 
                         name='HousingType'
                         value={familydata.JobScopes.HousingType}
                         onChange={(e) => {

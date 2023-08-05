@@ -119,7 +119,7 @@ const HelperEducation = () => {
                         </table>
                       </div>
 
-                       <div className="od-upload-section size-14">
+                       {/* <div className="od-upload-section size-14">
                         <p>Upload Education Cert</p>
                         <div className="row">
                           <div className="col-lg-6">
@@ -168,7 +168,7 @@ const HelperEducation = () => {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
               </div>
               </div>
             </div>
