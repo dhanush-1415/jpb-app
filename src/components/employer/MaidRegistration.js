@@ -4,12 +4,17 @@ import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 const MaidRegistration = () => {
   const [selectedLink, setSelectedLink] = useState('/');
   const [jwtToken, setjwtToken] = useState('');
   const [helperCode, setHelperCode] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [list, setList] = useState([]);
+  const [typeValue, setTypeValue] = useState("");
+  const [infoValue, setInfoValue] = useState("");  
   const nameRef = useRef('');
   const emailRef = useRef('');
   const phoneRef = useRef('');
@@ -239,6 +244,25 @@ const MaidRegistration = () => {
   }, []);
 
 
+  const handleAdd = (e) => {
+    e.preventDefault();
+    if (typeValue !== "" && infoValue !== "") {
+      setList((prevList) => [...prevList, { Type: typeValue, Information: infoValue ,OrgId:1,HelperCode:helperCode }]);
+      console.log(list);
+      setTypeValue("");
+      setInfoValue("");
+    }
+  };
+
+  const handleTypeChange = (event) => {
+    setTypeValue(event.target.value);
+  };
+  
+  const handleInfoChange = (event) => {
+    setInfoValue(event.target.value);
+  };
+
+
 
   async function stepFirstHandler(event) {
     console.log("in")
@@ -269,6 +293,7 @@ const MaidRegistration = () => {
       });
       if (!response.ok) {
         console.log('Something went wrong!');
+        toast.error('Something went wrong!');
       }
       const data = await response.json();
       console.log(data);
@@ -304,8 +329,10 @@ const MaidRegistration = () => {
       });
       if (!response.ok) {
         console.log('Please enter correct OTP!');
+        toast.error('Please enter correct OTP!');
       }
       const data = await response.json();
+      toast.success('OTP Verified Successfully!');
       console.log(data);
       setHelperCode(data.ReferenceNo );
      }else{
@@ -335,7 +362,14 @@ const MaidRegistration = () => {
     console.log("in")
     console.log(intTime);
     event.preventDefault();
-
+    const transformedData = list.map((item) => {
+      return {
+        OrgId: item.OrgId,
+        HelperCode: item.HelperCode,
+        Type: item.Type,
+        Information: item.Information
+      };
+    });
     fetchTokenHandler();
 
      const regDetail = {
@@ -366,8 +400,10 @@ const MaidRegistration = () => {
         TrainingCenter:helperFormData.TrainingCenter,
         EmailAddress:helperFormData.Email,
         // FileName:helperFormData.FileName,
-        FileName:"helper.jpg",
-        Helper_Img_Base64String:"",
+       // FileName:"helper.jpg",
+       // Helper_Img_Base64String:"",
+        FileName: helperFormData.HelperBioDetails.FileName,
+        Helper_Img_Base64String: helperFormData.HelperBioDetails.Helper_Img_Base64String,
         IsActive:true,
         CreatedBy:"HLPE75014F5"
       },
@@ -377,14 +413,7 @@ const MaidRegistration = () => {
         WhatsApp: helperFormData.WhatsApp,
         Viber: helperFormData.Viber,
         Facebook:helperFormData.Facebook,
-        OtherContact: [
-          {
-            OrgId: 1,
-            HelperCode: "HLPE75014F5",
-            Type:helperFormData.Type,
-            Information:helperFormData.Information
-          }
-        ]
+        OtherContact: transformedData
       },
       FamilyBackground: {
         FatherOccupation: helperFormData.FatherOccupation,
@@ -420,7 +449,7 @@ const MaidRegistration = () => {
       Interview: [
         {
           OrgId: 1,
-          HelperCode: "HLPE75014F5",
+          HelperCode: helperCode,
           InterviewDate:convertToISODate(document.getElementById('InterviewDate').value),
           InterviewTime: intTime,
           Remarks:helperFormData.Remarks
@@ -434,100 +463,7 @@ const MaidRegistration = () => {
       }
     }
 
-    //  const regDetail={
-    //   "HelperBioDetails": {
-    //     "OrgId": 1,
-    //     "HelperCode": "HLPE75014F5",
-    //     "HelperName": helperFormData.HelperName,
-    //     "EmailId": helperFormData.Email,
-    //     "Password": helperFormData.Password,
-    //     "MobileNo": helperFormData.SMSContactNumber,
-    //     "NRIC_FIN": helperFormData.NRIC_FIN,
-    //     "Nationality": "INDIAN",
-    //     "PassportNo": "PK000125",
-    //     "PassportIssuePlace": "CHENNAI",
-    //     "PassIssueDate": "2023-03-25T12:35:49.646Z",
-    //     "PassportExpiryDate": "2023-03-25T12:35:49.646Z",
-    //     "WorkPermitNo": "PRM00001",
-    //     "WorkPermitExpiry": "2023-03-25T12:35:49.646Z",
-    //     "Religion": "MUSLIM",
-    //     "DateOfBirth": "2023-03-25T12:35:49.646Z",
-    //     "MartilaStatus": "YES",
-    //     "BirthPlace": "TRICHY",
-    //     "Specialization_Preference": "Caregiver",
-    //     "RepatraiteAirport": "Airport1",
-    //     "Status": "Active",
-    //     "OtherInfo": "Nothing",
-    //     "DirectHire": true,
-    //     "TrainingCenter": "FACK TRAINING",
-    //     "EmailAddress": "Helper@gmail.com",
-    //     "FileName": "Helper.jpg",
-    //     "Helper_Img_Base64String": "",
-    //     "IsActive": true,
-    //     "CreatedBy": "HLP20261B91"
-    //   },
-    //   "HelperContacts": {
-    //     "HomeAddress": "Home Add-1",
-    //     "HomeTelephone": "044 52220",
-    //     "WhatsApp": "65555555555",
-    //     "Viber": "900000000",
-    //     "Facebook": "Noface5655",
-    //     "OtherContact": [
-    //       {
-    //         "OrgId": 1,
-    //         "HelperCode": "HLP20261B91",
-    //         "Type": "NEW TYPE",
-    //         "Information": "NOTHING"
-    //       }
-    //     ]
-    //   },
-    //   "FamilyBackground": {
-    //     "FatherOccupation": "VIP",
-    //     "MotherOccupation": "HOME MAKER",
-    //     "FatherAge": 50,
-    //     "MotherAge": 40,
-    //     "SiblingsPosition": "3",
-    //     "NoOfBrother": 1,
-    //     "NoOfSister": 2,
-    //     "BrotherAge": 40,
-    //     "SisterAge": 20,
-    //     "HusbandName": "NO IDEA",
-    //     "HusbandOccupation": "NOTHING",
-    //     "HusbandAge": 40,
-    //     "NoOfChildren": 2,
-    //     "ChildAge": 10
-    //   },
-    //   "PhysicalAttribute": {
-    //     "Complexion": "RELAX",
-    //     "Height_CM": "5.5",
-    //     "Height_Feet": "5",
-    //     "Weight_KG": 60,
-    //     "Weight_Pound": 50
-    //   },
-    //   "BookingRealtedInformation": {
-    //     "BasicSalary": 1000,
-    //     "OffDayDailyRate": 2,
-    //     "HelperFee": 2,
-    //     "PocketMoney": 100,
-    //     "SelectOffDays": "SUNDAY",
-    //     "NoOffDays": 1
-    //   },
-    //   "Interview": [
-    //     {
-    //       "OrgId": 1,
-    //       "HelperCode": "HLP20261B91",
-    //       "InterviewDate": "2023-03-28T10:04:04.107Z",
-    //       "InterviewTime": ["10:30","11:00"],
-    //       "Remarks": "TESTING INETRVIEW"
-    //     }
-    //   ],
-    //   "AccountDetails": {
-    //     "Email": "Helper@gmail.com",
-    //     "Password": "welcome123",
-    //     "ConfirmPassword": "welcome123",
-    //     "SMSContactNumber": "987456321"
-    //   }
-    // }
+   
      console.log(JSON.stringify(regDetail));
     
      const token = jwtToken;  
@@ -542,12 +478,14 @@ const MaidRegistration = () => {
      });
      if (!response.ok) {
        console.log('SOMETHING WENT WRONG');
+       toast.error('Something went wrong!');
      }
     //  console.log(response.json());
      const data =  await response.json();
      console.log(data);
      if (data.Code === 200 && data.Message === 'Sucess') {
       // alert('updated successfully')
+      toast.success('Registered Successfully');
       navigate('/helperlogin');
       }
    }
@@ -617,7 +555,7 @@ const MaidRegistration = () => {
                         <div className="col-lg-8">
                           <input type="text" ref={phoneRef} className="form-control" placeholder="Your Phone Number"/> </div>
                       </div>
-                      <div className="row align-items-center justify-content-center form-group">
+                      {/* <div className="row align-items-center justify-content-center form-group">
                         <div className="col-lg-auto">
                           <label>Select Option to Receive OTP * : <span className="red">*</span></label>
                         </div>
@@ -629,8 +567,8 @@ const MaidRegistration = () => {
                                 <input type="radio" name="r1"/> <span>via Email</span></label>
                             </div>
                           </div>
-                        </div>
-                      </div>
+                        </div> 
+                      </div> */}
                     </div>
                     <button type="button" onClick={stepFirstHandler} className="next action-button custom-button center-btn">Next</button>
                   </fieldset>
@@ -673,10 +611,47 @@ const MaidRegistration = () => {
                               <div className="col-lg-6">
                                 <div className="upload-area">
                                   <div className="file-upload">
-                                    <div id="start">
+                                    {/* <div id="start">
                                       <img src="images/upload-icon-highlight.png" alt=""/>
                                       <div className="upload-inner-info">Click here to upload Photo/Video</div>
-                                    </div>
+                                    </div> */}
+
+<label htmlFor="uploadInput">
+                                            <div id="start">
+                                              {selectedImage ? (
+                                                <img src={selectedImage} style={{'width':'100px','height':'100px'}} alt="Selected" />
+                                              ) : (
+                                                <img src="images/upload-icon-highlight.png" alt="" />
+                                              )}
+                                              <div className="upload-inner-info">Click here to upload Photo/Video</div>
+                                            </div>
+                                          </label>
+                                          <input
+                                            type="file"
+                                            id="uploadInput"
+                                            style={{ display: 'none' }}
+                                            accept="image/*, video/*"
+                                            onChange={(e) => {
+                                              const file = e.target.files[0];
+                                              if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = () => {
+                                                  setSelectedImage(reader.result);
+                                          
+                                                  setHelperFormData((prevData) => ({
+                                                    ...prevData,
+                                                    FileName: file.name,
+                                                    HelperBioDetails: {
+                                                      ...prevData.HelperBioDetails,
+                                                      Helper_Img_Base64String: reader.result,
+                                                    },
+                                                  }));
+                                                };
+                                                reader.readAsDataURL(file);
+                                              }
+                                            }}
+                                          />
+
                                   </div>
                                 </div>
                               </div>
@@ -1088,7 +1063,7 @@ const MaidRegistration = () => {
                                 <h6>Other Contact</h6>
                               </div>
                             </div>
-                            <div className="row form-group align-items-center">
+                            {/* <div className="row form-group align-items-center">
                               <div className="col-lg-3">
                                 <label>Type</label>
                               </div>
@@ -1113,13 +1088,73 @@ const MaidRegistration = () => {
                                           Information:  e.target.value
                                       })
                                   }}/> </div>
+                            </div> */}
+
+<div className="row form-group align-items-center">
+                        <div className="col-lg-3">
+                          <label>Type</label>
+                        </div>
+                        <div className="col-lg-6">
+                          <input type="text" className="form-control" placeholder="Type"
+                          value={typeValue}
+                          onChange={handleTypeChange}
+                          /> </div>
+                      </div>
+                      <div className="row form-group align-items-center">
+                        <div className="col-lg-3">
+                          <label>Information</label>
+                        </div>
+                        <div className="col-lg-6">
+                          <input type="text" className="form-control" placeholder="Info"
+                          value={infoValue}
+                          onChange={handleInfoChange}
+                          /> </div>
+
+                        <div className="col-lg-3">
+                          <button name="add-more" onClick={handleAdd} className="add-more"> Add </button>
+                        </div>
+                      </div>
+
+                      {/* <div className="row form-group align-items-center">
+                        <div className="col-lg-12">
+                          <button name="add-more" onClick={handleAdd} className="add-more"> Add <i className="fas fa-plus"></i></button>
+                        </div>
+                      </div>  */}
+                      {/* <ul>
+                        {list.map((item, index) => (
+                          <li key={index}>
+                            Type: {item.type}, Info: {item.info}
+                          </li>
+                        ))}
+                      </ul> */}
+                      {list.length > 0 && (
+                       <div className="table-holder md-table Scrollcontent" data-mcs-theme="dark">
+                        <table className="table" style={{ width: "80%" }}>
+                          <thead>
+                            <tr>
+                              <th>S/No</th>
+                              <th>Type</th>
+                              <th>Information</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {list.map((item, index) => (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{item.Type}</td>
+                                <td>{item.Information}</td>
+                              </tr>
+                            ))}
+                            </tbody>
+                            </table>
                             </div>
-                            <div className="row form-group align-items-center">
+                      )}
+                            {/* <div className="row form-group align-items-center">
                               <div className="col-lg-12">
                                 <button name="add-more" className="add-more"><i className="fas fa-plus"></i> Add More</button>
                               </div>
                             </div>
-                            
+                             */}
                             
 
                           </div>
@@ -1161,7 +1196,7 @@ const MaidRegistration = () => {
                               <div className="col-lg-3">
                                 <label>Father Age</label>
                               </div>
-                              <div className="col-lg-2">
+                              <div className="col-lg-6">
                                 <input type="text" className="form-control" placeholder="Age" value={helperFormData.FatherAge}
                                     onChange={(e) => {
                                       setHelperFormData({
@@ -1174,7 +1209,7 @@ const MaidRegistration = () => {
                               <div className="col-lg-3">
                                 <label>Mother Age</label>
                               </div>
-                              <div className="col-lg-2">
+                              <div className="col-lg-6">
                                 <input type="text" className="form-control" placeholder="Age" value={helperFormData.MotherAge}
                                     onChange={(e) => {
                                       setHelperFormData({
@@ -1201,7 +1236,7 @@ const MaidRegistration = () => {
                               <div className="col-lg-3">
                                 <label>No. of Brother</label>
                               </div>
-                              <div className="col-lg-2">
+                              <div className="col-lg-6">
                                 <input type="text" className="form-control" placeholder="No." value={helperFormData.NoOfBrother}
                                     onChange={(e) => {
                                       setHelperFormData({
@@ -1214,7 +1249,7 @@ const MaidRegistration = () => {
                               <div className="col-lg-3">
                                 <label>No. of Sister</label>
                               </div>
-                              <div className="col-lg-2">
+                              <div className="col-lg-6">
                                 <input type="text" className="form-control" placeholder="No." value={helperFormData.NoOfSister}
                                     onChange={(e) => {
                                       setHelperFormData({
@@ -1227,7 +1262,7 @@ const MaidRegistration = () => {
                               <div className="col-lg-3">
                                 <label>Brother Age</label>
                               </div>
-                              <div className="col-lg-2">
+                              <div className="col-lg-6">
                                 <input type="text" className="form-control" placeholder="No." value={helperFormData.BrotherAge}
                                     onChange={(e) => {
                                       setHelperFormData({
@@ -1240,7 +1275,7 @@ const MaidRegistration = () => {
                               <div className="col-lg-3">
                                 <label>Sister Age</label>
                               </div>
-                              <div className="col-lg-2">
+                              <div className="col-lg-6">
                                 <input type="text" className="form-control" placeholder="No." value={helperFormData.SisterAge}
                                     onChange={(e) => {
                                       setHelperFormData({
@@ -1280,7 +1315,7 @@ const MaidRegistration = () => {
                               <div className="col-lg-3">
                                 <label>Husband Age</label>
                               </div>
-                              <div className="col-lg-2">
+                              <div className="col-lg-6">
                                 <input type="text" className="form-control" placeholder="Age" value={helperFormData.HusbandAge}
                                     onChange={(e) => {
                                       setHelperFormData({
@@ -1293,7 +1328,7 @@ const MaidRegistration = () => {
                               <div className="col-lg-3">
                                 <label>No. Of Children</label>
                               </div>
-                              <div className="col-lg-2">
+                              <div className="col-lg-6">
                                 <input type="text" className="form-control" placeholder="No." value={helperFormData.NoOfChildren}
                                     onChange={(e) => {
                                       setHelperFormData({
@@ -1306,7 +1341,7 @@ const MaidRegistration = () => {
                               <div className="col-lg-3">
                                 <label>Child Age</label>
                               </div>
-                              <div className="col-lg-2">
+                              <div className="col-lg-6">
                                 <input type="text" className="form-control" placeholder="Age" value={helperFormData.ChildAge}
                                     onChange={(e) => {
                                       setHelperFormData({
@@ -1582,7 +1617,7 @@ const MaidRegistration = () => {
                                 </select>
                               </div>
                             </div>
-                              {intTime.length!=0? 
+                              {/* {intTime.length!=0? 
                                 <>{intTime.map((time)=><div key={time} className="row select-group select-slot-group align-items-center">
                                   <div className="col-lg-3"></div>
                                   <div className="col-lg-6">Selected Slot @ {time}</div>
@@ -1591,7 +1626,7 @@ const MaidRegistration = () => {
                         <div className="col-lg-12">
                           <button name="add-more" className="add-more"><i className="fas fa-plus"></i> Add More</button>
                         </div>
-                      </div>
+                      </div> */}
 
                       <div className="row form-group">
                               <div className="col-lg-3">

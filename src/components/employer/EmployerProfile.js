@@ -333,7 +333,7 @@ const EmployerProfile = () => {
                                 <label>Nationality</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select'
+                               <select className='form-control'
                                 id="Nationality"
                                 name="Nationality"
                                 value={profiledata.Nationality || ''}
@@ -430,7 +430,7 @@ const EmployerProfile = () => {
                                 <label>Gender</label>
                               </div>
                               <div className="col-lg-7">
-                                <select className='new-select'
+                                <select className='form-control'
                                 id="Gender"
                                 name="Gender"
                                 value={profiledata.Gender || ''}
@@ -447,7 +447,7 @@ const EmployerProfile = () => {
                                 <label>Race</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select'
+                               <select className='form-control'
                                 id="RaceCode"
                                 name="RaceCode"
                                 value={profiledata.RaceCode || ''}
@@ -464,7 +464,7 @@ const EmployerProfile = () => {
                                 <label>Residential Status</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select'
+                               <select className='form-control'
                                 id="ResidentialStatusCode"
                                 name="ResidentialStatusCode"
                                 value={profiledata.ResidentialStatusCode || ''}
@@ -481,7 +481,7 @@ const EmployerProfile = () => {
                                 <label>Marital Status</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select'
+                               <select className='form-control'
                                 id="MartilaStatus"
                                 name="MartilaStatus"
                                 value={profiledata.MartilaStatus || ''}
@@ -499,7 +499,7 @@ const EmployerProfile = () => {
                                 <label>Religion</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select'
+                               <select className='form-control'
                                 id="ReligionCode"
                                 name="ReligionCode"
                                 value={profiledata.ReligionCode || ''}
@@ -520,7 +520,7 @@ const EmployerProfile = () => {
                           <label>Occupation</label>
                         </div>
                         <div className="col-lg-7">
-                         <select className='new-select'
+                         <select className='form-control'
                           id="Occupation"
                           name="Occupation"
                           value={profiledata.Occupation || ''}
@@ -565,7 +565,7 @@ const EmployerProfile = () => {
                                 <label>Refferal Method</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select'
+                               <select className='form-control'
                                 id="ReferralMethod"
                                 name="ReferralMethod"
                                 value={profiledata.ReferralMethod || ''}
@@ -610,7 +610,7 @@ const EmployerProfile = () => {
                                 <label>Monthly Income</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select'
+                               <select className='form-control'
                                 id="MonthlyIncome"
                                 name="MonthlyIncome"
                                 value={profiledata.MonthlyIncome || ''}
@@ -626,7 +626,7 @@ const EmployerProfile = () => {
                                 <label>Year of Assesment</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select'
+                               <select className='form-control'
                                 id="YearofAssesment"
                                 name="YearofAssesment"
                                 value={profiledata.YearofAssesment || ''}
@@ -755,7 +755,7 @@ const EmployerProfile = () => {
                                 <label>Type of Residence</label>
                               </div>
                               <div className="col-lg-7">
-                               <select className='new-select'
+                               <select className='form-control'
                                 id="TypeOfResidence"
                                 name="TypeOfResidence"
                                 value={profiledata.TypeOfResidence || ''}
