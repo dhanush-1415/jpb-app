@@ -7,12 +7,24 @@ import { Link } from 'react-router-dom';
 
 const HelperInterview1 = () => {
   const [selectedLink, setSelectedLink] = useState('/');
-
+  const [storedData, setstoreddata] = React.useState([]);
+  const [helperName, setHelperName] = useState('');
+  const [ishelperloggedin, setishelperloggedin] = React.useState(false);
   // const navigate = useNavigate();
   useEffect(() => {
     setSelectedLink(window.location.pathname);
+    let token = localStorage.getItem("helpertoken");
+    console.log(token);
+    if (token) {
+      console.log(token);
+      setishelperloggedin(true);
+      setstoreddata(JSON.parse(token));
+      console.log(storedData);
+     // setHelperName(storedData[0].HelperName);
+    }
+    console.log(ishelperloggedin);
+    console.log(storedData);
   }, []);
-
   const handleLinkClick = (link) => {
     //navigate(link);
     window.location.href = link
@@ -45,7 +57,7 @@ const HelperInterview1 = () => {
           <div className="row">
             <div className="col-lg-auto mb-991-30"> 
               <div className="sidebar">
-              <div className="sidebar-title"><h5>Hi Samantha,</h5></div>
+              <div className="sidebar-title"><h5>Hi {helperName},</h5></div>
               <a className="btn-control-notext show-lg" href="#nav">Select</a>
               <ul id="nav" className="nav-1 hide-lg">
               <li className={selectedLink === '/helperaccount' ? 'active' : ''}><Link to="/helperaccount" onClick={() => { handleLinkClick('/helperaccount');}}>Account</Link></li>
