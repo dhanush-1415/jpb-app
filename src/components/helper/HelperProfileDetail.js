@@ -3,6 +3,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 
@@ -11,6 +12,7 @@ const HelperProfileDetail = () => {
   const [storedData, setstoreddata] = React.useState([]);
   const [ishelperloggedin, setishelperloggedin] = React.useState(false);
   const [jwtToken, setjwtToken] = useState('');
+  const [helperName, setHelperName] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [profiledata, setprofiledata] = useState({
     "HelperBioDetails": {
@@ -130,6 +132,7 @@ const HelperProfileDetail = () => {
           "Weight_Pound": storedData[0].Weight_Pound
         }
       });
+      setHelperName(storedData[0].HelperName);
 
       if(storedData[0].FilePath ){
         const reader = new FileReader();
@@ -250,6 +253,7 @@ const HelperProfileDetail = () => {
 
       if (!response.ok) {
         console.log('Something went wrong!');
+        toast.error('Something went wrong!');
         return;
       }
 
@@ -293,7 +297,7 @@ const HelperProfileDetail = () => {
           }; // Update the property
         setstoreddata(updatedData);
         console.log(storedData,updatedData);
-        
+        toast.success('Updated Successfully!');
         localStorage.setItem('helpertoken', JSON.stringify(updatedData));
       }
     } catch (error) {
@@ -334,7 +338,7 @@ const HelperProfileDetail = () => {
           <div className="row">
             <div className="col-lg-auto mb-991-30"> 
               <div className="sidebar">
-              <div className="sidebar-title"><h5>Hi Samantha,</h5></div>
+              <div className="sidebar-title"><h5>Hi {helperName},</h5></div>
               <a className="btn-control-notext show-lg" href="#nav">Select</a>
               <ul id="nav" className="nav-1 hide-lg">
              

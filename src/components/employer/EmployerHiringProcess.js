@@ -3,6 +3,7 @@ import $ from "jquery";
 import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
+import { toast } from 'react-toastify';
 
 
 

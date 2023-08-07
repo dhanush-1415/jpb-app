@@ -3,7 +3,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 
 const EmployerSearchResult = () => {
   return(

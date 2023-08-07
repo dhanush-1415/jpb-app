@@ -8,11 +8,13 @@ import {  toast } from 'react-toastify';
 
 
 
+
 const EmployerAccount = () => {
   const [selectedLink, setSelectedLink] = useState('/');
   const [storedData, setstoreddata] = React.useState([]);
   const [isloggedin, setisloggedin] = React.useState(false);
   const [jwtToken, setjwtToken] = useState('');
+  const [employerName, setEmployerName] = useState('');
   const [accountdata, setaccountdata] = useState({
     EmailId: '',
     Password: '',
@@ -46,6 +48,7 @@ const EmployerAccount = () => {
         Contact_MobileNo: storedData[0].Contact_MobileNo,
         EmployerCode: storedData[0].EmployerCode
       });
+      setEmployerName(storedData[0].EmployerName);
     }
   }, [storedData]);
 
@@ -102,6 +105,7 @@ if(accountdata.Password === accountdata.ConfirmPassword){
 
       if (!response.ok) {
         console.log('Something went wrong!');
+toast.error('Something went wrong!'); 
         return;
       }
 
@@ -122,6 +126,7 @@ if(accountdata.Password === accountdata.ConfirmPassword){
         console.log(storedData,updatedData);
         
         localStorage.setItem('token', JSON.stringify(updatedData));
+        toast.success('Updated Successfully!');
       }
     } catch (error) {
       console.log('An error occurred:', error);
@@ -164,7 +169,7 @@ if(accountdata.Password === accountdata.ConfirmPassword){
           <div className="row">
             <div className="col-lg-auto mb-991-30"> 
               <div className="sidebar">
-              <div className="sidebar-title"><h5>Hi Timothy,</h5></div>
+              <div className="sidebar-title"><h5>Hi {employerName},</h5></div>
               <a className="btn-control-notext show-lg" href="#nav">Select</a>
               <ul id="nav" className="nav-1 hide-lg">
               <li className={selectedLink === '/employeraccount' ? 'active' : ''}><Link to="/employeraccount" onClick={() => { handleLinkClick('/employeraccount');}}>Account Details</Link></li>

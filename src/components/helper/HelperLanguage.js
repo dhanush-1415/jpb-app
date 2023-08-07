@@ -3,7 +3,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 
 
 const HelperLanguage = () => {
@@ -13,6 +13,7 @@ const HelperLanguage = () => {
   const [jwtToken, setjwtToken] = useState('');
   const [list, setList] = useState([]);
   const [langValue, setLangValue] = useState("");
+  const [helperName, setHelperName] = useState('');
   const [understandingValue, setUnderstandingValue] = useState("");  
   const [speakingValue, setSpeakingValue] = useState("");
   const [remarksValue, setRemarksValue] = useState("");
@@ -69,6 +70,7 @@ const HelperLanguage = () => {
     //         ] 
         
       });
+      setHelperName(storedData[0].HelperName);
     }
   }, [storedData]);
 
@@ -172,6 +174,7 @@ const HelperLanguage = () => {
 
       if (!response.ok) {
         console.log('Something went wrong!');
+        toast.error('Something went wrong!');
         return;
       }
 
@@ -188,7 +191,7 @@ const HelperLanguage = () => {
           }; // Update the property
         setstoreddata(updatedData);
         console.log(storedData,updatedData);
-        
+        toast.success('Updated Successfully!');
         localStorage.setItem('helpertoken', JSON.stringify(updatedData));
       }
     } catch (error) {
@@ -229,7 +232,7 @@ const HelperLanguage = () => {
           <div className="row">
             <div className="col-lg-auto mb-991-30"> 
               <div className="sidebar">
-              <div className="sidebar-title"><h5>Hi Samantha,</h5></div>
+              <div className="sidebar-title"><h5>Hi {helperName},</h5></div>
               <a className="btn-control-notext show-lg" href="#nav">Select</a>
               <ul id="nav" className="nav-1 hide-lg">
               <li className={selectedLink === '/helperaccount' ? 'active' : ''}><Link to="/helperaccount" onClick={() => { handleLinkClick('/helperaccount');}}>Account</Link></li>

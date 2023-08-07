@@ -3,12 +3,13 @@ import Header from '../Header';
 import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 
 
 const EmployerContact = () => {
   const [selectedLink, setSelectedLink] = useState('/');
   const [storedData, setstoreddata] = React.useState([]);
+  const [employerName, setEmployerName] = useState('');
   const [contactdata, setcontactdata] = useState({
     "OrgId": 1,
     "EmployerCode": "",
@@ -58,6 +59,7 @@ const EmployerContact = () => {
         "Contact_BuildingName": storedData[0].Contact_BuildingName,
         "Contact_Country": storedData[0].Contact_Country
       });
+      setEmployerName(storedData[0].EmployerName);
     }
   }, [storedData]);
 
@@ -120,6 +122,7 @@ const EmployerContact = () => {
 
       if (!response.ok) {
         console.log('Something went wrong!');
+        toast.error('Something went wrong!');
         return;
       }
 
@@ -145,7 +148,7 @@ const EmployerContact = () => {
           }; // Update the property
         setstoreddata(updatedData);
         console.log(storedData,updatedData);
-        
+        toast.success('Updated Successfully!');
         localStorage.setItem('token', JSON.stringify(updatedData));
       }
     } catch (error) {
@@ -186,7 +189,7 @@ const EmployerContact = () => {
           <div className="row">
             <div className="col-lg-auto mb-991-30"> 
               <div className="sidebar">
-              <div className="sidebar-title"><h5>Hi Timothy,</h5></div>
+              <div className="sidebar-title"><h5>Hi {employerName},</h5></div>
               <a className="btn-control-notext show-lg" href="#nav">Select</a>
               <ul id="nav" className="nav-1 hide-lg">
               <li className={selectedLink === '/employeraccount' ? 'active' : ''}><Link to="/employeraccount" onClick={() => { handleLinkClick('/employeraccount');}}>Account Details</Link></li>
