@@ -5,7 +5,8 @@ import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
+import { createHelperUser, sendRegOTP, verifyRegOTP } from '../../apiCalls';
+import { jpb } from '../../config';
 
 const MaidRegistration = () => {
   const [selectedLink, setSelectedLink] = useState('/');
@@ -15,12 +16,17 @@ const MaidRegistration = () => {
   const [list, setList] = useState([]);
   const [typeValue, setTypeValue] = useState("");
   const [infoValue, setInfoValue] = useState("");  
-  const nameRef = useRef('');
-  const emailRef = useRef('');
-  const phoneRef = useRef('');
-  const otpRef = useRef('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [inputOtp , setInputOtp] = useState('');
+  const [stepOneComplete, setStepOneComplete] = useState(true);
+  const [stepTwoComplete, setStepTwoComplete] = useState(true);
   const [intTime, setIntTime] = useState([]);
+  const [otp , setOtp] = useState("")
+
   const navigate = useNavigate();
+
   const [helperFormData, setHelperFormData] = React.useState({
     HelperBioDetails: {
       OrgId: 1,
@@ -264,39 +270,70 @@ const MaidRegistration = () => {
 
 
 
+  
+  useEffect(() => {
+    if (!name || !email || !phone) {
+      setStepOneComplete(true);
+    } else {
+      setStepOneComplete(false);
+    }
+
+
+    console.log(otp , inputOtp , "iii")
+    if(otp === inputOtp){
+      setStepTwoComplete(false);
+    }else{
+      setStepTwoComplete(true);
+    }
+  }, [name, email, phone , otp , inputOtp]);
+
+
+
+
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+  
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+  
+  const handlePhoneChange = (event) => {
+    setPhone(event.target.value);
+  };
+  
+  const handleOtpChange = (event) => {
+    setInputOtp(event.target.value);
+  };
+
+
+
+
   async function stepFirstHandler(event) {
     console.log("in")
    // event.preventDefault();
   
     const regDetail = {
       OrgId: 1,
-      Name: nameRef.current.value,
-      Email: emailRef.current.value,
-      Phone: phoneRef.current.value,
-      viaOTP: 'EMAIL',
+      Name: name,
+      Email: email,
+      Phone: phone,
+      Method: 'Helper',
     };
-    console.log(regDetail);
-    console.log(JSON.stringify(regDetail));
-   
-    const token = jwtToken;
-    console.log(jwtToken);
-    console.log(token);
+
     if (regDetail.Email !="" && regDetail.Phone !=""){
-      console.log("test done");
-      const response = await fetch('http://154.26.130.251:283/api/Helper/Register', {
-        method: 'POST',
-        body: JSON.stringify(regDetail),
-        headers: {
-          'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        }
-      });
-      if (!response.ok) {
-        console.log('Something went wrong!');
-        toast.error('Something went wrong!');
+      
+    try {
+      const response = await sendRegOTP(regDetail);
+
+
+      if (response.Code === 200 && response.Message === 'Sucess') {
+        setOtp(response.Data);
       }
-      const data = await response.json();
-      console.log(data);
+    } catch (error) {
+      toast.error('Failure!');
+      console.log('An error occurred:', error);
+    }
     }else{
       console.log("mandatory are missing");
     }
@@ -308,33 +345,22 @@ const MaidRegistration = () => {
   // fetchTokenHandler();
      const regDetail = {
        OrgId: 1,
-       Email: emailRef.current.value,
-       OTP: otpRef.current.value
+       Email: email,
+       OTP: inputOtp,
+       Module: "Helper"
      };
-     console.log(regDetail);
-     console.log(JSON.stringify(regDetail));
     
-     const token = jwtToken;
-     console.log(jwtToken);
-     console.log(token);
      if (regDetail.OTP !=""){
-      console.log("present otp");
-      const response = await fetch('http://154.26.130.251:283/api/Helper/VerifyOTP', {
-       method: 'POST',
-       body: JSON.stringify(regDetail),
-       headers: {
-         'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-       }
-      });
-      if (!response.ok) {
-        console.log('Please enter correct OTP!');
-        toast.error('Please enter correct OTP!');
+      try {
+        const response = await verifyRegOTP(regDetail);
+  
+        if (response.Code === 200 && response.Message === 'Sucess') {
+          alert("Otp Verified")
+        }
+      } catch (error) {
+        toast.error('Failure!');
+        console.log('An error occurred:', error);
       }
-      const data = await response.json();
-      toast.success('OTP Verified Successfully!');
-      console.log(data);
-      setHelperCode(data.ReferenceNo );
      }else{
         console.log("empty");
      }
@@ -370,11 +396,438 @@ const MaidRegistration = () => {
         Information: item.Information
       };
     });
-    fetchTokenHandler();
 
-     const regDetail = {
+    //  const regDetail = {
+    //   HelperBioDetails: {
+    //     OrgId:  jpb.OrgId,,
+    //     HelperCode: helperCode,
+    //     HelperName: helperFormData.HelperName,
+    //     EmailId: helperFormData.Email,
+    //     Password:helperFormData.Password,
+    //     MobileNo:helperFormData.SMSContactNumber,
+    //     NRIC_FIN:helperFormData.NRIC_FIN,
+    //     Nationality:helperFormData.Nationality,
+    //     PassportNo:helperFormData.PassportNo,
+    //     PassportIssuePlace:helperFormData.PassportIssuePlace,
+    //     PassIssueDate:convertToISODate(document.getElementById('PassIssueDate').value),
+    //     PassportExpiryDate:convertToISODate(document.getElementById('PassportExpiryDate').value),
+    //     WorkPermitNo:helperFormData.WorkPermitNo,
+    //     WorkPermitExpiry:convertToISODate(document.getElementById('WorkPermitExpiry').value),
+    //     Religion:helperFormData.Religion,
+    //     DateOfBirth:convertToISODate(document.getElementById('DateOfBirth').value),
+    //     MartilaStatus:helperFormData.MartilaStatus,
+    //     BirthPlace:helperFormData.BirthPlace,
+    //     Specialization_Preference:helperFormData.Specialization_Preference,
+    //     RepatraiteAirport:helperFormData.RepatraiteAirport,
+    //     Status:helperFormData.Status,
+    //     OtherInfo:helperFormData.OtherInfo,
+    //     DirectHire:true,
+    //     TrainingCenter:helperFormData.TrainingCenter,
+    //     EmailAddress:helperFormData.Email,
+    //     // FileName:helperFormData.FileName,
+    //    // FileName:"helper.jpg",
+    //    // Helper_Img_Base64String:"",
+    //     FileName: helperFormData.HelperBioDetails.FileName,
+    //     Helper_Img_Base64String: helperFormData.HelperBioDetails.Helper_Img_Base64String,
+    //     IsActive:true,
+    //     CreatedBy:"HLPE75014F5"
+    //   },
+    //   HelperContacts: {
+    //     HomeAddress: helperFormData.HomeAddress,
+    //     HomeTelephone: helperFormData.HomeTelephone,
+    //     WhatsApp: helperFormData.WhatsApp,
+    //     Viber: helperFormData.Viber,
+    //     Facebook:helperFormData.Facebook,
+    //     OtherContact: transformedData
+    //   },
+    //   FamilyBackground: {
+    //     FatherOccupation: helperFormData.FatherOccupation,
+    //     MotherOccupation: helperFormData.MotherOccupation,
+    //     FatherAge:helperFormData.FatherAge,
+    //     MotherAge:helperFormData.MotherAge,
+    //     SiblingsPosition:helperFormData.SiblingsPosition,
+    //     NoOfBrother:helperFormData.NoOfBrother,
+    //     NoOfSister:helperFormData.NoOfSister,
+    //     BrotherAge:helperFormData.BrotherAge,
+    //     SisterAge:helperFormData.SisterAge,
+    //     HusbandName:helperFormData.HusbandName,
+    //     HusbandOccupation:helperFormData.HusbandOccupation,
+    //     HusbandAge:helperFormData.HusbandAge,
+    //     NoOfChildren:helperFormData.NoOfChildren,
+    //     ChildAge:helperFormData.ChildAge,
+    //   },
+    //   PhysicalAttribute: {
+    //     Complexion:helperFormData.Complexion,
+    //     Height_CM:helperFormData.Height_CM,
+    //     Height_Feet:helperFormData.Height_Feet,
+    //     Weight_KG:helperFormData.Weight_KG,
+    //     Weight_Pound:helperFormData.Weight_Pound
+    //   },
+    //   BookingRealtedInformation: {
+    //     BasicSalary:helperFormData.BasicSalary,
+    //     OffDayDailyRate:helperFormData.OffDayDailyRate,
+    //     HelperFee:helperFormData.HelperFee,
+    //     PocketMoney:helperFormData.PocketMoney,
+    //     SelectOffDays:helperFormData.SelectOffDays,
+    //     NoOffDays:helperFormData.NoOffDays
+    //   },
+    //   Interview: [
+    //     {
+    //       OrgId: 1,
+    //       HelperCode: helperCode,
+    //       InterviewDate:convertToISODate(document.getElementById('InterviewDate').value),
+    //       InterviewTime: intTime,
+    //       Remarks:helperFormData.Remarks
+    //     }
+    //   ],
+    //   // AccountDetails: {
+    //   //   Email:helperFormData.Email,
+    //   //   Password:helperFormData.Password,
+    //   //   ConfirmPassword:helperFormData.ConfirmPassword,
+    //   //   SMSContactNumber:helperFormData.SMSContactNumber
+    //   // }
+    // }
+
+
+    // const postData = {
+    //   "OrgId": jpb.OrgId,
+    //   "CVCode": helperCode,
+    //   "BranchCode": "string",
+    //   "Email": helperFormData.Email,
+    //   "Password": helperFormData.Password,
+    //   "ConfirmPassword": helperFormData.ConfirmPassword,
+    //   "SMSContactNumber": helperFormData.SMSContactNumber,
+    //   "FullName": "string",
+    //   "NricFin": "string",
+    //   "Nationality": "string",
+    //   "PassportNo": "string",
+    //   "PassportIssuePlace": "string",
+    //   "PassportExpiryDate": "2024-04-02T07:20:32.201Z",
+    //   "PassportExpiryDateString": "string",
+    //   "PassportIssueDate": "2024-04-02T07:20:32.201Z",
+    //   "PassportIssueDateString": "string",
+    //   "WPNo": "string",
+    //   "WPExpiry": "2024-04-02T07:20:32.201Z",
+    //   "WPExpiryString": "string",
+    //   "Religion": "string",
+    //   "DateOfBirth": "2024-04-02T07:20:32.201Z",
+    //   "DateOfBirthString": "string",
+    //   "MaritalStatus": "string",
+    //   "BirthPlace": "string",
+    //   "BirthPlaceString": "string",
+    //   "Specialisation": "string",
+    //   "RepatraiteAirport": "string",
+    //   "Status": "string",
+    //   "OtherInfo": "string",
+    //   "DirectHire": true,
+    //   "TrainingCenter": "string",
+    //   "Complexion": "string",
+    //   "Height": 0,
+    //   "Feet": 0,
+    //   "Weight": 0,
+    //   "Pound": 0,
+    //   "PlacementFee": 0,
+    //   "BasicSalary": 0,
+    //   "offDayDailyRate": 0,
+    //   "HelperFee": 0,
+    //   "Pocketmoney": 0,
+    //   "SelectOffDays": 0,
+    //   "EnterOffDays": 0,
+    //   "FatherOccupation": "string",
+    //   "MotherOccupation": "string",
+    //   "FatherAge": 0,
+    //   "MotherAge": 0,
+    //   "SiblingsPosition": "string",
+    //   "NoOfBrother": 0,
+    //   "NoOfSister": 0,
+    //   "BrotherAge": 0,
+    //   "SisterAge": 0,
+    //   "HusbandName": "string",
+    //   "HusbandOccupation": "string",
+    //   "HusbandAge": 0,
+    //   "NoofChildren": 0,
+    //   "ChildAge": 0,
+    //   "Isactive": true,
+    //   "HelperCode": "string",
+    //   "Experience": "string",
+    //   "Interviewer": "string",
+    //   "PersonImageString": "string",
+    //   "PersonImage": "string",
+    //   "PersonImg_Base64String": "string",
+    //   "PersonImageFileName": "string",
+    //   "PersonImagePath": "string",
+    //   "FullImageString": "string",
+    //   "FullImage": "string",
+    //   "FullImg_Base64String": "string",
+    //   "FullImageFileName": "string",
+    //   "VideoFileName": "string",
+    //   "VedioImagePath": "string",
+    //   "VedioFileName": "string",
+    //   "Vedio_Base64String": "string",
+    //   "Video": "string",
+    //   "FullImagePath": "string",
+    //   "CreatedBy": "string",
+    //   "CreatedOn": "2024-04-02T07:20:32.202Z",
+    //   "ChangedBy": "string",
+    //   "ChangedOn": "2024-04-02T07:20:32.202Z",
+    //   "CVNumber": "string",
+    //   "Contacts": [
+    //     {
+    //       "CVCode": "string",
+    //       "Type": "string",
+    //       "Homeaddress": "string",
+    //       "OrgId": jpb.OrgId,
+    //       "SLNo": 0,
+    //       "MobileNo": "string",
+    //       "Viber": "string",
+    //       "ContactNo": "string",
+    //       "Facebook": "string",
+    //       "Whatsapp": "string",
+    //       "OtherType": "string",
+    //       "IsActive": true,
+    //       "Instagram": "string",
+    //       "Tiktok": "string",
+    //       "Email": "string",
+    //       "FamilyMember": "string",
+    //       "Relationship": "string",
+    //       "Age": 0,
+    //       "CreatedBy": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.203Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.203Z"
+    //     }
+    //   ],
+    //   "Language": [
+    //     {
+    //       "CvCode": "string",
+    //       "OrgId": jpb.OrgId,
+    //       "SLNo": 0,
+    //       "Language": "string",
+    //       "Understandinglevel": "string",
+    //       "Speakinglevel": "string",
+    //       "Remarks": "string",
+    //       "Createdby": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.203Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.203Z"
+    //     }
+    //   ],
+    //   "Educations": [
+    //     {
+    //       "OrgId": jpb.OrgId,
+    //       "CVCode": "string",
+    //       "SLNo": 0,
+    //       "SchoolName": "string",
+    //       "Educations": "string",
+    //       "From": "2024-04-02T07:20:32.203Z",
+    //       "FromString": "string",
+    //       "To": "2024-04-02T07:20:32.203Z",
+    //       "ToStrings": "string",
+    //       "CreatedBy": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.203Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.203Z",
+    //       "EducationCertDocument": "string",
+    //       "EducationCertFileName": "string",
+    //       "EducationCertFileValue": "string",
+    //       "EducationCertFileValueBase64": "string"
+    //     }
+    //   ],
+    //   "Interview": [
+    //     {
+    //       "OrgId": jpb.OrgId,
+    //       "CVCode": "string",
+    //       "SLNo": 0,
+    //       "MeetingID": "string",
+    //       "MeetingLink": "string",
+    //       "MeetingDatetime": "2024-04-02T07:20:32.203Z",
+    //       "MeetingDatetimeString": "string",
+    //       "ConfirmMeeting": "string",
+    //       "AvaialableDate": "2024-04-02T07:20:32.203Z",
+    //       "AvaialableDateString": "string",
+    //       "AvaialableTime": "2024-04-02T07:20:32.203Z",
+    //       "AvaialableTimeString": "string",
+    //       "Createdby": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.203Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.203Z"
+    //     }
+    //   ],
+    //   "HelperExperience": [
+    //     {
+    //       "CvCode": "string",
+    //       "OrgId": jpb.OrgId,
+    //       "SLNo": 0,
+    //       "StartDate": "2024-04-02T07:20:32.203Z",
+    //       "EndDate": "2024-04-02T07:20:32.203Z",
+    //       "Country": "string",
+    //       "Name": "string",
+    //       "Race": "string",
+    //       "TypeOfResidence": "string",
+    //       "StartDateString": "string",
+    //       "EndDateString": "string",
+    //       "ReasonofLeaving": "string",
+    //       "Testimonial": "string",
+    //       "Duty": "string",
+    //       "Createdby": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.203Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.203Z",
+    //       "RaceDesc": "string",
+    //       "FeedBack": "string"
+    //     }
+    //   ],
+    //   "SkillMaster": [
+    //     {
+    //       "OrgId": jpb.OrgId,
+    //       "CVCode": "string",
+    //       "Experience": true,
+    //       "HelperSkillCaption": "string",
+    //       "SkillCode": "string",
+    //       "CreatedBy": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.204Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.204Z",
+    //       "SkillName": "string",
+    //       "Willingness": true,
+    //       "Assessment": "string",
+    //       "EmployerSkillName": "string",
+    //       "RemarkCaption": "string"
+    //     }
+    //   ],
+    //   "EvaluationofSkill": [
+    //     {
+    //       "OrgId": jpb.OrgId,
+    //       "CVCode": "string",
+    //       "SkillCode": "string",
+    //       "Description": "string",
+    //       "IsActive": true,
+    //       "CreatedBy": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.204Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.204Z"
+    //     }
+    //   ],
+    //   "MedicalCV": [
+    //     {
+    //       "OrgId": jpb.OrgId,
+    //       "Code": "string",
+    //       "MedicalCaption": "string",
+    //       "ParentId": "string",
+    //       "HasSub": true,
+    //       "Answer": "string",
+    //       "YesOrNo": true,
+    //       "CVCode": "string",
+    //       "CreatedBy": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.204Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.204Z",
+    //       "VaccinationFileName": "string",
+    //       "VaccinationFileValue": "string",
+    //       "VaccinationCertificateURL": "string",
+    //       "Status": 0,
+    //       "MedicalType": "string",
+    //       "LstVaccinactionDocument": [
+    //         {
+    //           "OrgId": jpb.OrgId,
+    //           "SlNo": 0,
+    //           "CVCode": "string",
+    //           "MedicalCode": "string",
+    //           "VaccinationUploadURL": "string",
+    //           "CreatedBy": "string",
+    //           "CreatedOn": "2024-04-02T07:20:32.204Z",
+    //           "ChangedBy": "string",
+    //           "ChangedOn": "2024-04-02T07:20:32.204Z",
+    //           "VaccinationUploadFileName": "string",
+    //           "VaccinationUploadtFileValue": "string",
+    //           "VaccinationUploadFileValueBase64": "string",
+    //           "VaccinationUpload_URL": "string"
+    //         }
+    //       ]
+    //     }
+    //   ],
+    //   "CustomUpload": [
+    //     {
+    //       "OrgId": jpb.OrgId,
+    //       "SlNo": 0,
+    //       "CVCode": "string",
+    //       "UploadURL": "string",
+    //       "CreatedBy": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.204Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.204Z",
+    //       "Title": "string",
+    //       "UploadFileName": "string",
+    //       "UploadtFileValue": "string",
+    //       "UploadFileValueBase64": "string",
+    //       "Upload_URL": "string"
+    //     }
+    //   ],
+    //   "HealthRestriction": [
+    //     {
+    //       "OrgId": jpb.OrgId,
+    //       "CVCode": "string",
+    //       "Code": "string",
+    //       "SlNo": "string",
+    //       "RestrictionCaption": "string",
+    //       "RestrictionParentCode": "string",
+    //       "ParentRestrictionCaption": "string",
+    //       "RestrictionType": "string",
+    //       "Answer": "string",
+    //       "YesOrNo": true,
+    //       "CreatedBy": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.204Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.205Z"
+    //     }
+    //   ],
+    //   "OtherRemarks": [
+    //     {
+    //       "OrgId": jpb.OrgId,
+    //       "CVCode": "string",
+    //       "SlNo": "string",
+    //       "Remarks": "string",
+    //       "Type": "string",
+    //       "Answer": "string",
+    //       "YesOrNo": true,
+    //       "CreatedBy": "string",
+    //       "CreatedOn": "2024-04-02T07:20:32.205Z",
+    //       "ChangedBy": "string",
+    //       "ChangedOn": "2024-04-02T07:20:32.205Z"
+    //     }
+    //   ],
+    //   "Passport": "string",
+    //   "PassportFileName": "string",
+    //   "PassportFileValue": "string",
+    //   "PassportFileValueBase64": "string",
+    //   "PassportURL": "string",
+    //   "BirthCertificate": "string",
+    //   "BirthCertificateFileName": "string",
+    //   "BirthCertificateFileValue": "string",
+    //   "BirthCertificateFileValueBase64": "string",
+    //   "BirthCertificateURL": "string",
+    //   "MarriageCertificate": "string",
+    //   "MarriageCertificateFileName": "string",
+    //   "MarriageCertificateFileValue": "string",
+    //   "MarriageCertificateFileValueBase64": "string",
+    //   "MarriageCertificateURL": "string",
+    //   "FamilyCertificate": "string",
+    //   "FamilyCertificateFileName": "string",
+    //   "FamilyCertificateFileValue": "string",
+    //   "FamilyCertificateFileValueBase64": "string",
+    //   "FamilyCertificateURL": "string",
+    //   "IsSingaporeExperiance": true,
+    //   "RestDay": 0,
+    //   "EntryDate": "2024-04-02T07:20:32.205Z",
+    //   "TrainingCenterDate": "2024-04-02T07:20:32.205Z",
+    //   "EntryDateString": "string",
+    //   "TrainingCenterDateString": "string",
+    //   "CVStatus": "string"
+    // }
+   
+    const regDetail = {
       HelperBioDetails: {
-        OrgId: 1,
+        OrgId:  jpb.OrgId,
         HelperCode: helperCode,
         HelperName: helperFormData.HelperName,
         EmailId: helperFormData.Email,
@@ -399,9 +852,6 @@ const MaidRegistration = () => {
         DirectHire:true,
         TrainingCenter:helperFormData.TrainingCenter,
         EmailAddress:helperFormData.Email,
-        // FileName:helperFormData.FileName,
-       // FileName:"helper.jpg",
-       // Helper_Img_Base64String:"",
         FileName: helperFormData.HelperBioDetails.FileName,
         Helper_Img_Base64String: helperFormData.HelperBioDetails.Helper_Img_Base64String,
         IsActive:true,
@@ -454,41 +904,190 @@ const MaidRegistration = () => {
           InterviewTime: intTime,
           Remarks:helperFormData.Remarks
         }
+      ]
+    };
+    
+    const postData = {
+      "OrgId": regDetail.HelperBioDetails.OrgId,
+      "CVCode": regDetail.HelperBioDetails.HelperCode,
+      "BranchCode": "string",
+      "Email": regDetail.HelperBioDetails.EmailId,
+      "Password": regDetail.HelperBioDetails.Password,
+      "ConfirmPassword": regDetail.HelperBioDetails.Password, // Assuming ConfirmPassword same as Password
+      "SMSContactNumber": regDetail.HelperBioDetails.MobileNo,
+      "FullName": regDetail.HelperBioDetails.HelperName, // Assuming HelperName is the full name
+      "NricFin": regDetail.HelperBioDetails.NRIC_FIN, // Assuming this is equivalent
+      "Nationality": regDetail.HelperBioDetails.Nationality,
+      "PassportNo": regDetail.HelperBioDetails.PassportNo,
+      "PassportIssuePlace": regDetail.HelperBioDetails.PassportIssuePlace,
+      "PassportExpiryDate": regDetail.HelperBioDetails.PassportExpiryDate,
+      "PassportExpiryDateString": "", // Placeholder, not provided in regDetail
+      "PassportIssueDate": regDetail.HelperBioDetails.PassIssueDate,
+      "PassportIssueDateString": "", // Placeholder, not provided in regDetail
+      "WPNo": regDetail.HelperBioDetails.WorkPermitNo,
+      "WPExpiry": regDetail.HelperBioDetails.WorkPermitExpiry,
+      "WPExpiryString": "", // Placeholder, not provided in regDetail
+      "Religion": regDetail.HelperBioDetails.Religion,
+      "DateOfBirth": regDetail.HelperBioDetails.DateOfBirth,
+      "DateOfBirthString": "", // Placeholder, not provided in regDetail
+      "MaritalStatus": regDetail.HelperBioDetails.MartilaStatus,
+      "BirthPlace": regDetail.HelperBioDetails.BirthPlace,
+      "BirthPlaceString": "", // Placeholder, not provided in regDetail
+      "Specialisation": regDetail.HelperBioDetails.Specialization_Preference, // Typo in regDetail
+      "RepatraiteAirport": regDetail.HelperBioDetails.RepatraiteAirport,
+      "Status": regDetail.HelperBioDetails.Status,
+      "OtherInfo": regDetail.HelperBioDetails.OtherInfo,
+      "DirectHire": regDetail.HelperBioDetails.DirectHire,
+      "TrainingCenter": regDetail.HelperBioDetails.TrainingCenter,
+      "Complexion": regDetail.PhysicalAttribute.Complexion,
+      "Height": regDetail.PhysicalAttribute.Height_CM, // Assuming this is height in cm
+      "Feet": regDetail.PhysicalAttribute.Height_Feet, // Assuming this is height in feet
+      "Weight": regDetail.PhysicalAttribute.Weight_KG, // Assuming this is weight in kg
+      "Pound": regDetail.PhysicalAttribute.Weight_Pound, // Assuming this is weight in pound
+      "PlacementFee": 0, // Placeholder, not provided in regDetail
+      "BasicSalary": regDetail.BookingRealtedInformation.BasicSalary,
+      "offDayDailyRate": regDetail.BookingRealtedInformation.OffDayDailyRate,
+      "HelperFee": regDetail.BookingRealtedInformation.HelperFee,
+      "Pocketmoney": regDetail.BookingRealtedInformation.PocketMoney, // Typo in regDetail
+      "SelectOffDays": regDetail.BookingRealtedInformation.SelectOffDays,
+      "EnterOffDays": regDetail.BookingRealtedInformation.NoOffDays, // Assuming this is the same
+      "FatherOccupation": regDetail.FamilyBackground.FatherOccupation,
+      "MotherOccupation": regDetail.FamilyBackground.MotherOccupation,
+      "FatherAge": regDetail.FamilyBackground.FatherAge,
+      "MotherAge": regDetail.FamilyBackground.MotherAge,
+      "SiblingsPosition": regDetail.FamilyBackground.SiblingsPosition,
+      "NoOfBrother": regDetail.FamilyBackground.NoOfBrother,
+      "NoOfSister": regDetail.FamilyBackground.NoOfSister,
+      "BrotherAge": regDetail.FamilyBackground.BrotherAge,
+      "SisterAge": regDetail.FamilyBackground.SisterAge,
+      "HusbandName": regDetail.FamilyBackground.HusbandName,
+      "HusbandOccupation": regDetail.FamilyBackground.HusbandOccupation,
+      "HusbandAge": regDetail.FamilyBackground.HusbandAge,
+      "NoofChildren": regDetail.FamilyBackground.NoOfChildren, // Typo in regDetail
+      "ChildAge": regDetail.FamilyBackground.ChildAge,
+      "Isactive": regDetail.HelperBioDetails.IsActive, // Typo in regDetail
+      "Experience": "", // Placeholder, not provided in regDetail
+      "Interviewer": "", // Placeholder, not provided in regDetail
+      "PersonImageString": "", // Placeholder, not provided in regDetail
+      "PersonImage": "", // Placeholder, not provided in regDetail
+      "PersonImg_Base64String": regDetail.HelperBioDetails.Helper_Img_Base64String,
+      "PersonImageFileName": "", // Placeholder, not provided in regDetail
+      "PersonImagePath": "", // Placeholder, not provided in regDetail
+      "FullImageString": "", // Placeholder, not provided in regDetail
+      "FullImage": "", // Placeholder, not provided in regDetail
+      "FullImg_Base64String": "", // Placeholder, not provided in regDetail
+      "FullImageFileName": "", // Placeholder, not provided in regDetail
+      "VideoFileName": "", // Placeholder, not provided in regDetail
+      "VedioImagePath": "", // Placeholder, not provided in regDetail
+      "VedioFileName": "", // Placeholder, not provided in regDetail
+      "Vedio_Base64String": "", // Placeholder, not provided in regDetail
+      "Video": "", // Placeholder, not provided in regDetail
+      "FullImagePath": "", // Placeholder, not provided in regDetail
+      "CreatedBy": regDetail.HelperBioDetails.CreatedBy,
+      "CreatedOn": "", // Placeholder, not provided in regDetail
+      "ChangedBy": "", // Placeholder, not provided in regDetail
+      "ChangedOn": "", // Placeholder, not provided in regDetail
+      "CVNumber": "", // Placeholder, not provided in regDetail
+      "Contacts": [
+        {
+          "CVCode": regDetail.HelperBioDetails.HelperCode,
+          "Type": "string",
+          "Homeaddress": regDetail.HelperContacts.HomeAddress,
+          "OrgId": jpb.OrgId,
+          "SLNo": 0,
+          "MobileNo": regDetail.HelperBioDetails.MobileNo,
+          "Viber": regDetail.HelperContacts.Viber,
+          "ContactNo": regDetail.HelperContacts.HomeTelephone, // Assuming HomeTelephone is ContactNo
+          "Facebook": regDetail.HelperContacts.Facebook,
+          "Whatsapp": regDetail.HelperContacts.WhatsApp,
+          "OtherType": "string",
+          "IsActive": true,
+          "Instagram": "", // Placeholder, not provided in regDetail
+          "Tiktok": "", // Placeholder, not provided in regDetail
+          "Email": "", // Placeholder, not provided in regDetail
+          "FamilyMember": "", // Placeholder, not provided in regDetail
+          "Relationship": "", // Placeholder, not provided in regDetail
+          "Age": 0,
+          "CreatedBy": "", // Placeholder, not provided in regDetail
+          "CreatedOn": "", // Placeholder, not provided in regDetail
+          "ChangedBy": "", // Placeholder, not provided in regDetail
+          "ChangedOn": "" // Placeholder, not provided in regDetail
+        }
       ],
-      AccountDetails: {
-        Email:helperFormData.Email,
-        Password:helperFormData.Password,
-        ConfirmPassword:helperFormData.ConfirmPassword,
-        SMSContactNumber:helperFormData.SMSContactNumber
+      "Language": [], // Placeholder, not provided in regDetail
+      "Educations": [], // Placeholder, not provided in regDetail
+      "Interview": [
+        {
+          "OrgId": regDetail.Interview[0].OrgId,
+          "CVCode": regDetail.Interview[0].HelperCode,
+          "SLNo": 0,
+          "MeetingID": "", // Placeholder, not provided in regDetail
+          "MeetingLink": "", // Placeholder, not provided in regDetail
+          "MeetingDatetime": regDetail.Interview[0].InterviewDate,
+          "MeetingDatetimeString": "", // Placeholder, not provided in regDetail
+          "ConfirmMeeting": "", // Placeholder, not provided in regDetail
+          "AvaialableDate": "", // Placeholder, not provided in regDetail
+          "AvaialableDateString": "", // Placeholder, not provided in regDetail
+          "AvaialableTime": "", // Placeholder, not provided in regDetail
+          "AvaialableTimeString": "", // Placeholder, not provided in regDetail
+          "Createdby": "", // Placeholder, not provided in regDetail
+          "CreatedOn": "", // Placeholder, not provided in regDetail
+          "ChangedBy": "", // Placeholder, not provided in regDetail
+          "ChangedOn": "" // Placeholder, not provided in regDetail
+        }
+      ],
+      "HelperExperience": [], // Placeholder, not provided in regDetail
+      "SkillMaster": [], // Placeholder, not provided in regDetail
+      "EvaluationofSkill": [], // Placeholder, not provided in regDetail
+      "MedicalCV": [], // Placeholder, not provided in regDetail
+      "CustomUpload": [], // Placeholder, not provided in regDetail
+      "HealthRestriction": [], // Placeholder, not provided in regDetail
+      "OtherRemarks": [], // Placeholder, not provided in regDetail
+      "Passport": "", // Placeholder, not provided in regDetail
+      "PassportFileName": "", // Placeholder, not provided in regDetail
+      "PassportFileValue": "", // Placeholder, not provided in regDetail
+      "PassportFileValueBase64": "", // Placeholder, not provided in regDetail
+      "PassportURL": "", // Placeholder, not provided in regDetail
+      "BirthCertificate": "", // Placeholder, not provided in regDetail
+      "BirthCertificateFileName": "", // Placeholder, not provided in regDetail
+      "BirthCertificateFileValue": "", // Placeholder, not provided in regDetail
+      "BirthCertificateFileValueBase64": "", // Placeholder, not provided in regDetail
+      "BirthCertificateURL": "", // Placeholder, not provided in regDetail
+      "MarriageCertificate": "", // Placeholder, not provided in regDetail
+      "MarriageCertificateFileName": "", // Placeholder, not provided in regDetail
+      "MarriageCertificateFileValue": "", // Placeholder, not provided in regDetail
+      "MarriageCertificateFileValueBase64": "", // Placeholder, not provided in regDetail
+      "MarriageCertificateURL": "", // Placeholder, not provided in regDetail
+      "FamilyCertificate": "", // Placeholder, not provided in regDetail
+      "FamilyCertificateFileName": "", // Placeholder, not provided in regDetail
+      "FamilyCertificateFileValue": "", // Placeholder, not provided in regDetail
+      "FamilyCertificateFileValueBase64": "", // Placeholder, not provided in regDetail
+      "FamilyCertificateURL": "", // Placeholder, not provided in regDetail
+      "IsSingaporeExperiance": true, // Placeholder, not provided in regDetail
+      "RestDay": 0, // Placeholder, not provided in regDetail
+      "EntryDate": "", // Placeholder, not provided in regDetail
+      "TrainingCenterDate": "", // Placeholder, not provided in regDetail
+      "EntryDateString": "", // Placeholder, not provided in regDetail
+      "TrainingCenterDateString": "", // Placeholder, not provided in regDetail
+      "CVStatus": "" // Placeholder, not provided in regDetail
+    };
+
+    
+    try {
+      const response = await createHelperUser(postData);
+
+      if (response.Message === "Sucess" ) {
+        window.location.href = "/"
+
       }
+    } catch (error) {
+      toast.error('Failure!');
+      console.log('An error occurred:', error);
     }
 
-   
-     console.log(JSON.stringify(regDetail));
-    
-     const token = jwtToken;  
 
-     const response = await fetch('http://154.26.130.251:283/api/Helper/DataFormUpdation', {
-       method: 'POST',
-       body: JSON.stringify(regDetail),
-       headers: {
-         'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-       }
-     });
-     if (!response.ok) {
-       console.log('SOMETHING WENT WRONG');
-       toast.error('Something went wrong!');
-     }
-    //  console.log(response.json());
-     const data =  await response.json();
-     console.log(data);
-     if (data.Code === 200 && data.Message === 'Sucess') {
-      // alert('updated successfully')
-      toast.success('Registered Successfully');
-      navigate('/helperlogin');
-      }
    }
+
 
   const handleLinkClick = (link) => {
     // navigate(link);
@@ -539,21 +1138,21 @@ const MaidRegistration = () => {
                           <label>Name <span className="red">*</span></label>
                         </div>
                         <div className="col-lg-8">
-                          <input type="text" ref={nameRef} className="form-control" placeholder="Your Name"/> </div>
+                          <input type="text" value={name} onChange={handleNameChange} className="form-control" placeholder="Your Name"/> </div>
                       </div>
                       <div className="row form-group align-items-center">
                         <div className="col-lg-4">
                           <label>Email Address <span className="red">*</span></label>
                         </div>
                         <div className="col-lg-8">
-                          <input type="text" ref={emailRef} className="form-control" placeholder="Your Email Address"/> </div>
+                          <input type="email"  value={email} onChange={handleEmailChange}  className="form-control" placeholder="Your Email Address"/> </div>
                       </div>
                       <div className="row form-group align-items-center">
                         <div className="col-lg-4">
                           <label>Phone Number <span className="red">*</span></label>
                         </div>
                         <div className="col-lg-8">
-                          <input type="text" ref={phoneRef} className="form-control" placeholder="Your Phone Number"/> </div>
+                          <input type="number" value={phone} onChange={handlePhoneChange}className="form-control" placeholder="Your Phone Number"/> </div>
                       </div>
                       {/* <div className="row align-items-center justify-content-center form-group">
                         <div className="col-lg-auto">
@@ -576,11 +1175,11 @@ const MaidRegistration = () => {
                     <div className="pageTitle title-fix text-center md">
                       <h2>Enter The Details</h2></div>
                     <div className="text-center otp-wrap">
-                      <p>A combination of digits has been sent to your chosen OTP.</p>
+                      <h6>A combination of digits has been sent to your chosen OTP.</h6>
                       <label>Enter the OTP <span className="red">*</span></label>
                       <div className="row gutters-10 otp-row align-items-center justify-content-center">
                         <div className="col-auto">
-                          <input ref={otpRef} type="text" className="form-control"/> </div>
+                          <input  value={inputOtp} onChange={handleOtpChange} type="text" className="form-control"/> </div>
                         {/* <div className="col-auto">
                           <input type="text" className="form-control"/> </div>
                         <div className="col-auto">

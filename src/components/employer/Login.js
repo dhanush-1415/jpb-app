@@ -4,13 +4,15 @@ import Footer from '../Footer';
 import QuickSearch from '../Quicksearch';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
+import { handleEmployerlogin, handleHelperlogin } from '../../apiCalls';
+import { jpb } from '../../config';
 
 const Login = () => {
   const [isloggedin, setisloggedin] = useState(false);
   const [logindata, setlogindata] = useState({});
   const [jwtToken, setjwtToken] = useState('');
   const [selectedLink, setSelectedLink] = useState('/');
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,56 +52,124 @@ const Login = () => {
     } catch (error) {}
   };
 
+  // const handleLogin = async (event) => {
+  //   event.preventDefault();
+
+  //   const regDetail = {
+  //     EmailId: logindata.Username,
+  //     Password: logindata.Password,
+  //   };
+  //   console.log(regDetail);
+
+  //   const jwttoken = jwtToken;
+  //   console.log(jwtToken, jwttoken);
+    
+
+  //   try {
+  //     const response = await fetch('http://154.26.130.251:283/api/Employer/Login', {
+  //       method: 'POST',
+  //       body: JSON.stringify(regDetail),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${jwttoken}`,
+  //       },
+  //     });
+
+  //     console.log(response);
+
+  //     if (!response.ok) {
+  //       console.log('Something went wrong!');
+  //       toast.error('Login Failure!');
+  //       return;
+  //     }
+
+  //     const data = await response.json();
+  //     console.log(data);
+
+  //     if (data.Code === 200 && data.Message === 'Sucess') {
+  //      // alert(true);
+  //       const userData = data.Data[0];
+  //       console.log(userData);
+  //       localStorage.setItem('token', JSON.stringify(data.Data));
+  //       setisloggedin(true);
+  //       console.log(localStorage.getItem('token'));
+  //       console.log(isloggedin);
+  //       toast.success('Login Successfully!');
+  //       navigate('/employeraccount');
+  //       window.location.reload();
+  //     }
+  //   } catch (error) {
+  //     toast.error('Failure!');
+  //     console.log('An error occurred:', error);
+  //   }
+  // };
+
+
+  
   const handleLogin = async (event) => {
     event.preventDefault();
 
     const regDetail = {
+      OrgId:jpb.OrgId,
       EmailId: logindata.Username,
       Password: logindata.Password,
     };
-    console.log(regDetail);
 
-    const jwttoken = jwtToken;
-    console.log(jwtToken, jwttoken);
     
+    if(selectedLink === "/login"){
 
-    try {
-      const response = await fetch('http://154.26.130.251:283/api/Employer/Login', {
-        method: 'POST',
-        body: JSON.stringify(regDetail),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwttoken}`,
-        },
-      });
-
-      console.log(response);
-
-      if (!response.ok) {
-        console.log('Something went wrong!');
-        toast.error('Login Failure!');
-        return;
+      try {
+        const response = await handleEmployerlogin(regDetail);
+        console.log(response);
+  
+        if (!response.ok) {
+          console.log('Something went wrong!');
+          toast.error('Login Failure!');
+          return;
+        }
+  
+        const data = await response.json();
+        console.log(data);
+  
+        if (data.Code === 200 && data.Message === 'Sucess') {
+          if(data.Data[0].Email === logindata.Username ){
+            toast.success('Login Sucess');
+            window.location.href = "/"
+          } 
+        }
+      } catch (error) {
+        toast.error('Failure!');
+        console.log('An error occurred:', error);
       }
 
-      const data = await response.json();
-      console.log(data);
+    }else{
 
-      if (data.Code === 200 && data.Message === 'Sucess') {
-       // alert(true);
-        const userData = data.Data[0];
-        console.log(userData);
-        localStorage.setItem('token', JSON.stringify(data.Data));
-        setisloggedin(true);
-        console.log(localStorage.getItem('token'));
-        console.log(isloggedin);
-        toast.success('Login Successfully!');
-        navigate('/employeraccount');
-        window.location.reload();
+      try {
+        const response = await handleHelperlogin(regDetail);
+        console.log(response);
+  
+        if (!response.ok) {
+          console.log('Something went wrong!');
+          toast.error('Login Failure!');
+          return;
+        }
+  
+        const data = await response.json();
+        console.log(data);
+  
+        if (data.Code === 200 && data.Message === 'Sucess') {
+          if(data.Data[0].Email === logindata.Username ){
+            toast.success('Login Sucess')
+            window.location.href = "/"
+          } 
+        }
+      } catch (error) {
+        toast.error('Failure!');
+        console.log('An error occurred:', error);
       }
-    } catch (error) {
-      toast.error('Failure!');
-      console.log('An error occurred:', error);
     }
+
+
   };
 
 

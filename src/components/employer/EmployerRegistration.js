@@ -6,23 +6,28 @@ import QuickSearch from '../Quicksearch';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
-
-
+import { sendRegOTP , verifyRegOTP, createEmployerUser } from '../../apiCalls';
+import { jpb } from '../../config';
 
 const EmployerRegistration = () => {
+
+  const [otp , setOtp] = useState("")
   const [selectedLink, setSelectedLink] = useState('/');
   const [jwtToken, setjwtToken] = useState('');
   const [employerCode, setemployerCode] = useState('');
-  const nameRef = useRef('');
-  const emailRef = useRef('');
-  const phoneRef = useRef('');
-  const otpRef = useRef('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [inputOtp , setInputOtp] = useState('');
+  const [stepOneComplete, setStepOneComplete] = useState(true);
+  const [stepTwoComplete, setStepTwoComplete] = useState(true);
+  const [stepThreeComplete, setStepThreeComplete] = useState(true);
   const navigate = useNavigate();
   const [employerFormData, setemployerFormData] = React.useState({
     PersonalDetails: {
       OrgId: 1,
       EmployerCode: employerCode,
-     EmployerName: nameRef.current.value,
+     EmployerName: name,
       Nationality: "Singaporean",
      NRIC_FIN: "string",
       PassportNo: "string",
@@ -32,7 +37,7 @@ const EmployerRegistration = () => {
       ContactPerson: "string",
       MobileNo: "string",
       HomeNo: "string",
-      EmailId: emailRef
+      EmailId: email
     },
     JobScopes: {
       HousingType: "string",
@@ -42,13 +47,30 @@ const EmployerRegistration = () => {
       NoOfBedroom: "string"
     },
     AccountDetails: {
-      Email: emailRef.current.value,
+      Email: email,
       Password: "string",
       ConfirmPassword: "string",
       SMSContactNumber: "string",
       MethodOfproceed: "string"
     }
 })
+
+
+const handleNameChange = (event) => {
+  setName(event.target.value);
+};
+
+const handleEmailChange = (event) => {
+  setEmail(event.target.value);
+};
+
+const handlePhoneChange = (event) => {
+  setPhone(event.target.value);
+};
+
+const handleOtpChange = (event) => {
+  setInputOtp(event.target.value);
+};
 
 const jobscopeoptions = [
   {JobScopeId: 1, value: 'Household Chores', label: 'Household Chores' },
@@ -225,68 +247,101 @@ const jobscopeoptions = [
 
 
 
-  async function stepFirstHandler(event) {
-   // event.preventDefault();
+  // async function stepFirstHandler(event) {
+  //  // event.preventDefault();
   
-    const regDetail = {
-      OrgId: 1,
-      Name: nameRef.current.value,
-      Email: emailRef.current.value,
-      Phone: phoneRef.current.value,
-      viaOTP: 'EMAIL',
-    };
-    console.log(regDetail);
-    console.log(JSON.stringify(regDetail));
+  //   const regDetail = {
+  //     OrgId: 1,
+  //     Name: nameRef.current.value,
+  //     Email: emailRef.current.value,
+  //     Phone: phoneRef.current.value,
+  //     viaOTP: 'EMAIL',
+  //   };
+  //   console.log(regDetail);
+  //   console.log(JSON.stringify(regDetail));
    
-    const token = jwtToken;
-    console.log(jwtToken);
-    console.log(token);
-    const response = await fetch('http://154.26.130.251:283/api/Employer/Register', {
-      method: 'POST',
-      body: JSON.stringify(regDetail),
-      headers: {
-        'Content-Type': 'application/json',
-           Authorization: `Bearer ${token}`,
-      }
-    });
-    if (!response.ok) {
-      console.log('Something went wrong!');
+  //   const token = jwtToken;
+  //   console.log(jwtToken);
+  //   console.log(token);
+  //   const response = await fetch('http://154.26.130.251:283/api/Employer/Register', {
+  //     method: 'POST',
+  //     body: JSON.stringify(regDetail),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //          Authorization: `Bearer ${token}`,
+  //     }
+  //   });
+  //   if (!response.ok) {
+  //     console.log('Something went wrong!');
+  //   }
+  //   const data = await response.json();
+  //   console.log(data);
+  // }
+
+
+  useEffect(() => {
+    if (!name || !email || !phone) {
+      setStepOneComplete(true);
+    } else {
+      setStepOneComplete(false);
     }
-    const data = await response.json();
-    console.log(data);
-  }
+
+
+    console.log(otp , inputOtp , "iii")
+    if(otp === inputOtp){
+      setStepTwoComplete(false);
+    }else{
+      setStepTwoComplete(true);
+    }
+  }, [name, email, phone , otp , inputOtp]);
+
+
+
+   const stepFirstHandler = async (event) => {
+    event.preventDefault();
+
+    const regDetail = {
+      Name: name,
+      Email: email,
+      Phone: phone,
+      Method: 'Employer',
+    };  
+
+    try {
+      const response = await sendRegOTP(regDetail);
+
+
+      if (response.Code === 200 && response.Message === 'Sucess') {
+        setOtp(response.Data);
+      }else{
+        toast.error('Failed to send OTP');
+      }
+    } catch (error) {
+      toast.error('Failure!');
+      console.log('An error occurred:', error);
+    }
+  };
 
   async function stepTwoHandler(event) {
     // event.preventDefault();
   // fetchTokenHandler();
      const regDetail = {
-       OrgId: 1,
-       Email: emailRef.current.value,
-       OTP: otpRef.current.value
-     };
-     console.log(regDetail);
-     console.log(JSON.stringify(regDetail));
+      OrgId: jpb.OrgId,
+      Email: email,
+      OTP: inputOtp,
+      Module: "Employer"
+    }
     
-     const token = jwtToken;
-     console.log(jwtToken);
-     console.log(token);
-     const response = await fetch('http://154.26.130.251:283/api/Employer/VerifyOTP', {
-       method: 'POST',
-       body: JSON.stringify(regDetail),
-       headers: {
-         'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-       }
-     });
-     if (!response.ok) {
-       console.log('Please enter correct OTP!');
-       toast.error('Please enter correct OTP!');
-     }
-     const data = await response.json();
-     console.log(data);
-     toast.success('OTP Verified Successfully!');
-     setemployerCode(data.ReferenceNo);
-     console.log(employerCode);
+    try {
+      const response = await verifyRegOTP(regDetail);
+
+      if (response.Code === 200 && response.Message === 'Sucess') {
+        alert("Otp Verified");
+      }
+    } catch (error) {
+      toast.error('Failure!');
+      console.log('An error occurred:', error);
+    }
    }
 
    const convertToDate = (dateString) => {
@@ -322,22 +377,22 @@ const jobscopeoptions = [
       PersonalDetails: {
         OrgId: 1,
         EmployerCode: employerCode,
-       EmployerName: employerFormData.EmployerName,
-        Nationality:document.getElementById('Nationality').value,
-       NRIC_FIN: employerFormData.NRIC_FIN,
-        PassportNo: employerFormData.PassportNo,
-        DateOfBirth: convertToISODate(document.getElementById('DateOfBirth').value)
+      //  EmployerName: employerFormData.EmployerName,
+        // Nationality:document.getElementById('Nationality').value,
+      //  NRIC_FIN: employerFormData.NRIC_FIN,
+        // PassportNo: employerFormData.PassportNo,
+        // DateOfBirth: convertToISODate(document.getElementById('DateOfBirth').value)
       },
       ContactDetails: {
-        ContactPerson: employerFormData.ContactPerson,
-        MobileNo: employerFormData.MobileNo,
-        HomeNo: employerFormData.HomeNo,
-        EmailId: employerFormData.EmailId
+        // ContactPerson: employerFormData.ContactPerson,
+        // MobileNo: employerFormData.MobileNo,
+        // HomeNo: employerFormData.HomeNo,
+        // EmailId: employerFormData.EmailId
       },
       JobScopes: {
-        HousingType: document.getElementById('HousingType').value,
+        // HousingType: document.getElementById('HousingType').value,
         ExpectedJobScope: employerFormData.JobScopes.ExpectedJobScope,
-        NoOfBedroom: employerFormData.NoOfBedroom
+        // NoOfBedroom: employerFormData.NoOfBedroom
       },
       AccountDetails: {
         Email: employerFormData.Email,
@@ -351,29 +406,130 @@ const jobscopeoptions = [
      console.log(employerFormData.Nationality);
      console.log(JSON.stringify(regDetail));
     
-     const token = jwtToken;
-     console.log(jwtToken);
-     console.log(token);
-     const response = await fetch('http://154.26.130.251:283/api/Employer/DataFormUpdation', {
-       method: 'POST',
-       body: JSON.stringify(regDetail),
-       headers: {
-         'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-       }
-     });
-     if (!response.ok) {
-       console.log('SOMETHING WENT WRONG');
-       toast.error('Something went wrong!');
-     }
-     console.log(response);
-   //  console.log(response.json());
-     const data = await response.json();
-     console.log(data);
-     if (data.Code === 200 && data.Message === 'Sucess') {
-      toast.success('Registered Successfully');
-     navigate('/login');
-     }
+
+
+     const postData = {
+      "EmployerMasterV2": {
+        "ICIssueDateString": "",
+        "DateOfBirthString": "",
+        "PassportExpiryDateString": "",
+        "OrgId": jpb.OrgId,
+        "EmployerAutoId": 0,
+        "BranchCode": "",
+        "EmployerCode": employerCode,
+        "EmployerName": employerFormData.EmployerName,
+        "EmailId": employerFormData.Email,
+        "Password": employerFormData.Password,
+        "Nationality": document.getElementById('Nationality').value,
+        "NRIC_FIN": employerFormData.NRIC_FIN,
+        "PassportNo": employerFormData.PassportNo,
+        "PassportExpiryDate": "2024-03-22T07:17:42.733Z",
+        "DateOfBirth": convertToISODate(document.getElementById('DateOfBirth').value),
+        "ICIssueDate": new Date(),
+        "Gender": "",
+        "RaceCode": 0,
+        "ResidentialStatusCode": "",
+        "BlockList": true,
+        "MartilaStatus": "",
+        "ReligionCode": 0,
+        "Occupation": "",
+        "Employed": true,
+        "ReferralMethod": "",
+        "CombinedIncome": true,
+        "MonthlyIncome": 0,
+        "YearofAssesment": 0,
+        "NoofBedroom": employerFormData.NoOfBedroom,
+        "NoofToilet": 0,
+        "ClearWindowExterior": "",
+        "CompanyName": "string",
+        "MarriageRegisteredinSG": "",
+        "AnnualIncome": 0,
+        "TypeOfResidence": "",
+        "ContactPerson": employerFormData.ContactPerson,
+        "Contact_MobileNo": employerFormData.MobileNo,
+        "Contact_HomeNo": employerFormData.HomeNo,
+        "Contact_OfficeNo": "",
+        "Contact_Email": employerFormData.EmailId,
+        "Contact_PostalCode": "",
+        "Contact_UnitNo": "",
+        "Contact_StreetName": "",
+        "Contact_BuildingName": "",
+        "Contact_Country": "",
+        "PostalCode": "",
+        "UnitNo": "",
+        "StreetName": "",
+        "BuildingName": "",
+        "Country": "",
+        "HousingType": document.getElementById('HousingType').value,
+        "HelperSleepingArea": "",
+        "OFMS": "",
+        "Remarks": "",
+        "CreatedBy": "",
+        "CreatedOn": new Date(),
+        "ChangedBy": "",
+        "ChangedOn": new Date(),
+        "Contact_EmailId": "",
+        "JobNoOfBedRoom": 0,
+        "IsActive": true
+      },
+      "employerMasterJobScopv2": [
+        {
+          "OrgId": jpb.OrgId,
+          "EmployerCode": employerCode,
+          "JobScopId": 0,
+          "JobScopDescriptin": ""
+        }
+      ],
+      "employerMasterFamilyDetailv2": {
+        "OrgId": jpb.OrgId,
+        "EmployerCode": employerCode,
+        "PassportExpiryDateString": "",
+        "DateOfBirthString": "",
+        "SlNo": 0,
+        "Name": "",
+        "Relationship": "",
+        "NRIC_FIN": "",
+        "DateofBirth": "",
+        "Title": "",
+        "Nationality": "",
+        "Passport": "",
+        "PassportExpiry": "",
+        "Gender": "",
+        "ResidentialStatus": "",
+        "Occupation": "",
+        "Employed": true,
+        "CompanyName": "",
+        "MonthlyIncome": "",
+        "AnnualIncome": 0,
+        "YearofAssessment": 0,
+        "MobileNo": "",
+        "Email": "",
+        "OtherNo": ""
+      },
+      "employerMasterContactDetailv2": [
+        {
+          "OrgId": jpb.OrgId,
+          "EmployerCode": employerCode,
+          "SlNo": 0,
+          "ContactPerson": "",
+          "ContactNo": ""
+        }
+      ]
+    }
+
+    try {
+      const response = await createEmployerUser(postData);
+
+      if (response.Message === "Sucess" ) {
+        window.location.href = "/"
+
+      }
+    } catch (error) {
+      toast.error('Failure!');
+      console.log('An error occurred:', error);
+    }
+
+
    }
 
    const customStyles = {
@@ -432,21 +588,21 @@ const jobscopeoptions = [
                           <label>Name <span className="red">*</span></label>
                         </div>
                         <div className="col-lg-8">
-                          <input type="text" ref={nameRef} className="form-control" placeholder="Your Name" required/> </div>
+                          <input type="text" value={name} onChange={handleNameChange} className="form-control" placeholder="Your Name" required/> </div>
                       </div>
                       <div className="row form-group align-items-center">
                         <div className="col-lg-4">
                           <label>Email Address <span className="red">*</span></label>
                         </div>
                         <div className="col-lg-8">
-                          <input type="email"  ref={emailRef} className="form-control" placeholder="Your Email Address" required/> </div>
+                          <input type="email"   value={email} onChange={handleEmailChange} className="form-control" placeholder="Your Email Address" required/> </div>
                       </div>
                       <div className="row form-group align-items-center">
                         <div className="col-lg-4">
                           <label>Phone Number <span className="red">*</span></label>
                         </div>
                         <div className="col-lg-8">
-                          <input type="number" ref={phoneRef} className="form-control" placeholder="Your Phone Number" required/> </div>
+                          <input type="number" value={phone} onChange={handlePhoneChange} className="form-control" placeholder="Your Phone Number" required/> </div>
                       </div>
                       {/* <div className="row align-items-center text-center justify-content-center form-group">
                         <div className="col-lg-auto">
@@ -463,17 +619,17 @@ const jobscopeoptions = [
                         </div>
                       </div> */}
                     </div>
-                    <button type="button" onClick={stepFirstHandler} className="next action-button custom-button center-btn">Next</button>
+                    <button type="button" onClick={stepFirstHandler} disabled={stepOneComplete} className="next action-button custom-button center-btn">Next</button>
                   </fieldset>
                   <fieldset>
                     <div className="pageTitle title-fix text-center md">
                       <h2>Enter The Details</h2></div>
                     <div className="text-center ">
-                      <p>OTP has been sent it to your registered Emailid!</p>
+                      <h6>OTP has been sent it to your registered Email Id!</h6>
                       <label>Enter the OTP <span className="red">*</span></label>
                       <div className="row gutters-10 otp-row align-items-center justify-content-center">
                         <div className="col-auto">
-                          <input type="text"  ref={otpRef} className="form-control"/> </div>
+                          <input type="text"  value={inputOtp} onChange={handleOtpChange} className="form-control"/> </div>
                         {/* <div className="col-auto">
                           <input type="text" className="form-control"/> </div>
                         <div className="col-auto">
@@ -486,7 +642,7 @@ const jobscopeoptions = [
                       <div className="resend-otp"><a href="#">Resend OTP <i className="fas fa-redo-alt"></i></a></div>
                     </div>
                     <button type="button" className="action-button previous previous_button custom-button prvs">Back</button>
-                    <button type="button" onClick={stepTwoHandler} className="next action-button custom-button ">Next</button>
+                    <button type="button" onClick={stepTwoHandler} disabled={stepTwoComplete} className="next action-button custom-button ">Next</button>
                   </fieldset>
                   <fieldset>
                     <div className="pageTitle title-fix text-center md">
@@ -816,7 +972,7 @@ const jobscopeoptions = [
                         <label htmlFor="c1">I hereby declared that all the above information given are true and correct.</label>
                       </div>
                     </div>
-                    <button type="button" className="action-button previous previous_button custom-button prvs">Back</button> <a href="#" onClick={stepThreeHandler} className="action-button custom-button finish">SUBMIT</a> 
+                    <button type="button" disabled={stepThreeComplete} className="action-button previous previous_button custom-button prvs">Back</button> <a href="#" onClick={stepThreeHandler} className="action-button custom-button finish">SUBMIT</a> 
                   </fieldset>
                 </form>
               </section>

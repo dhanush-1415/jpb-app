@@ -3919,7 +3919,7 @@ button.next.action-button.custom-button {
 }
 .reg-links ul li{display: table-cell; width: 50%; text-align: center;padding: 0;}
 .reg-links ul li a{ padding: 50px 25px; display: block; width: 100%; position: relative; font-size: 23px; color: #1D2F3B; font-family: 'Fredoka One', cursive;}
-.reg-links ul li.selected a,.reg-links ul li a:hover{background: #214E6C; color: #ffffff;}
+.reg-links ul li.selected a,.reg-links ul li a:hover{background: #214E6C;text-decoration: none; color: #ffffff;}
 .reg-links ul li a:after{content: ""; position: absolute; right: 20px; top:20px; border-radius: 50px; width: 18px; height: 18px; background: #FFFFFF;}
 .reg-links ul li.selected a:after,.reg-links ul li a:hover::after{background: #F8B80A; content: "\f00c";
     font-family: "Font Awesome 5 Free";
