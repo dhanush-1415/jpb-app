@@ -111,7 +111,7 @@ const Login = () => {
 
     const regDetail = {
       OrgId:jpb.OrgId,
-      EmailId: logindata.Username,
+      Email: logindata.Username,
       Password: logindata.Password,
     };
 
@@ -119,23 +119,17 @@ const Login = () => {
     if(selectedLink === "/login"){
 
       try {
-        const response = await handleEmployerlogin(regDetail);
-        console.log(response);
+        const response = await handleEmployerlogin(regDetail);  
   
-        if (!response.ok) {
-          console.log('Something went wrong!');
-          toast.error('Login Failure!');
-          return;
-        }
-  
-        const data = await response.json();
-        console.log(data);
-  
-        if (data.Code === 200 && data.Message === 'Sucess') {
-          if(data.Data[0].Email === logindata.Username ){
+        if (response.Code === 200 && response.Message === 'Sucess') {
+          if(response.Data[0].Email === logindata.Username ){
             toast.success('Login Sucess');
-            window.location.href = "/"
-          } 
+            window.location.href = "/helperlist"
+          }else{
+            toast.error("Login Failer , Please Register")
+          }
+        }else{
+          toast.error("Login Failed")
         }
       } catch (error) {
         toast.error('Failure!');
@@ -146,22 +140,16 @@ const Login = () => {
 
       try {
         const response = await handleHelperlogin(regDetail);
-        console.log(response);
-  
-        if (!response.ok) {
-          console.log('Something went wrong!');
-          toast.error('Login Failure!');
-          return;
-        }
-  
-        const data = await response.json();
-        console.log(data);
-  
-        if (data.Code === 200 && data.Message === 'Sucess') {
-          if(data.Data[0].Email === logindata.Username ){
-            toast.success('Login Sucess')
+
+        if (response.Code === 200 && response.Message === 'Sucess') {
+          if(response.Data[0].Email === logindata.Username ){
+            toast.success('Login Sucess');
             window.location.href = "/"
-          } 
+          }else{
+            toast.error("Login Failer , Please Register")
+          }
+        }else{
+          toast.error("Login Failed")
         }
       } catch (error) {
         toast.error('Failure!');

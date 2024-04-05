@@ -521,7 +521,7 @@ const jobscopeoptions = [
       const response = await createEmployerUser(postData);
 
       if (response.Message === "Sucess" ) {
-        window.location.href = "/"
+        window.location.href = "/helperlist"
 
       }
     } catch (error) {

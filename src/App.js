@@ -35,12 +35,16 @@ import HelperMedical from './components/helper/HelperMedical';
 import HelperProfileDetail from './components/helper/HelperProfileDetail';
 import HelperProfileFill from './components/helper/HelperProfileFill';
 import HelperSkill from './components/helper/HelperSkill';
+import FilterList from './components/path/filterList';
 import Pract from './pract';
-
+import HelperBio from './components/path/helperDetails';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <BrowserRouter basename="/">
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="*" element={<div>404</div>} />
@@ -79,6 +83,8 @@ function App() {
         <Route path='/helperprofiledetail' element={<HelperProfileDetail/> } />
         <Route path='/helperprofilefill' element={<HelperProfileFill/> } />
         <Route path='/helperskill' element={<HelperSkill/> } />
+        <Route path='/helperlist' element={<FilterList/> } />
+        <Route path='/helper/:helpercode' element={<HelperBio/> } />
       </Routes>
     </BrowserRouter>
   );
